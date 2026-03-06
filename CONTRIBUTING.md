@@ -282,11 +282,72 @@ Include:
 - [ ] Reviewed my own code
 ```
 
+### Required CI Checks
+
+All pull requests must pass the following automated checks before merging:
+
+#### ✅ Test Suite (`Run Tests`)
+
+- **What it checks:** All unit tests, integration tests, and coverage thresholds
+- **Required coverage:** 80% minimum across all packages
+- **Workflow:** `.github/workflows/test.yml`
+
+**If this fails:**
+- Review test failures in the GitHub Actions log
+- Run `npm test` locally to reproduce
+- Fix failing tests or update tests if behavior changed intentionally
+- Ensure new code has adequate test coverage
+
+#### ✅ Visual Regression (`visual-regression`)
+
+- **What it checks:** Storybook visual regression tests via Argos CI
+- **Workflow:** `.github/workflows/argos.yml`
+
+**If this fails:**
+- Review visual diffs in the Argos dashboard (linked in PR comments)
+- If changes are intentional, approve them in Argos
+- If changes are unintentional, fix the UI regression
+
+#### 📋 Merge Settings
+
+- **Merge strategy:** Squash merge only (standardizes commit history)
+- **Auto-delete:** Head branches are automatically deleted after merge
+- **Linear history:** No merge commits allowed
+
+### Coverage Requirements
+
+The test suite enforces an **80% coverage threshold** for:
+- Line coverage
+- Branch coverage
+- Function coverage
+- Statement coverage
+
+Contributions that drop coverage below 80% will fail CI. Ensure your code is adequately tested:
+
+```bash
+# Check coverage locally
+npm test -- --coverage
+
+# View detailed coverage report
+open coverage/index.html
+```
+
+### Handling Failed Checks
+
+1. **Read the error message** in the GitHub Actions workflow log
+2. **Reproduce locally** using the same commands (npm test, npm run build, etc.)
+3. **Fix the issue** and push additional commits
+4. **Re-run checks** (they trigger automatically on new pushes)
+
+Do not bypass or skip checks. If you believe a check is incorrectly failing, comment on the PR for maintainer assistance.
+
 ### Review Process
 
-1. **Automated checks** run (tests, linting, build)
-2. **Maintainer review** (may request changes)
-3. **Approval** and merge
+1. **Automated checks** run (tests, visual regression, coverage)
+2. **All checks must pass** (see Required CI Checks above)
+3. **Maintainer review** (may request changes)
+4. **At least 1 approval** required
+5. **Squash and merge** to main
 
 ## Design Token Contributions
 
