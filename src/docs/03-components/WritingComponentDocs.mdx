@@ -1,0 +1,408 @@
+---
+title: Writing Component Documentation
+description: Guide for creating high-quality component documentation
+---
+
+# Writing Component Documentation
+
+This guide helps you write clear, comprehensive documentation for TENsor components.
+
+## Documentation Principles
+
+### 1. Concept Before API
+
+Explain **why** and **when** to use a component before diving into **how** to use it.
+
+**Bad:**
+```md
+## Button
+
+Props: variant, size, disabled, onClick...
+```
+
+**Good:**
+```md
+## Button
+
+Buttons trigger actions in response to user interaction. Use buttons for actions like submitting forms, opening modals, or triggering processes. For navigation, use Link instead.
+
+### When to Use
+- Submitting a form
+- Opening a modal dialog
+- Starting a process
+
+### When Not to Use
+- Navigating to a different page (use Link)
+- Toggling visibility (use disclosure pattern)
+```
+
+### 2. Decision Guidance Over Feature Lists
+
+Help readers choose the right component, variant, or approach.
+
+**Bad:**
+```md
+Button has four variants: primary, secondary, danger, ghost.
+```
+
+**Good:**
+```md
+## Choosing a Variant
+
+**Primary** — Use for the main call-to-action. Limit to one primary button per section.
+Example: "Save Changes", "Submit"
+
+**Secondary** — Use for alternative actions with less emphasis.
+Example: "Cancel", "Go Back"
+
+**Danger** — Use for destructive actions. Always pair with confirmation for irreversible changes.
+Example: "Delete Account", "Remove Item"
+
+**Ghost** — Use for tertiary actions with minimal visual weight.
+Example: "Learn More", "Dismiss"
+```
+
+### 3. Show Real Examples
+
+Provide working code examples, not pseudo-code.
+
+**Bad:**
+```tsx
+<Button>...</Button>
+```
+
+**Good:**
+```tsx
+import { Button } from '@tenbaselabs/tensor-react';
+
+<Button variant="primary" onClick={() => console.log('Saved')}>
+  Save Changes
+</Button>
+```
+
+### 4. Explain Trade-offs
+
+When there are multiple ways to achieve something, explain the pros and cons.
+
+**Example:**
+```md
+## Handling Loading States
+
+### Option 1: loading prop (Recommended)
+```tsx
+<Button loading={isSubmitting}>
+  {isSubmitting ? 'Saving...' : 'Save'}
+</Button>
+```
+✅ Automatically disables button
+✅ Shows spinner
+✅ Sets aria-busy
+
+### Option 2: Manual disabled state
+```tsx
+<Button disabled={isSubmitting}>
+  {isSubmitting ? 'Saving...' : 'Save'}
+</Button>
+```
+⚠️ You must manually manage aria-busy
+⚠️ No built-in spinner
+Use this only when you need custom loading UI.
+```
+
+## Required Documentation Sections
+
+### 1. Overview
+
+**What it is:** A brief, 1-2 sentence description of the component.
+
+```md
+# Modal
+
+Modals display content in a layer above the main application, requiring user interaction before returning to the main context.
+```
+
+### 2. When to Use / When Not to Use
+
+**Decision guidance:** Help developers choose the right component.
+
+```md
+## When to Use
+
+✅ Critical actions requiring full attention (confirming account deletion)
+✅ Multi-step forms that need focus
+✅ Displaying detailed information without navigating away
+
+## When Not to Use
+
+❌ Non-critical information (use Tooltip or Popover)
+❌ Frequent interruptions (use Toast or inline messaging)
+❌ Complex workflows (consider dedicated pages)
+```
+
+### 3. API Reference
+
+**Auto-generated when possible.** Document all props with:
+- Type
+- Default value
+- Description
+- When to use
+
+```md
+## Props
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `variant` | `'primary' \| 'secondary'` | `'primary'` | Visual style. Use `primary` for main actions, `secondary` for alternatives. |
+| `disabled` | `boolean` | `false` | Disables interaction and adds `aria-disabled="true"`. |
+```
+
+### 4. Usage Examples
+
+**Show common patterns:**
+
+```md
+## Usage Examples
+
+### Basic Usage
+```tsx
+<Button onClick={handleClick}>Click me</Button>
+```
+
+### With Icon
+```tsx
+<Button icon={<PlusIcon />}>Add Item</Button>
+```
+
+### Loading State
+```tsx
+<Button loading={isLoading}>
+  {isLoading ? 'Saving...' : 'Save'}
+</Button>
+```
+```
+
+### 5. Accessibility
+
+**Document ARIA patterns, keyboard navigation, and screen reader support.**
+
+```md
+## Accessibility
+
+### Keyboard Navigation
+
+| Key | Action |
+|---|---|
+| `Escape` | Closes the modal and returns focus |
+| `Tab` | Moves focus within the modal (trapped) |
+
+### Focus Management
+
+Focus is automatically moved to the modal when it opens and returned to the trigger element when it closes.
+
+### Screen Reader Support
+
+```tsx
+<Modal
+  aria-labelledby="modal-title"
+  aria-describedby="modal-description"
+>
+  <h2 id="modal-title">Confirm Deletion</h2>
+  <p id="modal-description">This action cannot be undone.</p>
+</Modal>
+```
+```
+
+### 6. Best Practices (Do's and Don'ts)
+
+**Show what to do and what to avoid, with code examples.**
+
+```md
+## Best Practices
+
+### Do's
+
+✅ **Provide clear, actionable text**
+```tsx
+<Button>Save Changes</Button>
+```
+
+✅ **Use semantic button types**
+```tsx
+<Button type="submit">Submit</Button>
+```
+
+### Don'ts
+
+❌ **Don't use vague text**
+```tsx
+<Button>Click Here</Button>  // Bad
+<Button>Delete Account</Button>  // Good
+```
+
+❌ **Don't nest interactive elements**
+```tsx
+// Bad
+<Button><a href="/">Link</a></Button>
+
+// Good
+<Link href="/">Go Home</Link>
+```
+```
+
+## Writing Style Guide
+
+### Voice and Tone
+
+- **Active voice:** "Use Button to trigger actions" not "Button should be used to trigger actions"
+- **Imperative:** "Set the variant prop" not "You can set the variant prop"
+- **Concise:** Remove unnecessary words
+- **Specific:** "Use primary variant for main actions" not "Use this for important things"
+
+### Code Examples
+
+- **Self-contained:** Include all necessary imports
+- **Realistic:** Use real prop values, not `...` or `TODO`
+- **TypeScript:** Show types when relevant
+- **Formatted:** Use proper indentation and line breaks
+
+**Bad:**
+```tsx
+<Component prop1="..." prop2={...} />
+```
+
+**Good:**
+```tsx
+import { Button } from '@tenbaselabs/tensor-react';
+
+function App() {
+  const handleClick = () => {
+    console.log('Button clicked');
+  };
+
+  return (
+    <Button variant="primary" onClick={handleClick}>
+      Click me
+    </Button>
+  );
+}
+```
+
+### API Tables
+
+Use consistent formatting:
+
+```md
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `variant` | `'primary' \| 'secondary'` | `'primary'` | Button style variant |
+```
+
+**Rules:**
+- Wrap prop names in backticks: `variant`
+- Show TypeScript types exactly as defined: `'primary' \| 'secondary'`
+- Use backticks for default values: `'primary'`, `false`, `undefined`
+- Description should be a complete sentence ending with a period
+
+### Linking
+
+Link to related documentation:
+
+```md
+See [Button component](./Button) for more details.
+
+For theming guidance, refer to [Themes](../04-themes/Overview).
+```
+
+Use relative paths for internal links, full URLs for external resources.
+
+## Common Mistakes to Avoid
+
+### 1. Assuming Reader Knowledge
+
+❌ **Don't assume familiarity:**
+```md
+Use ARIA roles properly.
+```
+
+✅ **Provide context:**
+```md
+## Accessibility
+
+This component uses `role="button"` to indicate its interactive nature to assistive technologies. If using a `<div>` or `<span>`, you must add `role="button"` and handle keyboard events (`Enter` and `Space` keys).
+```
+
+### 2. Documenting Implementation Instead of Usage
+
+❌ **Internal implementation details:**
+```md
+The component uses `useCallback` to memoize the click handler.
+```
+
+✅ **Focus on usage:**
+```md
+The `onClick` prop accepts a function that is called when the button is clicked.
+```
+
+### 3. Incomplete Examples
+
+❌ **Fragmented code:**
+```tsx
+<Button variant={variant} />
+```
+
+✅ **Complete, runnable example:**
+```tsx
+import { Button } from '@tenbaselabs/tensor-react';
+import { useState } from 'react';
+
+function Example() {
+  const [variant, setVariant] = useState('primary');
+
+  return (
+    <Button variant={variant} onClick={() => setVariant('secondary')}>
+      Click to change variant
+    </Button>
+  );
+}
+```
+
+### 4. Missing Decision Guidance
+
+❌ **Just listing features:**
+```md
+Modal has `size` prop with values: `sm`, `md`, `lg`.
+```
+
+✅ **Guiding decisions:**
+```md
+## Choosing Modal Size
+
+- **Small (`sm`)** — Simple confirmations with 1-2 actions
+  Example: "Are you sure you want to delete this?"
+
+- **Medium (`md`)** — Forms with 3-5 fields, moderate content
+  Example: "Edit Profile" with name, email, bio
+
+- **Large (`lg`)** — Complex forms or detailed content requiring more space
+  Example: Multi-step onboarding flow
+```
+
+## Documentation Checklist
+
+Before publishing component documentation, ensure:
+
+- [ ] Overview explains what the component is and its purpose
+- [ ] "When to Use" and "When Not to Use" sections provide decision guidance
+- [ ] API reference documents all props with types, defaults, and descriptions
+- [ ] At least 3-5 realistic usage examples are provided
+- [ ] Accessibility section covers ARIA, keyboard navigation, and screen readers
+- [ ] Best Practices include Do's and Don'ts with code examples
+- [ ] All code examples are complete, formatted, and runnable
+- [ ] Related components are linked
+- [ ] Migration notes are included (if breaking changes exist)
+
+## Next Steps
+
+- **[Component Template](./ComponentTemplate)** — Use this template for new component docs
+- **[Design Tokens](../02-design-tokens/Overview)** — Reference tokens in your examples
+- **[Accessibility Guidelines](../05-accessibility/Overview)** — Ensure accessible component docs

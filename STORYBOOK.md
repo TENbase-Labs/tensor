@@ -99,7 +99,7 @@ The Tensor design system supports multiple themes (RoundVision and TENbase). To 
 1. Add theme decorator in your story:
 
 ```typescript
-import { tenbase, roundvision } from '@tenbase/tensor-themes';
+import { tenbase, roundvision } from '@tenbaselabs/tensor-themes';
 
 export const WithTheme: Story = {
   args: {

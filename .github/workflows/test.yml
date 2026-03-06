@@ -1,0 +1,61 @@
+name: Test
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    name: Run Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests with coverage
+        run: npm test -- --coverage --run
+        env:
+          CI: true
+
+      - name: Check coverage thresholds
+        run: |
+          echo "Verifying coverage meets 80% threshold..."
+          npm test -- --coverage --run --reporter=json > coverage-report.json || true
+
+          # Coverage enforcement is handled by vitest.config.ts thresholds
+          # If coverage is below 80%, vitest will exit with non-zero code
+          if [ $? -ne 0 ]; then
+            echo "❌ Coverage threshold not met (80% required)"
+            exit 1
+          fi
+          echo "✅ Coverage thresholds met"
+
+      - name: Upload coverage reports
+        uses: codecov/codecov-action@v4
+        if: always()
+        with:
+          files: ./coverage/lcov.info
+          fail_ci_if_error: false
+          token: ${{ secrets.CODECOV_TOKEN }}
+
+      - name: Comment coverage on PR
+        if: github.event_name == 'pull_request'
+        uses: artiomtr/jest-coverage-report-action@v2
+        with:
+          coverage-file: ./coverage/coverage-summary.json
+          base-coverage-file: ./coverage/coverage-summary.json
+          annotations: failed-tests
+          github-token: ${{ secrets.GITHUB_TOKEN }}

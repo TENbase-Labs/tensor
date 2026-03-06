@@ -1,0 +1,491 @@
+---
+title: Customizing Themes
+description: Override and extend existing TENsor themes
+---
+
+# Customizing Themes
+
+Customize existing TENsor themes to match your specific brand requirements without creating a theme from scratch.
+
+## Why Customize?
+
+Customize an existing theme when:
+
+✅ You need minor brand adjustments (e.g., different primary color)
+✅ You want to extend a theme with additional tokens
+✅ You need project-specific overrides for a shared theme
+
+**Create a new theme instead when:**
+❌ You need comprehensive brand identity changes
+❌ Multiple products will use these customizations
+❌ Customizations affect >50% of theme tokens
+
+## Customization Methods
+
+### Method 1: CSS Custom Property Overrides
+
+Override specific tokens using CSS:
+
+```css
+/* Override primary color for PlusOne theme */
+.plusone {
+  --color-primary: #FF8C42;  /* Adjusted orange */
+  --color-primary-hover: #FF7629;
+}
+```
+
+Apply this CSS after importing the base theme:
+
+```tsx
+import '@tenbaselabs/tensor-themes/plusone/plusone.css';
+import './my-overrides.css';  // Your customizations
+
+import { plusone } from '@tenbaselabs/tensor-themes/plusone';
+
+document.documentElement.classList.add(plusone);
+```
+
+### Method 2: Runtime Token Overrides
+
+Override tokens programmatically:
+
+```typescript
+// Apply theme
+document.documentElement.classList.add(plusone);
+
+// Override specific tokens
+document.documentElement.style.setProperty('--color-primary', '#FF8C42');
+document.documentElement.style.setProperty('--font-family-sans', 'Inter, sans-serif');
+```
+
+### Method 3: Extended Theme Class
+
+Create a new CSS class that extends the base theme:
+
+```css
+/* extended-plusone.css */
+
+.extended-plusone {
+  /* Inherit all PlusOne tokens */
+  @import '@tenbaselabs/tensor-themes/plusone/plusone.css';
+
+  /* Override specific tokens */
+  --color-primary: #FF8C42;
+  --color-secondary: #42A5F5;
+
+  /* Add custom tokens */
+  --color-brand-accent: #FFC107;
+  --button-border-radius: 1rem;
+}
+```
+
+## Common Customizations
+
+### Adjusting Primary Color
+
+```css
+.plusone {
+  /* Original: #FF6B35 */
+  --color-primary: #FF8C42;
+
+  /* Derived colors (adjust for consistency) */
+  --color-primary-hover: #FF7629;
+  --color-primary-active: #FF6118;
+}
+```
+
+**Important:** Ensure sufficient contrast with text colors:
+
+```typescript
+// Validate contrast
+const primary = '#FF8C42';
+const textOnPrimary = '#FFFFFF';
+
+// Should be ≥ 4.5:1
+const contrast = calculateContrast(primary, textOnPrimary);
+```
+
+### Changing Font Family
+
+```css
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+.plusone {
+  --font-family-sans: 'Inter', system-ui, sans-serif;
+}
+```
+
+### Adjusting Spacing Scale
+
+```css
+.plusone {
+  /* Make all spacing 1.25× larger */
+  --spacing-xs: 0.3125rem;  /* 5px instead of 4px */
+  --spacing-sm: 0.625rem;   /* 10px instead of 8px */
+  --spacing-md: 1.25rem;    /* 20px instead of 16px */
+  --spacing-lg: 1.875rem;   /* 30px instead of 24px */
+  --spacing-xl: 2.5rem;     /* 40px instead of 32px */
+}
+```
+
+⚠️ **Caution:** Changing spacing affects layout consistency. Test thoroughly.
+
+### Customizing Border Radius
+
+```css
+.plusone {
+  /* More rounded corners */
+  --border-radius-sm: 0.5rem;   /* Default: 0.25rem */
+  --border-radius-md: 1rem;     /* Default: 0.5rem */
+  --border-radius-lg: 1.5rem;   /* Default: 1rem */
+  --border-radius-full: 9999px; /* Pill-shaped */
+}
+```
+
+### Adjusting Shadows
+
+```css
+.plusone {
+  /* Softer, more diffused shadows */
+  --shadow-sm: 0 1px 3px 0 rgba(255, 107, 53, 0.1);
+  --shadow-md: 0 4px 6px -1px rgba(255, 107, 53, 0.15);
+  --shadow-lg: 0 10px 15px -3px rgba(255, 107, 53, 0.2);
+  --shadow-xl: 0 20px 25px -5px rgba(255, 107, 53, 0.25);
+}
+```
+
+## Component-Specific Customizations
+
+### Button Customization
+
+```css
+.plusone {
+  /* Button-specific overrides */
+  --button-padding-x: 1.5rem;
+  --button-padding-y: 0.75rem;
+  --button-border-radius: 0.75rem;
+  --button-font-weight: 600;
+
+  /* Variant-specific */
+  --button-primary-bg: var(--color-primary);
+  --button-primary-hover-bg: var(--color-primary-hover);
+}
+```
+
+### Card Customization
+
+```css
+.plusone {
+  --card-padding: 2rem;
+  --card-border-radius: 1rem;
+  --card-shadow: var(--shadow-lg);
+  --card-bg: var(--color-surface-raised);
+}
+```
+
+### Input Customization
+
+```css
+.plusone {
+  --input-border-width: 2px;
+  --input-border-color: var(--color-neutral-300);
+  --input-focus-border-color: var(--color-primary);
+  --input-padding-x: 1rem;
+  --input-padding-y: 0.75rem;
+}
+```
+
+## Scoped Customizations
+
+Apply customizations to specific sections:
+
+```tsx
+// Global theme
+document.documentElement.classList.add(plusone);
+
+// Component with custom overrides
+function CustomCard() {
+  return (
+    <div
+      style={{
+        '--card-bg': '#FFF9F5',  // Custom card background
+        '--card-shadow': '0 10px 30px rgba(255, 107, 53, 0.15)',
+      } as React.CSSProperties}
+      className="card"
+    >
+      Custom styled card
+    </div>
+  );
+}
+```
+
+## Conditional Customizations
+
+Apply overrides based on context:
+
+```css
+/* Default button */
+.plusone .button-primary {
+  background-color: var(--color-primary);
+}
+
+/* Button in dashboard context */
+.dashboard .plusone .button-primary {
+  background-color: var(--color-secondary);
+  border-radius: 0.5rem;
+}
+```
+
+## Responsive Customizations
+
+Adjust tokens based on screen size:
+
+```css
+.plusone {
+  /* Mobile: smaller typography */
+  --font-size-base: 0.875rem;
+  --spacing-md: 0.75rem;
+}
+
+@media (min-width: 768px) {
+  .plusone {
+    /* Tablet/desktop: larger typography */
+    --font-size-base: 1rem;
+    --spacing-md: 1rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .plusone {
+    /* Desktop: even larger spacing */
+    --spacing-md: 1.25rem;
+  }
+}
+```
+
+## User Preference Customizations
+
+### Dark Mode
+
+```css
+/* Light mode (default) */
+.plusone {
+  --color-surface-base: #FFFFFF;
+  --color-text-primary: #111827;
+}
+
+/* Dark mode */
+@media (prefers-color-scheme: dark) {
+  .plusone {
+    --color-surface-base: #111827;
+    --color-text-primary: #F9FAFB;
+    --color-primary: #FF8C5A;  /* Adjusted for dark backgrounds */
+  }
+}
+```
+
+### Reduced Motion
+
+```css
+@media (prefers-reduced-motion: reduce) {
+  .plusone {
+    --motion-duration-fast: 0ms;
+    --motion-duration-normal: 0ms;
+    --motion-duration-slow: 0ms;
+  }
+}
+```
+
+## Testing Customizations
+
+### Visual Regression Testing
+
+Use Storybook to test customizations:
+
+```typescript
+// .storybook/preview.ts
+export const parameters = {
+  themes: {
+    list: [
+      { name: 'PlusOne', class: 'plusone' },
+      { name: 'PlusOne Custom', class: 'plusone-custom' },
+    ],
+  },
+};
+```
+
+### Automated Contrast Testing
+
+```typescript
+import { checkContrast } from '@tenbaselabs/tensor-test-utils';
+
+test('Custom primary color meets contrast requirements', () => {
+  const primary = getComputedStyle(document.documentElement)
+    .getPropertyValue('--color-primary');
+
+  const textOnPrimary = getComputedStyle(document.documentElement)
+    .getPropertyValue('--color-text-inverse');
+
+  const contrast = checkContrast(primary, textOnPrimary);
+
+  expect(contrast).toBeGreaterThanOrEqual(4.5);
+});
+```
+
+## Best Practices
+
+### Do's
+
+✅ **Document your customizations**
+```typescript
+/**
+ * Custom PlusOne theme overrides
+ *
+ * Modifications:
+ * - Primary color adjusted to #FF8C42 for accessibility
+ * - Font changed to Inter for better readability
+ * - Spacing scale increased by 1.25× for touch targets
+ */
+```
+
+✅ **Test across all components**
+```bash
+# Run Storybook with your custom theme
+npm run storybook
+```
+
+✅ **Validate accessibility**
+```typescript
+// Check all customized colors for contrast
+checkContrast(primary, textOnPrimary);  // ≥ 4.5:1
+checkContrast(border, background);      // ≥ 3:1
+```
+
+✅ **Use CSS custom properties consistently**
+```css
+/* Good — extends theme system */
+.custom-component {
+  color: var(--color-primary);
+  padding: var(--spacing-md);
+}
+
+/* Bad — hard-coded values */
+.custom-component {
+  color: #FF6B35;
+  padding: 16px;
+}
+```
+
+### Don'ts
+
+❌ **Don't override too many tokens** (consider creating a new theme)
+
+❌ **Don't ignore derived tokens**
+```css
+/* Bad — only changed primary, forgot hover state */
+.plusone {
+  --color-primary: #FF8C42;
+}
+
+/* Good — updated derived tokens too */
+.plusone {
+  --color-primary: #FF8C42;
+  --color-primary-hover: #FF7629;
+  --color-primary-active: #FF6118;
+}
+```
+
+❌ **Don't customize spacing without testing layout**
+
+❌ **Don't break component APIs**
+```css
+/* Bad — components expect --button-padding-x to exist */
+.plusone .button {
+  padding: 10px 20px;  /* Ignores theme token */
+}
+
+/* Good — overrides token value */
+.plusone {
+  --button-padding-x: 1.25rem;
+  --button-padding-y: 0.625rem;
+}
+```
+
+## Migration Path
+
+### From Hard-Coded Overrides
+
+If you have hard-coded customizations:
+
+```tsx
+// Before: Hard-coded styles
+<Button style={{ backgroundColor: '#FF8C42' }}>
+  Custom Button
+</Button>
+```
+
+**Migrate to theme customization:**
+
+```css
+/* custom-theme.css */
+.plusone {
+  --color-primary: #FF8C42;
+}
+```
+
+```tsx
+// After: Uses theme token
+<Button variant="primary">
+  Themed Button
+</Button>
+```
+
+## Troubleshooting
+
+### Customizations Not Applying
+
+**Check specificity:**
+```css
+/* Low specificity — may be overridden */
+.plusone {
+  --color-primary: #FF8C42;
+}
+
+/* Higher specificity */
+:root.plusone {
+  --color-primary: #FF8C42;
+}
+```
+
+### Customization Conflicts
+
+**Problem:** Multiple customizations conflict.
+
+**Solution:** Use namespaced tokens:
+
+```css
+.plusone {
+  --my-project-primary: #FF8C42;
+  --color-primary: var(--my-project-primary);
+}
+```
+
+### Dark Mode Overrides Not Working
+
+**Problem:** Dark mode customizations ignored.
+
+**Solution:** Increase specificity:
+
+```css
+@media (prefers-color-scheme: dark) {
+  :root.plusone {
+    --color-primary: #FF8C5A;
+  }
+}
+```
+
+## Next Steps
+
+- **[Creating Custom Themes](./CreatingThemes)** — Build a theme from scratch
+- **[Themes Overview](./Overview)** — Theming concepts and architecture
+- **[Design Tokens](../02-design-tokens/Overview)** — Available tokens to customize

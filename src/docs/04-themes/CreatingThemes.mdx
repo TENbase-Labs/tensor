@@ -1,0 +1,417 @@
+---
+title: Creating Custom Themes
+description: Build brand-specific themes for TENsor
+---
+
+# Creating Custom Themes
+
+This guide walks you through creating a custom brand theme for TENsor.
+
+## When to Create a Theme
+
+Create a custom theme when:
+
+✅ Adding a new brand to the TENbase Labs product family
+✅ Building a white-label version of an existing product
+✅ Experimenting with alternative visual styles
+
+**Don't create a theme for:**
+❌ One-off component customizations (use props instead)
+❌ User preferences like dark mode (use theme variants)
+❌ A/B testing (use feature flags)
+
+## Theme Creation Process
+
+### Step 1: Define Brand Tokens
+
+Start with a token specification:
+
+```typescript
+// theme-tokens.ts
+export const myBrandTokens = {
+  colors: {
+    primary: '#6C5CE7',      // Brand purple
+    secondary: '#00B894',    // Brand teal
+    accent: '#FDCB6E',       // Brand yellow
+
+    // Neutral palette
+    neutral: {
+      50: '#F9FAFB',
+      100: '#F3F4F6',
+      200: '#E5E7EB',
+      300: '#D1D5DB',
+      400: '#9CA3AF',
+      500: '#6B7280',
+      600: '#4B5563',
+      700: '#374151',
+      800: '#1F2937',
+      900: '#111827',
+    },
+
+    // Semantic colors (derived from primary)
+    success: '#00B894',
+    warning: '#FFA502',
+    danger: '#FF6348',
+    info: '#6C5CE7',
+  },
+
+  typography: {
+    fontFamily: {
+      sans: '"Poppins", system-ui, sans-serif',
+      mono: '"Fira Code", monospace',
+    },
+  },
+
+  // Spacing and motion typically remain unchanged
+};
+```
+
+### Step 2: Create Theme CSS
+
+Convert tokens to CSS custom properties:
+
+```css
+/* mybrand.css */
+
+.mybrand {
+  /* Colors */
+  --color-primary: #6C5CE7;
+  --color-secondary: #00B894;
+  --color-accent: #FDCB6E;
+
+  /* Neutral scale */
+  --color-neutral-50: #F9FAFB;
+  --color-neutral-100: #F3F4F6;
+  --color-neutral-200: #E5E7EB;
+  --color-neutral-300: #D1D5DB;
+  --color-neutral-400: #9CA3AF;
+  --color-neutral-500: #6B7280;
+  --color-neutral-600: #4B5563;
+  --color-neutral-700: #374151;
+  --color-neutral-800: #1F2937;
+  --color-neutral-900: #111827;
+
+  /* Semantic colors */
+  --color-success: #00B894;
+  --color-warning: #FFA502;
+  --color-danger: #FF6348;
+  --color-info: #6C5CE7;
+
+  /* Surface colors (derived) */
+  --color-surface-base: #FFFFFF;
+  --color-surface-raised: #F9FAFB;
+  --color-surface-overlay: #FFFFFF;
+  --color-surface-sunken: #F3F4F6;
+
+  /* Text colors (ensure contrast) */
+  --color-text-primary: #111827;
+  --color-text-secondary: #6B7280;
+  --color-text-tertiary: #9CA3AF;
+  --color-text-disabled: #D1D5DB;
+  --color-text-inverse: #FFFFFF;
+
+  /* Typography */
+  --font-family-sans: "Poppins", system-ui, sans-serif;
+  --font-family-mono: "Fira Code", monospace;
+
+  /* Optional: Custom border radius */
+  --border-radius-sm: 0.25rem;
+  --border-radius-md: 0.5rem;
+  --border-radius-lg: 1rem;
+
+  /* Optional: Custom shadows */
+  --shadow-sm: 0 1px 2px 0 rgba(108, 92, 231, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(108, 92, 231, 0.1);
+  --shadow-lg: 0 10px 15px -3px rgba(108, 92, 231, 0.1);
+}
+```
+
+### Step 3: Export Theme Class
+
+```typescript
+// mybrand/index.ts
+
+// CSS class name
+export const mybrand = 'mybrand';
+
+// Optional: Export token values for programmatic access
+export * from './theme-tokens';
+```
+
+### Step 4: Add Theme to Package
+
+```json
+// packages/tensor-themes/package.json
+{
+  "name": "@tenbaselabs/tensor-themes",
+  "exports": {
+    "./plusone": "./dist/plusone/index.js",
+    "./hooversheet": "./dist/hooversheet/index.js",
+    "./mybrand": "./dist/mybrand/index.js"
+  }
+}
+```
+
+### Step 5: Test Theme
+
+```tsx
+import { mybrand } from '@tenbaselabs/tensor-themes/mybrand';
+import { Button, Card } from '@tenbaselabs/tensor-react';
+
+// Apply theme
+document.documentElement.classList.add(mybrand);
+
+// Test components
+function ThemeTest() {
+  return (
+    <Card>
+      <h2>My Brand Theme</h2>
+      <Button variant="primary">Primary Button</Button>
+      <Button variant="secondary">Secondary Button</Button>
+      <Button variant="danger">Danger Button</Button>
+    </Card>
+  );
+}
+```
+
+## Dark Mode Variant
+
+Create a dark mode variant of your theme:
+
+```css
+/* mybrand-dark.css */
+
+.mybrand-dark {
+  /* Inverted surface colors */
+  --color-surface-base: #111827;
+  --color-surface-raised: #1F2937;
+  --color-surface-overlay: #374151;
+  --color-surface-sunken: #0F172A;
+
+  /* Inverted text colors */
+  --color-text-primary: #F9FAFB;
+  --color-text-secondary: #D1D5DB;
+  --color-text-tertiary: #9CA3AF;
+  --color-text-disabled: #6B7280;
+  --color-text-inverse: #111827;
+
+  /* Adjusted primary colors for dark backgrounds */
+  --color-primary: #8B7FF5;  /* Lighter purple for contrast */
+  --color-secondary: #00D9A6;  /* Lighter teal */
+
+  /* Semantic colors (adjust for dark mode) */
+  --color-success: #00D9A6;
+  --color-warning: #FFB84D;
+  --color-danger: #FF7A6B;
+  --color-info: #8B7FF5;
+
+  /* Neutral scale (inverted) */
+  --color-neutral-50: #111827;
+  --color-neutral-100: #1F2937;
+  /* ...remaining inverted values */
+  --color-neutral-900: #F9FAFB;
+}
+```
+
+## Color Contrast Guidelines
+
+Ensure all color combinations meet WCAG 2.1 AA standards:
+
+### Required Contrast Ratios
+
+| Text Size | Background | Minimum Contrast |
+|---|---|---|
+| Normal text (< 18px) | Any background | 4.5:1 |
+| Large text (≥ 18px or ≥ 14px bold) | Any background | 3:1 |
+| UI components | Adjacent colors | 3:1 |
+
+### Testing Contrast
+
+Use tools to validate your theme:
+
+- **[WebAIM Contrast Checker](https://webaim.org/resources/contrastchecker/)**
+- **[Coolors Contrast Checker](https://coolors.co/contrast-checker)**
+- **Chrome DevTools** — Inspect element → Contrast ratio
+
+```typescript
+// Example: Check primary button contrast
+const primaryColor = '#6C5CE7';
+const textColor = '#FFFFFF';
+
+// This should return ≥ 4.5:1 for normal text
+const contrastRatio = calculateContrast(primaryColor, textColor);
+```
+
+## Typography Customization
+
+### Custom Font Families
+
+Load custom fonts in your theme:
+
+```css
+/* Load font from CDN or self-hosted */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+
+.mybrand {
+  --font-family-sans: "Poppins", system-ui, sans-serif;
+}
+```
+
+### Font Fallbacks
+
+Always provide fallbacks:
+
+```css
+.mybrand {
+  --font-family-sans: "Poppins", "Inter", system-ui, -apple-system, sans-serif;
+  --font-family-serif: "Merriweather", Georgia, serif;
+  --font-family-mono: "Fira Code", "SF Mono", "Consolas", monospace;
+}
+```
+
+## Advanced Theming
+
+### Scoped Component Overrides
+
+Override specific components:
+
+```css
+.mybrand {
+  /* Global theme tokens */
+  --color-primary: #6C5CE7;
+
+  /* Component-specific overrides */
+  --button-border-radius: 1rem;  /* Rounded buttons */
+  --input-border-width: 2px;     /* Thicker input borders */
+  --card-shadow: 0 10px 30px rgba(108, 92, 231, 0.2);  /* More prominent cards */
+}
+```
+
+### Conditional Token Values
+
+Use CSS custom property fallbacks:
+
+```css
+.mybrand {
+  /* Base value */
+  --color-primary: #6C5CE7;
+
+  /* Context-specific override */
+  --button-primary-bg: var(--button-primary-bg-override, var(--color-primary));
+}
+
+/* Special context overrides primary button */
+.special-context {
+  --button-primary-bg-override: #FF6348;
+}
+```
+
+## Theme Validation Checklist
+
+Before releasing a theme, verify:
+
+- [ ] All required tokens are defined
+- [ ] Contrast ratios meet WCAG AA (4.5:1 for text, 3:1 for UI)
+- [ ] Dark mode variant exists (if applicable)
+- [ ] Custom fonts load correctly with fallbacks
+- [ ] Theme works in all supported browsers
+- [ ] Storybook renders correctly with theme
+- [ ] Hover/focus states are visible
+- [ ] Disabled states are distinguishable
+- [ ] Error states use sufficient contrast
+- [ ] Theme CSS is minified for production
+
+## Publishing Your Theme
+
+### 1. Add Build Script
+
+```json
+// packages/tensor-themes/package.json
+{
+  "scripts": {
+    "build:mybrand": "postcss src/mybrand/mybrand.css -o dist/mybrand/mybrand.css"
+  }
+}
+```
+
+### 2. Add to Storybook
+
+```typescript
+// .storybook/preview.ts
+import '../packages/tensor-themes/dist/mybrand/mybrand.css';
+
+export const parameters = {
+  themes: {
+    list: [
+      { name: 'PlusOne', class: 'plusone' },
+      { name: 'HooverSheet', class: 'hooversheet' },
+      { name: 'My Brand', class: 'mybrand' },  // Add your theme
+    ],
+  },
+};
+```
+
+### 3. Document Theme
+
+Create a theme-specific doc:
+
+```md
+# My Brand Theme
+
+Visual theme for the My Brand product line.
+
+## Installation
+
+```bash
+npm install @tenbaselabs/tensor-themes
+```
+
+## Usage
+
+```typescript
+import { mybrand } from '@tenbaselabs/tensor-themes/mybrand';
+
+document.documentElement.classList.add(mybrand);
+```
+
+## Brand Colors
+
+- Primary: #6C5CE7 (Purple)
+- Secondary: #00B894 (Teal)
+- Accent: #FDCB6E (Yellow)
+```
+
+## Common Issues
+
+### Theme Not Loading
+
+**Problem:** Theme class applied but styles not visible.
+
+**Solution:**
+1. Ensure theme CSS is imported
+2. Check browser DevTools for CSS load errors
+3. Verify CSS class name matches export
+
+### Colors Look Wrong
+
+**Problem:** Theme colors don't match brand guidelines.
+
+**Solution:**
+1. Validate hex codes in theme CSS
+2. Check for CSS specificity conflicts
+3. Ensure no inline styles override theme
+
+### Font Not Loading
+
+**Problem:** Custom font doesn't appear.
+
+**Solution:**
+1. Verify font URL is correct
+2. Check CORS headers if self-hosting
+3. Test with fallback font first
+
+## Next Steps
+
+- **[Customizing Themes](./CustomizingThemes)** — Override specific tokens
+- **[Themes Overview](./Overview)** — Theming concepts
+- **[Design Tokens](../02-design-tokens/Overview)** — Available tokens

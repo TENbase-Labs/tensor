@@ -1,0 +1,417 @@
+---
+title: Spacing Tokens
+description: Consistent spacing scale for layout and composition
+---
+
+# Spacing Tokens
+
+TENsor's spacing system provides a consistent scale for margins, padding, gaps, and layout composition.
+
+## Spacing Scale
+
+TENsor uses a streamlined 8-level spacing scale (consolidated in Phase 1) with an 8px grid for visual alignment:
+
+```typescript
+import { tokens } from '@tenbaselabs/tensor';
+
+tokens.spacing['0']  // 0
+tokens.spacing.xs    // 0.25rem (4px)
+tokens.spacing.sm    // 0.5rem (8px)
+tokens.spacing.md    // 1rem (16px)
+tokens.spacing.lg    // 1.5rem (24px)
+tokens.spacing.xl    // 2rem (32px)
+tokens.spacing['2xl']// 3rem (48px)
+tokens.spacing['3xl']// 4rem (64px)
+```
+
+### Semantic Names
+
+All spacing tokens use semantic names for clarity:
+
+| Token | Value | Use Case |
+|---|---|---|
+| `0` | 0 | No spacing, reset |
+| `xs` | 4px | Icon padding, tight spacing |
+| `sm` | 8px | Compact lists, button padding (vertical) |
+| `md` | 16px | Card padding, form field padding |
+| `lg` | 24px | Gap between components, section padding |
+| `xl` | 32px | Section margins, card spacing |
+| `2xl` | 48px | Major section spacing |
+| `3xl` | 64px | Page-level spacing, hero sections |
+
+> **Phase 1 Note:** Consolidated from 12+ levels to 8 semantic tokens. See [Migration Guide](../../MIGRATION_PHASE1.md) for mapping old numeric tokens.
+
+## Spacing Usage Guidelines
+
+### Component Internal Spacing
+
+Use smaller spacing values for internal component padding:
+
+| Token | Value | Use Case |
+|---|---|---|
+| `xs` | 4px | Icon padding, tight spacing |
+| `sm` | 8px | Button padding (vertical), compact lists |
+| `md` | 16px | Card padding, form field padding |
+| `lg` | 24px | Section padding, generous component spacing |
+
+### Layout Spacing
+
+Use larger spacing values for layout gaps and margins:
+
+| Token | Value | Use Case |
+|---|---|---|
+| `lg` | 24px | Gap between components |
+| `xl` | 32px | Section margins, card spacing |
+| `2xl` | 48px | Major section spacing |
+| `3xl` | 64px | Page-level spacing, hero sections |
+
+## Common Patterns
+
+### Button Padding
+
+```tsx
+// Small button
+<button style={{
+  paddingTop: tokens.spacing.sm,
+  paddingBottom: tokens.spacing.sm,
+  paddingLeft: tokens.spacing.md,
+  paddingRight: tokens.spacing.md,
+}}>
+  Small Button
+</button>
+
+// Medium button (default)
+<button style={{
+  paddingTop: tokens.spacing.sm,
+  paddingBottom: tokens.spacing.sm,
+  paddingLeft: tokens.spacing.lg,
+  paddingRight: tokens.spacing.lg,
+}}>
+  Medium Button
+</button>
+
+// Large button
+<button style={{
+  paddingTop: tokens.spacing.md,
+  paddingBottom: tokens.spacing.md,
+  paddingLeft: tokens.spacing.xl,
+  paddingRight: tokens.spacing.xl,
+}}>
+  Large Button
+</button>
+```
+
+### Card Spacing
+
+```tsx
+<div style={{
+  padding: tokens.spacing.md,          // Internal padding
+  marginBottom: tokens.spacing.lg,     // Gap to next card
+  borderRadius: tokens.borderRadius.md,
+  backgroundColor: tokens.colors.surface.raised,
+}}>
+  <h3 style={{ marginBottom: tokens.spacing.sm }}>Card Title</h3>
+  <p style={{ marginBottom: tokens.spacing.md }}>Card content</p>
+  <button>Action</button>
+</div>
+```
+
+### Form Fields
+
+```tsx
+// Form field with label
+<div style={{ marginBottom: tokens.spacing.lg }}>
+  <label style={{
+    display: 'block',
+    marginBottom: tokens.spacing.sm,
+    fontSize: tokens.typography.fontSize.sm,
+    fontWeight: tokens.typography.fontWeight.medium,
+  }}>
+    Email Address
+  </label>
+  <input style={{
+    padding: `${tokens.spacing.sm} ${tokens.spacing.md}`,
+    borderRadius: tokens.borderRadius.md,
+    border: `1px solid ${tokens.colors.neutral[300]}`,
+  }} />
+</div>
+```
+
+### List Spacing
+
+```tsx
+// Compact list
+<ul style={{ listStyle: 'none', padding: 0 }}>
+  <li style={{ marginBottom: tokens.spacing.sm }}>Item 1</li>
+  <li style={{ marginBottom: tokens.spacing.sm }}>Item 2</li>
+  <li style={{ marginBottom: tokens.spacing.sm }}>Item 3</li>
+</ul>
+
+// Comfortable list
+<ul style={{ listStyle: 'none', padding: 0 }}>
+  <li style={{ marginBottom: tokens.spacing.md }}>Item 1</li>
+  <li style={{ marginBottom: tokens.spacing.md }}>Item 2</li>
+  <li style={{ marginBottom: tokens.spacing.md }}>Item 3</li>
+</ul>
+```
+
+### Grid Gaps
+
+```tsx
+// Tight grid (gallery)
+<div style={{
+  display: 'grid',
+  gridTemplateColumns: 'repeat(3, 1fr)',
+  gap: tokens.spacing.sm,
+}}>
+  {/* Grid items */}
+</div>
+
+// Comfortable grid (dashboard)
+<div style={{
+  display: 'grid',
+  gridTemplateColumns: 'repeat(3, 1fr)',
+  gap: tokens.spacing.lg,
+}}>
+  {/* Grid items */}
+</div>
+```
+
+## Layout Composition
+
+### Container Padding
+
+```tsx
+// Mobile-first container
+<div style={{
+  paddingLeft: tokens.spacing['4'],    // 16px on mobile
+  paddingRight: tokens.spacing['4'],
+  // Add responsive padding for larger screens
+}}>
+  Content
+</div>
+
+// Or with Tailwind
+<div className="px-4 md:px-8 lg:px-12">
+  Content
+</div>
+```
+
+### Section Spacing
+
+```tsx
+// Major sections
+<section style={{
+  paddingTop: tokens.spacing['16'],     // 64px
+  paddingBottom: tokens.spacing['16'],
+}}>
+  <h2 style={{ marginBottom: tokens.spacing['8'] }}>Section Title</h2>
+  {/* Section content */}
+</section>
+```
+
+### Stack Layout (Vertical Spacing)
+
+```tsx
+// Stack components with consistent spacing
+<div style={{ display: 'flex', flexDirection: 'column', gap: tokens.spacing['6'] }}>
+  <Card />
+  <Card />
+  <Card />
+</div>
+```
+
+## Responsive Spacing
+
+Spacing should often scale with screen size:
+
+```tsx
+// Small spacing on mobile, larger on desktop
+const responsivePadding = {
+  padding: tokens.spacing['4'],  // Mobile: 16px
+  '@media (min-width: 768px)': {
+    padding: tokens.spacing['8'],  // Tablet: 32px
+  },
+  '@media (min-width: 1024px)': {
+    padding: tokens.spacing['12'], // Desktop: 48px
+  },
+};
+```
+
+Or with Tailwind:
+
+```tsx
+<div className="p-4 md:p-8 lg:p-12">
+  Responsive padding
+</div>
+```
+
+## Negative Spacing
+
+Use negative spacing carefully for overlapping elements:
+
+```tsx
+// Overlapping avatar stack
+<div style={{ display: 'flex' }}>
+  <img style={{ marginRight: `-${tokens.spacing['2']}` }} />
+  <img style={{ marginRight: `-${tokens.spacing['2']}` }} />
+  <img />
+</div>
+```
+
+## Do's and Don'ts
+
+### Do's
+
+✅ Use consistent spacing from the scale
+```tsx
+marginBottom: tokens.spacing['6']  // ✅
+marginBottom: '24px'               // ❌
+```
+
+✅ Use the 8px grid for visual alignment
+```tsx
+// Spacing values divisible by 8 (8, 16, 24, 32, 48, 64)
+padding: tokens.spacing.md  // 16px ✅
+```
+
+✅ Use semantic tokens for common patterns
+```tsx
+padding: tokens.spacing.md    // ✅ Clear intent
+padding: tokens.spacing['4']  // ✅ Also valid
+padding: '1rem'               // ❌ Hard-coded
+```
+
+✅ Increase spacing between major sections
+```tsx
+<section style={{ marginBottom: tokens.spacing['16'] }}>Section 1</section>
+<section style={{ marginBottom: tokens.spacing['16'] }}>Section 2</section>
+```
+
+### Don'ts
+
+❌ Don't use arbitrary spacing values
+```tsx
+// Bad
+padding: '13px'
+
+// Good
+padding: tokens.spacing['3']  // 12px
+```
+
+❌ Don't mix spacing units
+```tsx
+// Bad
+padding: '16px 1rem 12px 8px'
+
+// Good
+padding: tokens.spacing['4']  // Consistent 16px
+```
+
+❌ Don't use too many different spacing values in one component
+```tsx
+// Bad (inconsistent)
+<div style={{
+  marginTop: tokens.spacing['3'],
+  marginBottom: tokens.spacing['7'],
+  paddingLeft: tokens.spacing['5'],
+  paddingRight: tokens.spacing['9'],
+}}>
+
+// Good (consistent)
+<div style={{
+  margin: tokens.spacing['4'],
+  padding: tokens.spacing['6'],
+}}>
+```
+
+❌ Don't ignore optical alignment
+```tsx
+// Bad — icons may need less padding than text due to optical weight
+<button style={{ padding: tokens.spacing['4'] }}>
+  <Icon /> {/* Icon looks cramped */}
+</button>
+
+// Good — adjust for optical balance
+<button style={{
+  paddingTop: tokens.spacing['3'],
+  paddingBottom: tokens.spacing['3'],
+  paddingLeft: tokens.spacing['4'],
+  paddingRight: tokens.spacing['4'],
+}}>
+  <Icon style={{ marginRight: tokens.spacing['2'] }} />
+  Text
+</button>
+```
+
+## White Space Principles
+
+### Proximity
+
+Group related elements with less spacing, separate unrelated elements with more:
+
+```tsx
+// Form with grouped fields
+<form>
+  {/* Name group — tight spacing */}
+  <div style={{ marginBottom: tokens.spacing['6'] }}>
+    <label style={{ marginBottom: tokens.spacing['2'] }}>First Name</label>
+    <input />
+  </div>
+
+  <div style={{ marginBottom: tokens.spacing['6'] }}>
+    <label style={{ marginBottom: tokens.spacing['2'] }}>Last Name</label>
+    <input />
+  </div>
+
+  {/* Email — separate section with more spacing */}
+  <div style={{ marginBottom: tokens.spacing['8'], marginTop: tokens.spacing['8'] }}>
+    <label style={{ marginBottom: tokens.spacing['2'] }}>Email</label>
+    <input />
+  </div>
+</form>
+```
+
+### Visual Hierarchy
+
+Use spacing to establish importance:
+
+```tsx
+<article>
+  <h1 style={{ marginBottom: tokens.spacing['8'] }}>Article Title</h1>
+  <p style={{ marginBottom: tokens.spacing['4'] }}>First paragraph</p>
+  <p style={{ marginBottom: tokens.spacing['4'] }}>Second paragraph</p>
+  <h2 style={{
+    marginTop: tokens.spacing['12'],    // More space before subheading
+    marginBottom: tokens.spacing['4'],
+  }}>Subheading</h2>
+  <p style={{ marginBottom: tokens.spacing['4'] }}>Paragraph</p>
+</article>
+```
+
+## Accessibility Considerations
+
+- **Touch targets**: Minimum `44px × 44px` for interactive elements (use `spacing['11']` or larger)
+- **Reading flow**: Adequate spacing between paragraphs improves readability
+- **Focus indicators**: Ensure sufficient spacing for visible focus outlines
+
+```tsx
+// Accessible button (minimum 44px height)
+<button style={{
+  paddingTop: tokens.spacing['3'],     // 12px
+  paddingBottom: tokens.spacing['3'],  // 12px
+  paddingLeft: tokens.spacing['6'],
+  paddingRight: tokens.spacing['6'],
+  fontSize: tokens.typography.fontSize.base,  // 16px
+  lineHeight: tokens.typography.lineHeight.normal,  // 1.5 × 16px = 24px
+  // Total height: 12 + 24 + 12 = 48px ✅
+}}>
+  Accessible Button
+</button>
+```
+
+## Next Steps
+
+- **[Layout Patterns](../03-components/ComponentTemplate)** — Component composition
+- **[Design Tokens Overview](./Overview)** — Full token reference
+- **[Accessibility](../05-accessibility/Overview)** — Spacing and accessibility

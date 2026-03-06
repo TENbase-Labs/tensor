@@ -1,0 +1,388 @@
+---
+title: Themes Overview
+description: Multi-brand theming in TENsor
+---
+
+
+
+# Themes Overview
+
+TENsor's theming system enables multiple brands (PlusOne, HooverSheet, and others) to share the same component library while maintaining distinct visual identities.
+
+## How Theming Works
+
+Themes override design token values at runtime using CSS custom properties, allowing the same component code to render with different brand styles.
+
+```typescript
+// Base tokens
+tokens.colors.primary → '#3B82F6'
+
+// With PlusOne theme applied
+tokens.colors.primary → '#FF6B35' (PlusOne brand color)
+
+// With HooverSheet theme applied
+tokens.colors.primary → '#4A90E2' (HooverSheet brand color)
+```
+
+## Available Themes
+
+TENsor ships with built-in themes for all TENbase Labs brands:
+
+| Theme | Brand | Primary Color | Use Case |
+|---|---|---|---|
+| `plusone` | PlusOne | Orange (#FF6B35) | PlusOne product |
+| `hooversheet` | HooverSheet | Blue (#4A90E2) | HooverSheet product |
+| `default` | Base | Blue (#3B82F6) | Fallback/testing |
+
+## Applying a Theme
+
+### 1. Install Theme Package
+
+```bash
+npm install @tenbaselabs/tensor-themes
+```
+
+### 2. Import and Apply Theme
+
+```typescript
+import { plusone } from '@tenbaselabs/tensor-themes/plusone';
+
+// Apply to document root
+document.documentElement.classList.add(plusone);
+```
+
+### 3. Use Components Normally
+
+Components automatically adapt to the active theme:
+
+```tsx
+import { Button, Card } from '@tenbaselabs/tensor-react';
+
+// Button will use PlusOne colors automatically
+<Button variant="primary">PlusOne Button</Button>
+```
+
+## Theme Structure
+
+Each theme is a CSS class that overrides design token custom properties:
+
+```css
+/* Example: PlusOne theme */
+.plusone {
+  --color-primary: #FF6B35;
+  --color-secondary: #4ECDC4;
+  --font-family-sans: 'Inter', system-ui, sans-serif;
+  /* ...other token overrides */
+}
+```
+
+When applied to the document root, all components inherit these values.
+
+## Runtime Theme Switching
+
+Switch themes dynamically in response to user actions:
+
+```tsx
+import { useState } from 'react';
+import { plusone, hooversheet } from '@tenbaselabs/tensor-themes';
+
+function ThemeSwitcher() {
+  const [activeTheme, setActiveTheme] = useState(plusone);
+
+  const switchTheme = (theme: string) => {
+    // Remove all theme classes
+    document.documentElement.classList.remove(plusone, hooversheet);
+    // Add new theme
+    document.documentElement.classList.add(theme);
+    setActiveTheme(theme);
+  };
+
+  return (
+    <div>
+      <button onClick={() => switchTheme(plusone)}>
+        PlusOne Theme
+      </button>
+      <button onClick={() => switchTheme(hooversheet)}>
+        HooverSheet Theme
+      </button>
+    </div>
+  );
+}
+```
+
+## Theme Tokens
+
+Themes can override any design token:
+
+### Colors
+
+```typescript
+// Theme-specific brand colors
+colors.primary
+colors.secondary
+colors.accent
+
+// Neutral palette
+colors.neutral[50] - colors.neutral[900]
+
+// Semantic colors
+colors.success
+colors.warning
+colors.danger
+colors.info
+```
+
+### Typography
+
+```typescript
+// Font families
+typography.fontFamily.sans
+typography.fontFamily.serif
+typography.fontFamily.mono
+
+// Font sizes (usually not overridden)
+typography.fontSize.*
+```
+
+### Spacing & Motion
+
+Spacing and motion tokens are typically **not** theme-specific — they remain consistent across brands for usability.
+
+Exception: Brand guidelines may require specific animation timing.
+
+## Scoped Theming
+
+Apply themes to specific parts of your application:
+
+```tsx
+// Global PlusOne theme
+document.documentElement.classList.add(plusone);
+
+function EmbeddedWidget() {
+  return (
+    // Override with HooverSheet theme for this section
+    <div className={hooversheet}>
+      <Button variant="primary">
+        HooverSheet Button (blue)
+      </Button>
+    </div>
+  );
+}
+```
+
+**Use sparingly** — mixing themes on the same page can confuse users.
+
+## Server-Side Rendering (SSR)
+
+Apply theme class on the server to prevent flash of unstyled content:
+
+```tsx
+// Next.js example
+export default function RootLayout({ children }) {
+  return (
+    <html className={plusone}>
+      <body>{children}</body>
+    </html>
+  );
+}
+```
+
+```tsx
+// Remix example
+export default function App() {
+  return (
+    <html className={plusone}>
+      <head>
+        <Meta />
+        <Links />
+      </head>
+      <body>
+        {children}
+        <Scripts />
+      </body>
+    </html>
+  );
+}
+```
+
+## Dark Mode Support
+
+TENsor themes support dark mode variants:
+
+```typescript
+import { plusone, plusoneDark } from '@tenbaselabs/tensor-themes';
+
+// Detect user preference
+const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+const theme = prefersDark ? plusoneDark : plusone;
+document.documentElement.classList.add(theme);
+```
+
+Or use CSS media query:
+
+```css
+/* Light theme by default */
+.root {
+  background: var(--color-surface-base);
+}
+
+/* Dark theme via media query */
+@media (prefers-color-scheme: dark) {
+  .root {
+    background: var(--color-surface-base-dark);
+  }
+}
+```
+
+## Theme Persistence
+
+Save user's theme preference to localStorage:
+
+```typescript
+const THEME_KEY = 'tensor-theme';
+
+function saveTheme(theme: string) {
+  localStorage.setItem(THEME_KEY, theme);
+  document.documentElement.classList.add(theme);
+}
+
+function loadTheme() {
+  const savedTheme = localStorage.getItem(THEME_KEY);
+  if (savedTheme) {
+    document.documentElement.classList.add(savedTheme);
+  }
+  return savedTheme;
+}
+
+// On app load
+loadTheme();
+```
+
+## Theming Best Practices
+
+### Do's
+
+✅ **Apply theme to document root**
+```tsx
+document.documentElement.classList.add(plusone);
+```
+
+✅ **Use design tokens, not hard-coded values**
+```tsx
+// Good — adapts to theme
+backgroundColor: tokens.colors.primary
+
+// Bad — ignores theme
+backgroundColor: '#FF6B35'
+```
+
+✅ **Test your UI in all brand themes**
+```bash
+# Run Storybook with theme switcher
+npm run storybook
+```
+
+✅ **Remove old theme before adding new one**
+```tsx
+document.documentElement.classList.remove(previousTheme);
+document.documentElement.classList.add(newTheme);
+```
+
+### Don'ts
+
+❌ **Don't mix multiple themes on one page** (creates visual confusion)
+
+❌ **Don't override theme tokens in component styles**
+```tsx
+// Bad — breaks theming
+<Button style={{ backgroundColor: '#FF0000' }}>
+  Hardcoded color
+</Button>
+
+// Good — respects theme
+<Button variant="danger">
+  Themed button
+</Button>
+```
+
+❌ **Don't assume theme values**
+```tsx
+// Bad — assumes PlusOne colors
+if (backgroundColor === '#FF6B35') { ... }
+
+// Good — check semantic meaning
+if (variant === 'primary') { ... }
+```
+
+## Performance Considerations
+
+### CSS Custom Properties Are Fast
+
+Theme switching via CSS custom properties is nearly instant — no JavaScript re-rendering required.
+
+### Avoid Inline Styles
+
+```tsx
+// Slow — inline styles bypass CSS optimizations
+<div style={{ color: tokens.colors.primary }} />
+
+// Fast — uses CSS classes
+<div className="text-primary" />
+```
+
+### Preload Theme CSS
+
+```html
+<link rel="preload" href="/themes/plusone.css" as="style" />
+<link rel="stylesheet" href="/themes/plusone.css" />
+```
+
+## Troubleshooting
+
+### Theme Not Applying
+
+**Check:**
+1. Theme class is on `<html>` or a parent element
+2. Theme CSS is loaded
+3. No inline styles overriding theme tokens
+4. CSS specificity isn't blocking theme styles
+
+### Flashing Wrong Theme
+
+**Solution:** Apply theme class server-side or inline critical CSS:
+
+```html
+<html class="plusone">
+  <style>
+    .plusone {
+      --color-primary: #FF6B35;
+      /* Critical theme tokens */}
+  </style>
+  <!-- Rest of page -->
+</html>
+```
+
+### Components Not Updating After Theme Change
+
+**Solution:** Ensure components use CSS custom properties, not JavaScript token imports for dynamic values:
+
+```css
+/* Good — updates when theme changes */
+.button-primary {
+  background-color: var(--color-primary);
+}
+```
+
+```tsx
+// Bad — frozen at build time
+const buttonStyle = {
+  backgroundColor: tokens.colors.primary  // Won't update on theme change
+};
+```
+
+## Next Steps
+
+- **[Creating Custom Themes](./CreatingThemes)** — Build your own brand theme
+- **[Customizing Themes](./CustomizingThemes)** — Override specific tokens
+- **[Design Tokens](../02-design-tokens/Overview)** — Available tokens to theme

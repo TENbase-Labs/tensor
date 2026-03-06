@@ -1,0 +1,256 @@
+---
+title: Keyboard Navigation
+description: Keyboard interaction patterns for TENsor components
+---
+
+# Keyboard Navigation
+
+All TENsor components are fully keyboard accessible, following standard interaction patterns.
+
+## Global Keyboard Shortcuts
+
+| Key | Action |
+|---|---|
+| `Tab` | Move focus forward |
+| `Shift + Tab` | Move focus backward |
+| `Enter` | Activate links, buttons |
+| `Space` | Activate buttons, checkboxes |
+| `Escape` | Close modals, dropdowns, cancel actions |
+| `Arrow keys` | Navigate within composite widgets |
+
+## Component Patterns
+
+### Button
+
+| Key | Action |
+|---|---|
+| `Enter` | Activates button |
+| `Space` | Activates button |
+
+```tsx
+<Button onClick={handleClick}>
+  Save Changes
+</Button>
+// Press Enter or Space to activate
+```
+
+### Link
+
+| Key | Action |
+|---|---|
+| `Enter` | Follows link |
+
+```tsx
+<Link href="/page">Navigate</Link>
+// Press Enter to follow
+```
+
+### Modal / Dialog
+
+| Key | Action |
+|---|---|
+| `Escape` | Closes modal, returns focus to trigger |
+| `Tab` | Cycles focus within modal (trapped) |
+
+```tsx
+<Modal open={isOpen} onClose={() => setIsOpen(false)}>
+  <h2>Dialog Title</h2>
+  <button onClick={() => setIsOpen(false)}>Close</button>
+</Modal>
+// Focus is trapped — Tab cycles within
+// Escape closes and returns focus
+```
+
+### Dropdown Menu
+
+| Key | Action |
+|---|---|
+| `Enter` / `Space` | Opens menu |
+| `Escape` | Closes menu |
+| `Arrow Down` | Moves to next item |
+| `Arrow Up` | Moves to previous item |
+| `Home` | Moves to first item |
+| `End` | Moves to last item |
+| `Enter` | Selects item |
+
+```tsx
+<Dropdown>
+  <DropdownTrigger>Options</DropdownTrigger>
+  <DropdownMenu>
+    <DropdownItem>Edit</DropdownItem>
+    <DropdownItem>Delete</DropdownItem>
+  </DropdownMenu>
+</Dropdown>
+```
+
+### Tabs
+
+| Key | Action |
+|---|---|
+| `Arrow Left` | Previous tab |
+| `Arrow Right` | Next tab |
+| `Home` | First tab |
+| `End` | Last tab |
+| `Tab` | Move focus into tab panel |
+
+```tsx
+<Tabs>
+  <TabList>
+    <Tab>Tab 1</Tab>
+    <Tab>Tab 2</Tab>
+  </TabList>
+  <TabPanel>Content 1</TabPanel>
+  <TabPanel>Content 2</TabPanel>
+</Tabs>
+```
+
+### Accordion
+
+| Key | Action |
+|---|---|
+| `Enter` / `Space` | Toggle expand/collapse |
+| `Arrow Down` | Next accordion header |
+| `Arrow Up` | Previous accordion header |
+| `Home` | First accordion header |
+| `End` | Last accordion header |
+
+### Checkbox / Radio
+
+| Key | Action |
+|---|---|
+| `Space` | Toggle checkbox / select radio |
+| `Arrow Down/Right` | Next radio (radio group only) |
+| `Arrow Up/Left` | Previous radio (radio group only) |
+
+```tsx
+<Checkbox checked={isChecked} onChange={setIsChecked}>
+  Accept terms
+</Checkbox>
+// Press Space to toggle
+```
+
+### Slider
+
+| Key | Action |
+|---|---|
+| `Arrow Right/Up` | Increase value |
+| `Arrow Left/Down` | Decrease value |
+| `Home` | Minimum value |
+| `End` | Maximum value |
+| `Page Up` | Increase by large step |
+| `Page Down` | Decrease by large step |
+
+## Focus Management
+
+### Visible Focus Indicators
+
+All interactive elements show focus:
+
+```css
+.button:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+```
+
+### Skip Links
+
+Allow keyboard users to skip navigation:
+
+```tsx
+<a href="#main-content" className="skip-link">
+  Skip to main content
+</a>
+
+<nav>/* Navigation */</nav>
+
+<main id="main-content">
+  /* Main content */
+</main>
+```
+
+### Focus Trapping
+
+Modals trap focus to prevent tabbing outside:
+
+```tsx
+function Modal({ isOpen, onClose, children }) {
+  const modalRef = useRef();
+
+  useEffect(() => {
+    if (isOpen) {
+      // Store previously focused element
+      const previouslyFocused = document.activeElement;
+
+      // Focus first element in modal
+      modalRef.current?.focus();
+
+      // Return focus on close
+      return () => previouslyFocused?.focus();
+    }
+  }, [isOpen]);
+
+  return (
+    <div ref={modalRef} role="dialog" tabIndex={-1}>
+      {children}
+    </div>
+  );
+}
+```
+
+### Focus Restoration
+
+Return focus after actions:
+
+```tsx
+function DeleteButton() {
+  const triggerRef = useRef();
+
+  const handleDelete = async () => {
+    await deleteItem();
+    // Return focus to trigger button
+    triggerRef.current?.focus();
+  };
+
+  return (
+    <button ref={triggerRef} onClick={handleDelete}>
+      Delete
+    </button>
+  );
+}
+```
+
+## Testing Keyboard Navigation
+
+### Manual Testing
+
+1. Disconnect mouse
+2. Tab through all interactive elements
+3. Verify focus is visible
+4. Test all keyboard shortcuts
+5. Ensure no keyboard traps
+
+### Automated Testing
+
+```tsx
+test('Button is keyboard accessible', () => {
+  const handleClick = jest.fn();
+  const { getByRole } = render(<Button onClick={handleClick}>Click</Button>);
+
+  const button = getByRole('button');
+
+  // Press Enter
+  fireEvent.keyDown(button, { key: 'Enter', code: 'Enter' });
+  expect(handleClick).toHaveBeenCalled();
+
+  // Press Space
+  fireEvent.keyDown(button, { key: ' ', code: 'Space' });
+  expect(handleClick).toHaveBeenCalledTimes(2);
+});
+```
+
+## Next Steps
+
+- **[ARIA Patterns](./ARIAPatterns)** — Semantic markup for components
+- **[Focus Management](./FocusManagement)** — Advanced focus techniques
+- **[Accessibility Overview](./Overview)** — Full accessibility guidelines

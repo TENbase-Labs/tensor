@@ -1,0 +1,342 @@
+---
+title: Component Documentation Template
+description: Standard template for documenting TENsor components
+---
+
+# Component Documentation Template
+
+This template ensures consistent, comprehensive documentation for all TENsor components.
+
+## Template Structure
+
+Every component doc should include:
+
+1. **Overview** — What the component is and when to use it
+2. **When to Use / When Not to Use** — Decision guidance
+3. **Anatomy** — Visual breakdown of component parts
+4. **API Reference** — Props, types, defaults
+5. **Usage Examples** — Common patterns
+6. **Variants** — Available component variations
+7. **Accessibility** — ARIA patterns, keyboard navigation
+8. **Best Practices** — Do's and Don'ts
+
+---
+
+## Example: Button Component
+
+Use this example as a reference for documenting your own components.
+
+---
+
+# Button
+
+Buttons trigger actions and events in response to user interaction.
+
+## When to Use
+
+✅ **Use Button when:**
+- Triggering an action (submit form, open modal, delete item)
+- Navigating within the application (prefer `<Link>` for external navigation)
+- Starting or stopping a process
+
+❌ **Don't use Button when:**
+- Navigating to a different page (use `<Link>` or `<a>`)
+- Showing/hiding content without an action (use `<details>` or disclosure pattern)
+- The action is not immediately reversible without presenting a destructive variant
+
+## Anatomy
+
+```
+┌─────────────────────────────┐
+│  [Icon] Button Text         │  ← Button container
+└─────────────────────────────┘
+   ↑        ↑
+   Icon     Text (required)
+   (optional)
+```
+
+## API Reference
+
+### Props
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `variant` | `'primary' \| 'secondary' \| 'danger' \| 'ghost'` | `'primary'` | Visual style variant |
+| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Button size |
+| `disabled` | `boolean` | `false` | Disables button interaction |
+| `loading` | `boolean` | `false` | Shows loading spinner, disables interaction |
+| `icon` | `ReactNode` | `undefined` | Leading icon element |
+| `iconPosition` | `'left' \| 'right'` | `'left'` | Icon placement relative to text |
+| `fullWidth` | `boolean` | `false` | Expands button to full container width |
+| `type` | `'button' \| 'submit' \| 'reset'` | `'button'` | HTML button type |
+| `onClick` | `(event: MouseEvent) => void` | `undefined` | Click handler |
+| `children` | `ReactNode` | **required** | Button text content |
+
+### TypeScript Types
+
+```typescript
+import { type ButtonProps } from '@tenbaselabs/tensor-react';
+
+// Usage
+const props: ButtonProps = {
+  variant: 'primary',
+  size: 'lg',
+  onClick: () => console.log('clicked'),
+};
+```
+
+## Usage Examples
+
+### Basic Button
+
+```tsx
+import { Button } from '@tenbaselabs/tensor-react';
+
+<Button onClick={() => console.log('clicked')}>
+  Click me
+</Button>
+```
+
+### Button Variants
+
+```tsx
+// Primary (default) — Main call-to-action
+<Button variant="primary">Save Changes</Button>
+
+// Secondary — Alternative actions
+<Button variant="secondary">Cancel</Button>
+
+// Danger — Destructive actions
+<Button variant="danger">Delete Account</Button>
+
+// Ghost — Minimal emphasis
+<Button variant="ghost">Learn More</Button>
+```
+
+### Button Sizes
+
+```tsx
+<Button size="sm">Small</Button>
+<Button size="md">Medium (default)</Button>
+<Button size="lg">Large</Button>
+```
+
+### With Icon
+
+```tsx
+import { PlusIcon } from '@tenbaselabs/icons';
+
+<Button icon={<PlusIcon />}>
+  Add Item
+</Button>
+
+// Icon on right
+<Button icon={<ArrowRightIcon />} iconPosition="right">
+  Next
+</Button>
+```
+
+### Loading State
+
+```tsx
+<Button loading={isSubmitting}>
+  {isSubmitting ? 'Saving...' : 'Save Changes'}
+</Button>
+```
+
+### Disabled State
+
+```tsx
+<Button disabled>
+  Disabled Button
+</Button>
+```
+
+### Full Width
+
+```tsx
+<Button fullWidth>
+  Full Width Button
+</Button>
+```
+
+## Variants
+
+### Primary
+
+**Use for:** Main call-to-action, most important action on the page.
+
+**Example:** "Save", "Submit", "Continue", "Sign Up"
+
+### Secondary
+
+**Use for:** Alternative actions, less emphasis than primary.
+
+**Example:** "Cancel", "Go Back", "Skip"
+
+### Danger
+
+**Use for:** Destructive or irreversible actions that require caution.
+
+**Example:** "Delete", "Remove", "Deactivate"
+
+**Best practice:** Pair with confirmation dialogs for irreversible actions.
+
+### Ghost
+
+**Use for:** Tertiary actions, minimal visual weight.
+
+**Example:** "Learn More", "Dismiss", "View Details"
+
+## Accessibility
+
+### ARIA Attributes
+
+Buttons automatically include proper ARIA attributes:
+
+```tsx
+// Loading state
+<Button loading>
+  Save
+</Button>
+// Renders with: aria-busy="true" aria-disabled="true"
+
+// Disabled state
+<Button disabled>
+  Submit
+</Button>
+// Renders with: aria-disabled="true"
+```
+
+### Keyboard Navigation
+
+| Key | Action |
+|---|---|
+| `Enter` | Activates the button |
+| `Space` | Activates the button |
+| `Tab` | Moves focus to the button |
+
+### Focus Management
+
+Buttons have a visible focus indicator that meets WCAG 2.1 guidelines (minimum 2px outline with 3:1 contrast ratio).
+
+```tsx
+// Focus is automatically managed
+<Button>Accessible Button</Button>
+// Focus indicator appears on keyboard navigation
+```
+
+### Screen Reader Support
+
+```tsx
+// For icon-only buttons, provide accessible text
+<Button aria-label="Close dialog">
+  <CloseIcon />
+</Button>
+```
+
+## Best Practices
+
+### Do's
+
+✅ **Use descriptive text**
+```tsx
+<Button>Save Changes</Button>  // Clear action
+```
+
+✅ **Place primary action on the right** (in button groups)
+```tsx
+<div>
+  <Button variant="secondary">Cancel</Button>
+  <Button variant="primary">Save</Button>  {/* Right-aligned */}
+</div>
+```
+
+✅ **Provide loading feedback**
+```tsx
+<Button loading={isSaving}>
+  {isSaving ? 'Saving...' : 'Save'}
+</Button>
+```
+
+✅ **Use semantic button types**
+```tsx
+<form>
+  <Button type="submit">Submit Form</Button>
+  <Button type="reset">Reset</Button>
+  <Button type="button">Cancel</Button>  {/* Doesn't submit */}
+</form>
+```
+
+### Don'ts
+
+❌ **Don't use vague text**
+```tsx
+<Button>Click Here</Button>  // Bad — no context
+<Button>Delete Account</Button>  // Good — clear intent
+```
+
+❌ **Don't use buttons for navigation**
+```tsx
+// Bad
+<Button onClick={() => window.location.href = '/about'}>
+  About Us
+</Button>
+
+// Good
+<Link href="/about">About Us</Link>
+```
+
+❌ **Don't nest interactive elements**
+```tsx
+// Bad — invalid HTML
+<Button>
+  <a href="/link">Nested link</a>
+</Button>
+
+// Good — use Link component for navigation
+<Link href="/link">Go to page</Link>
+```
+
+❌ **Don't use too many primary buttons**
+```tsx
+// Bad — unclear priority
+<div>
+  <Button variant="primary">Action 1</Button>
+  <Button variant="primary">Action 2</Button>
+  <Button variant="primary">Action 3</Button>
+</div>
+
+// Good — clear hierarchy
+<div>
+  <Button variant="ghost">Action 1</Button>
+  <Button variant="secondary">Action 2</Button>
+  <Button variant="primary">Primary Action</Button>
+</div>
+```
+
+## Related Components
+
+- **Link** — Use for navigation to other pages
+- **IconButton** — Icon-only buttons without text
+- **ButtonGroup** — Group related buttons together
+
+## Migration Notes
+
+See [Migration Guide](../06-migration/MigrationGuide) for upgrading from previous versions.
+
+---
+
+## Using This Template
+
+When documenting a new component:
+
+1. Copy this template structure
+2. Replace "Button" with your component name
+3. Fill in all sections with component-specific details
+4. Include TypeScript prop types
+5. Provide real, working code examples
+6. Add accessibility guidance specific to the component
+7. Include Do's and Don'ts with code examples
+
+See [Writing Component Docs](./WritingComponentDocs) for detailed guidance.

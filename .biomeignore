@@ -1,0 +1,8 @@
+node_modules
+dist
+storybook-static
+build
+.storybook
+packages/tensor/dist
+src/stories
+coverage

@@ -50,74 +50,68 @@ tokens.typography.fontFamily.mono
 
 ## Font Sizes
 
-TENsor uses a modular scale for font sizes:
+TENsor uses a streamlined 6-level scale (consolidated from 9 levels in Phase 1):
 
 ```typescript
-tokens.typography.fontSize.xs     // 0.75rem (12px)
 tokens.typography.fontSize.sm     // 0.875rem (14px)
 tokens.typography.fontSize.base   // 1rem (16px)
 tokens.typography.fontSize.lg     // 1.125rem (18px)
 tokens.typography.fontSize.xl     // 1.25rem (20px)
 tokens.typography.fontSize['2xl'] // 1.5rem (24px)
 tokens.typography.fontSize['3xl'] // 1.875rem (30px)
-tokens.typography.fontSize['4xl'] // 2.25rem (36px)
-tokens.typography.fontSize['5xl'] // 3rem (48px)
 ```
 
 ### Size Guidelines
 
 | Token | Size | Use Case |
 |---|---|---|
-| `xs` | 12px | Captions, legal text, metadata |
-| `sm` | 14px | Secondary labels, helper text |
+| `sm` | 14px | Small UI text, labels, captions |
 | `base` | 16px | Body text (default), form inputs |
 | `lg` | 18px | Emphasized body text, large UI text |
 | `xl` | 20px | Section titles, card headers |
 | `2xl` | 24px | Page subtitles, prominent headings |
-| `3xl` | 30px | H3 headings |
-| `4xl` | 36px | H2 headings |
-| `5xl` | 48px | H1 headings, hero text |
+| `3xl` | 30px | H1-H3 headings, hero text |
+
+> **Phase 1 Note:** Font sizes consolidated from 9 to 6 levels. See [Migration Guide](../../MIGRATION_PHASE1.md) for details.
 
 ## Font Weights
 
 ```typescript
-tokens.typography.fontWeight.light      // 300
 tokens.typography.fontWeight.normal     // 400
 tokens.typography.fontWeight.medium     // 500
 tokens.typography.fontWeight.semibold   // 600
 tokens.typography.fontWeight.bold       // 700
-tokens.typography.fontWeight.extrabold  // 800
 ```
 
 ### Weight Usage
 
 | Weight | Value | Use Case |
 |---|---|---|
-| `light` | 300 | Large headings, decorative text |
 | `normal` | 400 | Body text, descriptions |
 | `medium` | 500 | Subheadings, emphasized text |
 | `semibold` | 600 | Button text, form labels |
 | `bold` | 700 | Headings (H1-H3), strong emphasis |
-| `extrabold` | 800 | Display text, hero titles |
+
+> **Phase 1 Note:** Removed `light` (300) and `extrabold` (800) — use size variation with normal/bold instead.
 
 ## Line Heights
 
 ```typescript
 tokens.typography.lineHeight.tight    // 1.25
-tokens.typography.lineHeight.snug     // 1.375
 tokens.typography.lineHeight.normal   // 1.5
 tokens.typography.lineHeight.relaxed  // 1.625
-tokens.typography.lineHeight.loose    // 2
 ```
 
 ### Line Height Pairing
 
 | Font Size | Recommended Line Height | Use Case |
 |---|---|---|
-| `xs`, `sm` | `normal` (1.5) | Compact UI text |
+| `sm` | `normal` (1.5) | Compact UI text |
 | `base`, `lg` | `relaxed` (1.625) | Readable body text |
-| `xl`, `2xl` | `snug` (1.375) | Headings with balance |
-| `3xl`+ | `tight` (1.25) | Large display text |
+| `xl`, `2xl` | `normal` (1.5) | Headings with balance |
+| `3xl` | `tight` (1.25) | Large display text |
+
+> **Phase 1 Note:** Removed `snug` and `loose` — use `tight`, `normal`, or `relaxed` instead.
 
 ## Letter Spacing
 

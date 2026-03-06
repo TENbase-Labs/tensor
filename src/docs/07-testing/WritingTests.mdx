@@ -1,0 +1,488 @@
+---
+title: Writing Tests
+description: Comprehensive guide to writing tests for Tensor components
+---
+
+# Writing Tests
+
+All Tensor components require **>80% test coverage** with a focus on behavioral correctness, accessibility, and visual consistency. This guide shows you how to write effective tests using our test infrastructure.
+
+## Test Stack
+
+- **Test Runner:** [Vitest](https://vitest.dev/) - Fast, modern test framework
+- **Testing Library:** [@testing-library/react](https://testing-library.com/react) - User-centric component testing
+- **Environment:** jsdom - Simulates browser environment for DOM testing
+- **Coverage:** v8 provider with 80% threshold enforcement
+
+## Quick Start
+
+### 1. Create a test file
+
+Test files live alongside their components with the `.test.tsx` extension:
+
+```
+src/
+  components/
+    ui/
+      Button/
+        Button.tsx
+        Button.test.tsx  ← Test file here
+```
+
+### 2. Write your first test
+
+```tsx
+import { render, screen } from '@testing-library/react';
+import { describe, expect, it } from 'vitest';
+import { Button } from './Button';
+
+describe('Button', () => {
+  it('renders with required props', () => {
+    render(<Button>Click me</Button>);
+    const button = screen.getByRole('button', { name: /click me/i });
+    expect(button).toBeInTheDocument();
+  });
+});
+```
+
+### 3. Run tests
+
+```bash
+# Run all tests
+npm test
+
+# Run tests in watch mode
+npm test -- --watch
+
+# Run specific test file
+npm test -- Button.test.tsx
+
+# Run with coverage
+npm test -- --coverage
+```
+
+## Test Structure
+
+Follow this structure for all component tests (see [Button.test.tsx](/src/stories/Button.test.tsx) for a complete example):
+
+### 1. Rendering Tests
+
+Verify the component renders correctly with default and custom props.
+
+```tsx
+describe('Button', () => {
+  it('renders with required props', () => {
+    render(<Button>Submit</Button>);
+    expect(screen.getByRole('button')).toBeInTheDocument();
+  });
+
+  it('displays the correct label text', () => {
+    render(<Button>Save Changes</Button>);
+    expect(screen.getByText('Save Changes')).toBeInTheDocument();
+  });
+});
+```
+
+### 2. Prop Variation Tests
+
+Test all prop combinations and their effects on component behavior.
+
+```tsx
+describe('variant prop', () => {
+  it('applies primary variant styles', () => {
+    render(<Button variant="primary">Primary</Button>);
+    const button = screen.getByRole('button');
+    expect(button).toHaveClass('btn-primary');
+  });
+
+  it('applies secondary variant styles', () => {
+    render(<Button variant="secondary">Secondary</Button>);
+    const button = screen.getByRole('button');
+    expect(button).toHaveClass('btn-secondary');
+  });
+});
+
+describe('size prop', () => {
+  it.each(['small', 'medium', 'large'] as const)(
+    'applies %s size class',
+    (size) => {
+      render(<Button size={size}>Button</Button>);
+      expect(screen.getByRole('button')).toHaveClass(`btn-${size}`);
+    }
+  );
+});
+```
+
+### 3. Event Handler Tests
+
+Test user interactions and callbacks using `@testing-library/user-event`.
+
+```tsx
+import { userEvent } from '@testing-library/user-event';
+import { vi } from 'vitest';
+
+describe('onClick handler', () => {
+  it('calls onClick when button is clicked', async () => {
+    const user = userEvent.setup();
+    const handleClick = vi.fn();
+    render(<Button onClick={handleClick}>Click me</Button>);
+
+    await user.click(screen.getByRole('button'));
+
+    expect(handleClick).toHaveBeenCalledTimes(1);
+  });
+
+  it('does not throw when onClick is not provided', async () => {
+    const user = userEvent.setup();
+    render(<Button>No handler</Button>);
+
+    await expect(
+      user.click(screen.getByRole('button'))
+    ).resolves.not.toThrow();
+  });
+});
+```
+
+### 4. Keyboard Navigation Tests
+
+Verify keyboard accessibility (Enter, Space, Tab, Arrow keys, Escape).
+
+```tsx
+describe('keyboard navigation', () => {
+  it('triggers onClick when Enter key is pressed', async () => {
+    const user = userEvent.setup();
+    const handleClick = vi.fn();
+    render(<Button onClick={handleClick}>Press Enter</Button>);
+
+    const button = screen.getByRole('button');
+    button.focus();
+    await user.keyboard('{Enter}');
+
+    expect(handleClick).toHaveBeenCalledTimes(1);
+  });
+
+  it('triggers onClick when Space key is pressed', async () => {
+    const user = userEvent.setup();
+    const handleClick = vi.fn();
+    render(<Button onClick={handleClick}>Press Space</Button>);
+
+    const button = screen.getByRole('button');
+    button.focus();
+    await user.keyboard(' ');
+
+    expect(handleClick).toHaveBeenCalledTimes(1);
+  });
+});
+```
+
+### 5. Focus Management Tests
+
+Test focus behavior and tab order.
+
+```tsx
+describe('focus management', () => {
+  it('is focusable via tab key', async () => {
+    const user = userEvent.setup();
+    render(<Button>Focusable</Button>);
+
+    await user.tab();
+
+    expect(screen.getByRole('button')).toHaveFocus();
+  });
+
+  it('can be programmatically focused', () => {
+    render(<Button>Focus Test</Button>);
+    const button = screen.getByRole('button');
+
+    button.focus();
+
+    expect(button).toHaveFocus();
+  });
+});
+```
+
+### 6. Accessibility Tests (WCAG AAA)
+
+Verify ARIA attributes, roles, and semantic HTML.
+
+```tsx
+describe('accessibility', () => {
+  it('has button role (semantic HTML)', () => {
+    render(<Button>Semantic</Button>);
+    const button = screen.getByRole('button');
+    expect(button.tagName).toBe('BUTTON');
+  });
+
+  it('has accessible name', () => {
+    render(<Button aria-label="Close dialog">×</Button>);
+    expect(
+      screen.getByRole('button', { name: /close dialog/i })
+    ).toBeInTheDocument();
+  });
+
+  it('indicates disabled state to assistive tech', () => {
+    render(<Button disabled>Disabled</Button>);
+    expect(screen.getByRole('button')).toBeDisabled();
+    expect(screen.getByRole('button')).toHaveAttribute('aria-disabled', 'true');
+  });
+
+  it('is included in tab order when enabled', () => {
+    render(<Button>Enabled</Button>);
+    expect(screen.getByRole('button')).not.toHaveAttribute('tabIndex', '-1');
+  });
+});
+```
+
+### 7. Snapshot Tests
+
+Catch unintended visual changes.
+
+```tsx
+describe('snapshots', () => {
+  it('matches snapshot for default button', () => {
+    const { container } = render(<Button>Default</Button>);
+    expect(container.firstChild).toMatchSnapshot();
+  });
+
+  it('matches snapshot for all variants', () => {
+    const variants = ['primary', 'secondary', 'destructive'] as const;
+    variants.forEach((variant) => {
+      const { container } = render(<Button variant={variant}>Button</Button>);
+      expect(container.firstChild).toMatchSnapshot(`button-${variant}`);
+    });
+  });
+});
+```
+
+## Best Practices
+
+### ✅ Do
+
+- **Test behavior, not implementation details** - Focus on what users see and do, not internal state
+- **Use semantic queries** - Prefer `getByRole`, `getByLabelText` over `getByTestId`
+- **Test user interactions** - Click, type, tab, press keys like real users
+- **Test all prop combinations** - Especially edge cases (empty strings, null, undefined)
+- **Test accessibility** - ARIA attributes, keyboard navigation, screen reader support
+- **Use descriptive test names** - "renders submit button" not "test 1"
+- **Group related tests** - Use nested `describe` blocks for organization
+- **Keep tests simple** - One concept per test
+
+### ❌ Don't
+
+- **Don't test internal state** - Only test observable behavior
+- **Don't use `getByTestId` unless necessary** - Prefer semantic queries
+- **Don't test third-party libraries** - Trust that Radix, React, etc. work
+- **Don't duplicate tests** - If a parent component tests something, children don't need to
+- **Don't mock unnecessarily** - Use real components when possible
+- **Don't write brittle selectors** - Avoid class names, IDs, and fragile structures
+
+## Common Testing Patterns
+
+### Testing Conditional Rendering
+
+```tsx
+it('shows loading spinner when loading prop is true', () => {
+  render(<Button loading>Submit</Button>);
+  expect(screen.getByRole('status')).toBeInTheDocument();
+  expect(screen.queryByText('Submit')).not.toBeInTheDocument();
+});
+
+it('shows label text when loading prop is false', () => {
+  render(<Button loading={false}>Submit</Button>);
+  expect(screen.queryByRole('status')).not.toBeInTheDocument();
+  expect(screen.getByText('Submit')).toBeInTheDocument();
+});
+```
+
+### Testing Disabled State
+
+```tsx
+it('does not call onClick when disabled', async () => {
+  const user = userEvent.setup();
+  const handleClick = vi.fn();
+  render(<Button disabled onClick={handleClick}>Disabled</Button>);
+
+  await user.click(screen.getByRole('button'));
+
+  expect(handleClick).not.toHaveBeenCalled();
+});
+```
+
+### Testing Forms
+
+```tsx
+it('submits form when button type is submit', async () => {
+  const user = userEvent.setup();
+  const handleSubmit = vi.fn((e) => e.preventDefault());
+
+  render(
+    <form onSubmit={handleSubmit}>
+      <Button type="submit">Submit</Button>
+    </form>
+  );
+
+  await user.click(screen.getByRole('button'));
+
+  expect(handleSubmit).toHaveBeenCalledTimes(1);
+});
+
+it('does not submit form when button type is button', async () => {
+  const user = userEvent.setup();
+  const handleSubmit = vi.fn((e) => e.preventDefault());
+
+  render(
+    <form onSubmit={handleSubmit}>
+      <Button type="button">Cancel</Button>
+    </form>
+  );
+
+  await user.click(screen.getByRole('button'));
+
+  expect(handleSubmit).not.toHaveBeenCalled();
+});
+```
+
+### Testing Async Operations
+
+```tsx
+it('handles async onClick operations', async () => {
+  const user = userEvent.setup();
+  const asyncOperation = vi.fn().mockResolvedValue('success');
+
+  render(<Button onClick={asyncOperation}>Async Action</Button>);
+
+  await user.click(screen.getByRole('button'));
+  await waitFor(() => expect(asyncOperation).toHaveBeenCalled());
+});
+```
+
+## Coverage Requirements
+
+All components must meet **80% coverage** across:
+
+- **Statements**: 80%
+- **Branches**: 80%
+- **Functions**: 80%
+- **Lines**: 80%
+
+### Check coverage
+
+```bash
+npm test -- --coverage
+```
+
+Coverage reports are generated in `./coverage/`:
+
+- **HTML report**: `coverage/index.html` (open in browser)
+- **LCOV report**: `coverage/lcov.info` (for CI tools)
+- **JSON report**: `coverage/coverage-summary.json`
+
+### What counts toward coverage
+
+✅ **Included in coverage:**
+- All component code in `src/components/`
+- All utility functions in `src/utils/`
+- All hooks in `src/hooks/`
+
+❌ **Excluded from coverage:**
+- Test files (`*.test.tsx`, `*.test.ts`)
+- Story files (`*.stories.tsx`)
+- Configuration files (`*.config.ts`)
+- Storybook files (`.storybook/**`)
+
+## CI Integration
+
+Tests run automatically on every PR via GitHub Actions (`.github/workflows/test.yml`):
+
+✅ **Required checks:**
+- All tests pass
+- Coverage ≥ 80%
+
+❌ **PR merge blocked if:**
+- Any test fails
+- Coverage drops below 80%
+
+View test results and coverage in the PR checks section.
+
+## Troubleshooting
+
+### Tests fail locally but pass in CI
+
+**Cause:** Environment differences (Node version, dependencies, timezone)
+
+**Solution:**
+```bash
+# Use exact Node version from CI (see .github/workflows/test.yml)
+nvm use 20
+
+# Clear cache and reinstall
+rm -rf node_modules package-lock.json
+npm install
+
+# Run tests with CI flag
+CI=true npm test
+```
+
+### "Cannot find module" errors
+
+**Cause:** Missing dependencies or incorrect imports
+
+**Solution:**
+```bash
+# Install missing dependencies
+npm install
+
+# Check import paths match file structure
+# ✅ import { Button } from './Button'
+# ❌ import { Button } from '@/components/Button'
+```
+
+### Tests timeout
+
+**Cause:** Async operations not properly awaited
+
+**Solution:**
+```tsx
+// ❌ Don't forget await
+it('clicks button', () => {
+  user.click(button); // Missing await!
+});
+
+// ✅ Always await user interactions
+it('clicks button', async () => {
+  await user.click(button);
+});
+```
+
+### "Element not found" errors
+
+**Cause:** Querying for elements that don't exist or haven't rendered yet
+
+**Solution:**
+```tsx
+// ❌ Use getBy* for elements that should exist
+expect(screen.getByText('Not here')).toBeInTheDocument();
+
+// ✅ Use queryBy* for elements that might not exist
+expect(screen.queryByText('Maybe not here')).not.toBeInTheDocument();
+
+// ✅ Use findBy* for elements that appear asynchronously
+const asyncElement = await screen.findByText('Loads later');
+```
+
+## Resources
+
+- [Testing Library Docs](https://testing-library.com/docs/react-testing-library/intro)
+- [Vitest API Reference](https://vitest.dev/api/)
+- [Common Testing Mistakes](https://kentcdodds.com/blog/common-mistakes-with-react-testing-library)
+- [Example: Button.test.tsx](/src/stories/Button.test.tsx) - Complete test template
+- [WCAG 2.1 Guidelines](https://www.w3.org/WAI/WCAG21/quickref/)
+
+## Next Steps
+
+1. **Write your first test** - Copy [Button.test.tsx](/src/stories/Button.test.tsx) as a template
+2. **Run tests locally** - `npm test -- --watch`
+3. **Check coverage** - `npm test -- --coverage`
+4. **Create a PR** - Tests run automatically in CI
+
+Need help? Ask the QA Engineer or reference the [Button.test.tsx](/src/stories/Button.test.tsx) template.

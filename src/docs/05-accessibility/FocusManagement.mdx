@@ -1,0 +1,356 @@
+---
+title: Focus Management
+description: Managing focus in complex UIs
+---
+
+# Focus Management
+
+Proper focus management ensures keyboard users can navigate your application efficiently and understand context changes.
+
+## Focus Principles
+
+### 1. Visible Focus
+
+Always show where focus is:
+
+```css
+/* All focusable elements */
+:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* Minimum 3:1 contrast ratio */
+.dark-background :focus-visible {
+  outline-color: var(--color-accent);
+}
+```
+
+### 2. Logical Focus Order
+
+Tab order follows visual layout (left-to-right, top-to-bottom):
+
+```tsx
+// Good — natural DOM order
+<form>
+  <input name="firstName" />
+  <input name="lastName" />
+  <button type="submit">Submit</button>
+</form>
+
+// Bad — tabindex disrupts natural order
+<form>
+  <input name="firstName" tabIndex={2} />
+  <button type="submit" tabIndex={1}>Submit</button>
+  <input name="lastName" tabIndex={3} />
+</form>
+```
+
+### 3. Focus Restoration
+
+Return focus after context changes:
+
+```tsx
+function DeleteButton() {
+  const buttonRef = useRef();
+
+  const handleDelete = async () => {
+    await deleteItem();
+    // Item is gone — focus next sibling or parent
+    buttonRef.current?.nextSibling?.focus() ||
+      buttonRef.current?.parentElement?.focus();
+  };
+
+  return <button ref={buttonRef} onClick={handleDelete}>Delete</button>;
+}
+```
+
+## Common Patterns
+
+### Modal Focus Trap
+
+Keep focus within modal:
+
+```tsx
+import { useEffect, useRef } from 'react';
+
+function Modal({ isOpen, onClose, children }) {
+  const modalRef = useRef();
+  const previousFocusRef = useRef();
+
+  useEffect(() => {
+    if (isOpen) {
+      // Save current focus
+      previousFocusRef.current = document.activeElement;
+
+      // Focus modal
+      modalRef.current?.focus();
+
+      // Trap focus
+      const handleTab = (e) => {
+        const focusableElements = modalRef.current?.querySelectorAll(
+          'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+        );
+
+        const first = focusableElements[0];
+        const last = focusableElements[focusableElements.length - 1];
+
+        if (e.key === 'Tab') {
+          if (e.shiftKey) {
+            if (document.activeElement === first) {
+              e.preventDefault();
+              last.focus();
+            }
+          } else {
+            if (document.activeElement === last) {
+              e.preventDefault();
+              first.focus();
+            }
+          }
+        }
+      };
+
+      document.addEventListener('keydown', handleTab);
+
+      return () => {
+        document.removeEventListener('keydown', handleTab);
+        // Restore focus on close
+        previousFocusRef.current?.focus();
+      };
+    }
+  }, [isOpen]);
+
+  if (!isOpen) return null;
+
+  return (
+    <div
+      ref={modalRef}
+      role="dialog"
+      aria-modal="true"
+      tabIndex={-1}
+    >
+      {children}
+    </div>
+  );
+}
+```
+
+### Dropdown Focus
+
+Manage focus in menus:
+
+```tsx
+function Dropdown() {
+  const [isOpen, setIsOpen] = useState(false);
+  const [focusedIndex, setFocusedIndex] = useState(0);
+  const itemsRef = useRef([]);
+
+  const handleKeyDown = (e) => {
+    if (!isOpen) return;
+
+    switch (e.key) {
+      case 'ArrowDown':
+        e.preventDefault();
+        setFocusedIndex((i) => (i + 1) % itemsRef.current.length);
+        break;
+      case 'ArrowUp':
+        e.preventDefault();
+        setFocusedIndex((i) =>
+          i === 0 ? itemsRef.current.length - 1 : i - 1
+        );
+        break;
+      case 'Escape':
+        setIsOpen(false);
+        triggerRef.current?.focus();
+        break;
+    }
+  };
+
+  useEffect(() => {
+    if (isOpen) {
+      itemsRef.current[focusedIndex]?.focus();
+    }
+  }, [focusedIndex, isOpen]);
+
+  return (
+    <div onKeyDown={handleKeyDown}>
+      <button onClick={() => setIsOpen(!isOpen)}>Menu</button>
+      {isOpen && (
+        <ul>
+          {items.map((item, i) => (
+            <li
+              key={i}
+              ref={(el) => (itemsRef.current[i] = el)}
+              tabIndex={-1}
+            >
+              {item}
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+}
+```
+
+### Roving Tabindex
+
+For toolbars and composite widgets:
+
+```tsx
+function Toolbar({ items }) {
+  const [focusedIndex, setFocusedIndex] = useState(0);
+  const itemRefs = useRef([]);
+
+  const handleKeyDown = (e, index) => {
+    let nextIndex = index;
+
+    switch (e.key) {
+      case 'ArrowRight':
+        e.preventDefault();
+        nextIndex = (index + 1) % items.length;
+        break;
+      case 'ArrowLeft':
+        e.preventDefault();
+        nextIndex = index === 0 ? items.length - 1 : index - 1;
+        break;
+      case 'Home':
+        e.preventDefault();
+        nextIndex = 0;
+        break;
+      case 'End':
+        e.preventDefault();
+        nextIndex = items.length - 1;
+        break;
+    }
+
+    setFocusedIndex(nextIndex);
+    itemRefs.current[nextIndex]?.focus();
+  };
+
+  return (
+    <div role="toolbar">
+      {items.map((item, i) => (
+        <button
+          key={i}
+          ref={(el) => (itemRefs.current[i] = el)}
+          tabIndex={i === focusedIndex ? 0 : -1}
+          onKeyDown={(e) => handleKeyDown(e, i)}
+          onFocus={() => setFocusedIndex(i)}
+        >
+          {item.label}
+        </button>
+      ))}
+    </div>
+  );
+}
+```
+
+### Skip Links
+
+Jump to main content:
+
+```tsx
+<a href="#main" className="skip-link">
+  Skip to main content
+</a>
+
+<nav>/* Navigation */</nav>
+
+<main id="main" tabIndex={-1}>
+  <h1>Page Title</h1>
+</main>
+```
+
+```css
+.skip-link {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+}
+
+.skip-link:focus {
+  left: 0;
+  z-index: 9999;
+  padding: 1rem;
+  background: var(--color-primary);
+  color: white;
+}
+```
+
+## Focus Debugging
+
+### Chrome DevTools
+
+```javascript
+// Log focus changes
+let lastFocused = null;
+document.addEventListener('focusin', (e) => {
+  if (e.target !== lastFocused) {
+    console.log('Focus moved to:', e.target);
+    lastFocused = e.target;
+  }
+});
+```
+
+### Testing Focus
+
+```tsx
+test('Modal traps focus', () => {
+  const { getByRole } = render(<Modal isOpen={true} />);
+
+  const modal = getByRole('dialog');
+  const buttons = within(modal).getAllByRole('button');
+
+  // Tab through buttons
+  buttons[0].focus();
+  userEvent.tab();
+  expect(buttons[1]).toHaveFocus();
+
+  // Tab from last button wraps to first
+  buttons[buttons.length - 1].focus();
+  userEvent.tab();
+  expect(buttons[0]).toHaveFocus();
+});
+```
+
+## Common Mistakes
+
+❌ **Using tabindex="0" everywhere**
+```tsx
+// Bad
+<div tabIndex={0}>Not interactive</div>
+
+// Good — only on interactive elements
+<button>Interactive</button>
+```
+
+❌ **Positive tabindex values**
+```tsx
+// Bad — disrupts natural order
+<button tabIndex={1}>First</button>
+<button tabIndex={2}>Second</button>
+
+// Good — natural DOM order
+<button>First</button>
+<button>Second</button>
+```
+
+❌ **Removing focus outline without replacement**
+```css
+/* Bad */
+button:focus {
+  outline: none;
+}
+
+/* Good — provide alternative indicator */
+button:focus-visible {
+  outline: 2px solid var(--color-primary);
+}
+```
+
+## Next Steps
+
+- **[Keyboard Navigation](./KeyboardNavigation)** — Keyboard interaction patterns
+- **[ARIA Patterns](./ARIAPatterns)** — Semantic markup
+- **[Accessibility Overview](./Overview)** — Complete accessibility guide

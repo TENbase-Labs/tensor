@@ -1,0 +1,126 @@
+---
+title: Welcome to TENsor
+description: Multi-brand design system documentation
+---
+
+# Welcome to TENsor
+
+TENsor is a multi-brand design system for TENbase Labs products, providing shared foundations with per-project themes.
+
+## What is TENsor?
+
+TENsor enables consistent, accessible user interfaces across all TENbase Labs products while supporting unique brand identities for PlusOne, HooverSheet, and other products.
+
+### Key Features
+
+✨ **Multi-brand Theming** — Runtime theme switching for different brands
+🎨 **Design Tokens** — Consistent colors, typography, spacing, and motion
+⚛️ **React Components** — Production-ready, accessible components
+♿ **Accessibility First** — WCAG 2.1 AA compliant
+📦 **Modular Architecture** — Use only what you need
+🛠️ **Great DX** — TypeScript, Storybook, excellent documentation
+
+## Quick Links
+
+### Getting Started
+
+- **[Installation](../01-getting-started/Installation)** — Set up TENsor in your project
+- **[Quick Start](../01-getting-started/QuickStart)** — Build your first component
+
+### Core Documentation
+
+- **[Design Tokens](../02-design-tokens/Overview)** — Colors, typography, spacing, motion
+- **[Components](../03-components/ComponentTemplate)** — React component library
+- **[Themes](../04-themes/Overview)** — Multi-brand theming system
+- **[Accessibility](../05-accessibility/Overview)** — WCAG compliance guidelines
+
+### Guides
+
+- **[Writing Component Docs](../03-components/WritingComponentDocs)** — Documentation standards
+- **[Creating Themes](../04-themes/CreatingThemes)** — Build custom brand themes
+- **[Migration Guide](../06-migration/MigrationGuide)** — Upgrade between versions
+- **[Contributing](/CONTRIBUTING.md)** — Contribute to TENsor
+
+## Architecture
+
+TENsor consists of three main packages:
+
+### @tenbaselabs/tensor (Core)
+
+Design tokens and utilities — the foundation of the system.
+
+```typescript
+import { tokens } from '@tenbaselabs/tensor';
+
+const buttonStyle = {
+  backgroundColor: tokens.colors.primary,
+  padding: tokens.spacing.md,
+};
+```
+
+### @tenbaselabs/tensor-react (Components)
+
+React components built with design tokens.
+
+```tsx
+import { Button, Card } from '@tenbaselabs/tensor-react';
+
+<Card>
+  <Button variant="primary">Click me</Button>
+</Card>
+```
+
+### @tenbaselabs/tensor-themes (Themes)
+
+Brand-specific theme packages.
+
+```typescript
+import { plusone } from '@tenbaselabs/tensor-themes/plusone';
+
+// Apply theme
+document.documentElement.classList.add(plusone);
+```
+
+## Design Principles
+
+### 1. Accessibility First
+
+All components meet WCAG 2.1 Level AA standards with full keyboard and screen reader support.
+
+### 2. Token-Based Design
+
+Design tokens ensure consistency and enable theming across products.
+
+### 3. Semantic API
+
+Component APIs use meaningful names (`variant="primary"`) not implementation details (`color="blue"`).
+
+### 4. Progressive Enhancement
+
+Components work without JavaScript and enhance when available.
+
+### 5. Developer Experience
+
+TypeScript types, comprehensive docs, and Storybook examples make TENsor easy to use.
+
+## Browser Support
+
+- Chrome (latest)
+- Firefox (latest)
+- Safari (latest)
+- Edge (latest)
+
+## Community & Support
+
+- **GitHub:** [TENbase-Labs/tensor](https://github.com/TENbase-Labs/tensor)
+- **Issues:** [Report bugs](https://github.com/TENbase-Labs/tensor/issues)
+- **Discussions:** [Ask questions](https://github.com/TENbase-Labs/tensor/discussions)
+- **NPM:** [@tenbaselabs/tensor](https://www.npmjs.com/package/@tenbaselabs/tensor)
+
+## License
+
+MIT © TENbase Labs
+
+---
+
+Ready to get started? Head to the **[Installation Guide](../01-getting-started/Installation)**.

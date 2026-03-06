@@ -1,0 +1,310 @@
+---
+title: Accessibility Overview
+description: Building accessible interfaces with TENsor
+---
+
+
+
+# Accessibility Overview
+
+TENsor is designed with accessibility as a core principle. All components follow WCAG 2.1 Level AA guidelines and implement WAI-ARIA patterns correctly.
+
+## Accessibility Principles
+
+### 1. Perceivable
+
+Users must be able to perceive the information being presented.
+
+✅ **TENsor ensures:**
+- Sufficient color contrast (4.5:1 for text, 3:1 for UI components)
+- Text alternatives for non-text content
+- Adaptable layouts that work at different zoom levels
+- Support for prefers-color-scheme and prefers-reduced-motion
+
+### 2. Operable
+
+Users must be able to operate the interface.
+
+✅ **TENsor ensures:**
+- All functionality available via keyboard
+- Sufficient time to read and interact
+- No content that causes seizures (respects prefers-reduced-motion)
+- Navigable focus order and visible focus indicators
+
+### 3. Understandable
+
+Users must be able to understand the information and operation.
+
+✅ **TENsor ensures:**
+- Readable text with appropriate typography
+- Predictable behavior across components
+- Input assistance (labels, error messages, validation)
+- Consistent navigation patterns
+
+### 4. Robust
+
+Content must be robust enough to work with assistive technologies.
+
+✅ **TENsor ensures:**
+- Valid, semantic HTML
+- Proper ARIA attributes
+- Compatibility with screen readers (NVDA, JAWS, VoiceOver)
+- Progressive enhancement
+
+## WCAG 2.1 Compliance
+
+TENsor components meet WCAG 2.1 Level AA criteria:
+
+| Criterion | Level | Status |
+|---|---|---|
+| **1.4.3** Text Contrast | AA | ✅ All text meets 4.5:1 ratio |
+| **1.4.11** Non-text Contrast | AA | ✅ UI components meet 3:1 ratio |
+| **2.1.1** Keyboard | A | ✅ Full keyboard support |
+| **2.1.2** No Keyboard Trap | A | ✅ Focus management |
+| **2.4.7** Focus Visible | AA | ✅ Visible focus indicators |
+| **3.2.4** Consistent Identification | AA | ✅ Predictable patterns |
+| **4.1.2** Name, Role, Value | A | ✅ Proper ARIA usage |
+| **4.1.3** Status Messages | AA | ✅ Live regions for updates |
+
+## Core Accessibility Features
+
+### Color Contrast
+
+All TENsor color combinations meet WCAG requirements:
+
+```typescript
+// Text on background
+tokens.colors.text.primary / tokens.colors.surface.base
+→ Contrast: 16:1 (AAA)
+
+// Primary button
+tokens.colors.text.inverse / tokens.colors.primary
+→ Contrast: 4.6:1 (AA)
+
+// Border vs background
+tokens.colors.neutral[300] / tokens.colors.surface.base
+→ Contrast: 3.2:1 (AA)
+```
+
+### Keyboard Navigation
+
+Every interactive element is keyboard accessible:
+
+```tsx
+// Button
+<Button>Click me</Button>
+// Press Enter or Space to activate
+
+// Link
+<Link href="/page">Navigate</Link>
+// Press Enter to follow
+
+// Modal
+<Modal open={isOpen}>Content</Modal>
+// Press Escape to close
+// Focus trapped within modal
+```
+
+### Screen Reader Support
+
+Components include proper ARIA labels and live regions:
+
+```tsx
+// Button with icon
+<Button aria-label="Close dialog">
+  <CloseIcon />
+</Button>
+
+// Loading state
+<Button loading aria-busy="true">
+  Saving...
+</Button>
+
+// Status message
+<div role="status" aria-live="polite">
+  Changes saved successfully
+</div>
+```
+
+### Focus Management
+
+Visible focus indicators with 3:1 contrast ratio:
+
+```css
+/* All interactive elements */
+.button:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+```
+
+### Motion Preferences
+
+Respects user's motion preferences:
+
+```typescript
+// Check preference
+const prefersReducedMotion = window.matchMedia(
+  '(prefers-reduced-motion: reduce)'
+).matches;
+
+// Components automatically disable animations
+<Transition duration={prefersReducedMotion ? 0 : 200} />
+```
+
+## Testing for Accessibility
+
+### Automated Testing
+
+```bash
+# Install axe-core
+npm install --save-dev @axe-core/react
+
+# Run in tests
+import { axe } from '@axe-core/react';
+
+test('Button is accessible', async () => {
+  const { container } = render(<Button>Click me</Button>);
+  const results = await axe(container);
+  expect(results).toHaveNoViolations();
+});
+```
+
+### Manual Testing
+
+**Keyboard-only navigation:**
+1. Tab through all interactive elements
+2. Verify focus is visible
+3. Activate elements with Enter/Space
+4. Ensure no keyboard traps
+
+**Screen reader testing:**
+1. Test with NVDA (Windows), JAWS (Windows), or VoiceOver (macOS)
+2. Verify all content is announced
+3. Check ARIA labels and descriptions
+4. Test form validation messages
+
+**Color blindness simulation:**
+1. Use browser DevTools color vision deficiency emulation
+2. Ensure information isn't conveyed by color alone
+
+### Browser Testing
+
+Test in multiple browsers with assistive tech:
+
+| Browser | Screen Reader | Platform |
+|---|---|---|
+| Chrome | NVDA | Windows |
+| Firefox | JAWS | Windows |
+| Safari | VoiceOver | macOS/iOS |
+| Edge | Narrator | Windows |
+
+## Common Patterns
+
+### Form Accessibility
+
+```tsx
+<form>
+  <label htmlFor="email">
+    Email Address
+    <span aria-label="required">*</span>
+  </label>
+  <input
+    id="email"
+    type="email"
+    required
+    aria-required="true"
+    aria-describedby="email-error"
+    aria-invalid={hasError}
+  />
+  {hasError && (
+    <span id="email-error" role="alert">
+      Please enter a valid email address
+    </span>
+  )}
+</form>
+```
+
+### Skip Links
+
+```tsx
+<a href="#main-content" className="skip-link">
+  Skip to main content
+</a>
+
+<main id="main-content">
+  {/* Page content */}
+</main>
+```
+
+### Landmarks
+
+```tsx
+<header>
+  <nav aria-label="Main navigation">
+    {/* Navigation links */}
+  </nav>
+</header>
+
+<main>
+  <article>
+    <h1>Article Title</h1>
+    {/* Article content */}
+  </article>
+</main>
+
+<footer>
+  {/* Footer content */}
+</footer>
+```
+
+## Accessibility Checklist
+
+Use this checklist when building features:
+
+- [ ] Color contrast meets 4.5:1 (text) and 3:1 (UI)
+- [ ] All interactive elements are keyboard accessible
+- [ ] Focus indicators are visible (2px outline, 3:1 contrast)
+- [ ] ARIA attributes are used correctly
+- [ ] Form inputs have associated labels
+- [ ] Error messages are announced to screen readers
+- [ ] Images have alt text
+- [ ] Headings follow proper hierarchy (h1 → h2 → h3)
+- [ ] No keyboard traps exist
+- [ ] Motion respects prefers-reduced-motion
+- [ ] Tested with keyboard-only navigation
+- [ ] Tested with screen reader
+
+## Resources
+
+### Documentation
+
+- **[ARIA Patterns](./ARIAPatterns)** — Proper ARIA usage for components
+- **[Keyboard Navigation](./KeyboardNavigation)** — Keyboard interaction patterns
+- **[Focus Management](./FocusManagement)** — Managing focus in complex UIs
+
+### External Resources
+
+- **[WCAG 2.1 Guidelines](https://www.w3.org/WAI/WCAG21/quickref/)** — Official accessibility guidelines
+- **[WAI-ARIA Authoring Practices](https://www.w3.org/WAI/ARIA/apg/)** — ARIA pattern reference
+- **[WebAIM](https://webaim.org/)** — Accessibility articles and tools
+- **[A11y Project](https://www.a11yproject.com/)** — Community-driven accessibility resources
+
+### Tools
+
+- **[axe DevTools](https://www.deque.com/axe/devtools/)** — Browser extension for accessibility testing
+- **[WAVE](https://wave.webaim.org/)** — Web accessibility evaluation tool
+- **[Lighthouse](https://developers.google.com/web/tools/lighthouse)** — Automated audits (built into Chrome)
+- **[Screen Reader Testing](https://www.nvaccess.org/)** — NVDA (free, Windows)
+
+## Support
+
+If you encounter accessibility issues:
+
+1. Check component documentation for proper usage
+2. Review [ARIA Patterns](./ARIAPatterns) for correct implementation
+3. Test with automated tools (axe, Lighthouse)
+4. Test with screen readers
+5. Report issues to the TENsor team with reproduction steps
+
+Accessibility is a shared responsibility — every contributor should understand and apply these principles.

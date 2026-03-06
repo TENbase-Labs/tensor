@@ -13,4 +13,4 @@ export const tenbase = {
       accent: '#f59e0b',
     },
   },
-} as const;
+} as const

@@ -1,0 +1,37 @@
+{
+  "$schema": "https://biomejs.dev/schemas/1.x/schema.json",
+  "files": {
+    "ignoreUnknown": true,
+    "experimentalScannerIgnores": [
+      "node_modules/**",
+      "dist/**",
+      "storybook-static/**",
+      "build/**",
+      ".storybook/**",
+      "packages/tensor/dist/**",
+      "src/stories/**"
+    ]
+  },
+  "formatter": {
+    "enabled": true,
+    "indentStyle": "space",
+    "indentWidth": 2,
+    "lineWidth": 100
+  },
+  "linter": {
+    "enabled": true,
+    "rules": {
+      "recommended": true,
+      "a11y": {
+        "recommended": true
+      }
+    }
+  },
+  "javascript": {
+    "formatter": {
+      "quoteStyle": "single",
+      "trailingCommas": "all",
+      "semicolons": "asNeeded"
+    }
+  }
+}

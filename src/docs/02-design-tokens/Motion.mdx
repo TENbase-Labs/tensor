@@ -1,0 +1,397 @@
+---
+title: Motion Tokens
+description: Animation timing, duration, and easing functions
+---
+
+# Motion Tokens
+
+TENsor's motion system defines consistent animation timing and easing to create smooth, purposeful user experiences.
+
+## Philosophy
+
+Motion in TENsor serves three purposes:
+
+1. **Feedback** — Acknowledge user actions
+2. **Relationship** — Show connections between UI elements
+3. **Hierarchy** — Direct attention to important changes
+
+Motion should feel natural, not distracting. Animations should be fast enough to feel responsive but slow enough to be perceived.
+
+## Duration Tokens
+
+Animation durations scale with the complexity of the transition (streamlined in Phase 1):
+
+```typescript
+import { tokens } from '@tenbaselabs/tensor';
+
+tokens.motion.duration.instant   // 0ms — No animation
+tokens.motion.duration.fast      // 100ms — Simple fades, hovers
+tokens.motion.duration.normal    // 200ms — Default transitions
+tokens.motion.duration.slow      // 300ms — Complex transitions
+```
+
+### Duration Guidelines
+
+| Token | Value | Use Case |
+|---|---|---|
+| `instant` | 0ms | Disable animation, testing, reduced motion |
+| `fast` | 100ms | Hover states, focus indicators, tooltips |
+| `normal` | 200ms | Most UI transitions, modals, dropdowns |
+| `slow` | 300ms | Page transitions, multi-step animations, loading states |
+
+> **Phase 1 Note:** Removed `slower` (500ms) — use `slow` for complex animations instead.
+
+## Easing Functions
+
+Easing defines how animations accelerate and decelerate:
+
+```typescript
+tokens.motion.easing.linear      // constant speed
+tokens.motion.easing.easeIn      // slow start, fast end
+tokens.motion.easing.easeOut     // fast start, slow end
+tokens.motion.easing.easeInOut   // slow start and end
+tokens.motion.easing.spring      // bouncy, natural motion
+```
+
+### Easing Curves
+
+| Easing | Cubic Bezier | Feel | Use Case |
+|---|---|---|---|
+| `linear` | `linear` | Mechanical, constant | Loading spinners, progress bars |
+| `easeIn` | `cubic-bezier(0.4, 0, 1, 1)` | Accelerating | Elements leaving the screen |
+| `easeOut` | `cubic-bezier(0, 0, 0.2, 1)` | Decelerating | Elements entering the screen |
+| `easeInOut` | `cubic-bezier(0.4, 0, 0.2, 1)` | Natural | Most UI transitions |
+| `spring` | `cubic-bezier(0.34, 1.56, 0.64, 1)` | Bouncy | Playful interactions, emphasis |
+
+## Common Motion Patterns
+
+### Fade Transitions
+
+```tsx
+// Fade in
+<div style={{
+  opacity: 0,
+  animation: `fadeIn ${tokens.motion.duration.fast} ${tokens.motion.easing.easeOut} forwards`,
+}}>
+  Content fades in
+</div>
+
+// CSS keyframes
+const styles = `
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+`;
+```
+
+### Slide Transitions
+
+```tsx
+// Slide in from right
+<div style={{
+  transform: 'translateX(100%)',
+  animation: `slideIn ${tokens.motion.duration.normal} ${tokens.motion.easing.easeOut} forwards`,
+}}>
+  Drawer content
+</div>
+
+// Keyframes
+const styles = `
+  @keyframes slideIn {
+    from { transform: translateX(100%); }
+    to { transform: translateX(0); }
+  }
+`;
+```
+
+### Scale Transitions
+
+```tsx
+// Pop in
+<div style={{
+  transform: 'scale(0.9)',
+  opacity: 0,
+  animation: `popIn ${tokens.motion.duration.normal} ${tokens.motion.easing.easeOut} forwards`,
+}}>
+  Modal content
+</div>
+
+// Keyframes
+const styles = `
+  @keyframes popIn {
+    from {
+      transform: scale(0.9);
+      opacity: 0;
+    }
+    to {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+`;
+```
+
+### Hover States
+
+```tsx
+<button style={{
+  transition: `background-color ${tokens.motion.duration.fast} ${tokens.motion.easing.easeInOut}`,
+}}>
+  Hover me
+</button>
+```
+
+## Component-Specific Motion
+
+### Button Press
+
+```tsx
+<button style={{
+  transition: `transform ${tokens.motion.duration.fast} ${tokens.motion.easing.easeOut}`,
+  ':active': {
+    transform: 'scale(0.95)',
+  },
+}}>
+  Press me
+</button>
+```
+
+### Accordion Expand/Collapse
+
+```tsx
+<div style={{
+  maxHeight: isOpen ? '500px' : '0',
+  overflow: 'hidden',
+  transition: `max-height ${tokens.motion.duration.normal} ${tokens.motion.easing.easeInOut}`,
+}}>
+  Accordion content
+</div>
+```
+
+### Dropdown Menu
+
+```tsx
+<div style={{
+  opacity: isOpen ? 1 : 0,
+  transform: isOpen ? 'translateY(0)' : 'translateY(-8px)',
+  transition: `
+    opacity ${tokens.motion.duration.fast} ${tokens.motion.easing.easeOut},
+    transform ${tokens.motion.duration.fast} ${tokens.motion.easing.easeOut}
+  `,
+  pointerEvents: isOpen ? 'auto' : 'none',
+}}>
+  Dropdown items
+</div>
+```
+
+### Loading Spinner
+
+```tsx
+<div style={{
+  animation: `spin ${tokens.motion.duration.slow} ${tokens.motion.easing.linear} infinite`,
+}}>
+  ⟳
+</div>
+
+// Keyframes
+const styles = `
+  @keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+`;
+```
+
+### Toast Notification
+
+```tsx
+// Enter from bottom
+<div style={{
+  transform: 'translateY(100%)',
+  animation: `slideUp ${tokens.motion.duration.normal} ${tokens.motion.easing.easeOut} forwards`,
+}}>
+  Toast message
+</div>
+
+// Auto-dismiss after delay
+setTimeout(() => {
+  element.style.animation = `slideDown ${tokens.motion.duration.normal} ${tokens.motion.easing.easeIn} forwards`;
+}, 3000);
+```
+
+## Accessibility: Reduced Motion
+
+Always respect user's motion preferences:
+
+```tsx
+// Check for reduced motion preference
+const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+<div style={{
+  transition: prefersReducedMotion
+    ? 'none'
+    : `opacity ${tokens.motion.duration.normal} ${tokens.motion.easing.easeOut}`,
+}}>
+  Respects user preference
+</div>
+```
+
+Or use CSS:
+
+```css
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+```
+
+TENsor components automatically respect `prefers-reduced-motion` by using `tokens.motion.duration.instant` when the preference is detected.
+
+## Choreography
+
+When animating multiple elements, stagger their timing for a polished feel:
+
+```tsx
+// Staggered list items
+{items.map((item, index) => (
+  <li
+    key={item.id}
+    style={{
+      opacity: 0,
+      animation: `fadeIn ${tokens.motion.duration.normal} ${tokens.motion.easing.easeOut} forwards`,
+      animationDelay: `${index * 50}ms`, // 50ms stagger
+    }}
+  >
+    {item.content}
+  </li>
+))}
+```
+
+### Parallax Scrolling
+
+```tsx
+<div
+  style={{
+    transform: `translateY(${scrollY * 0.5}px)`,
+    transition: `transform ${tokens.motion.duration.instant}`, // Smooth but instant
+  }}
+>
+  Background layer
+</div>
+```
+
+## Do's and Don'ts
+
+### Do's
+
+✅ Use motion to guide user attention
+```tsx
+// Good — feedback on button press
+<button style={{
+  transition: `transform ${tokens.motion.duration.fast} ${tokens.motion.easing.easeOut}`,
+  ':active': { transform: 'scale(0.95)' },
+}}>
+  Click me
+</button>
+```
+
+✅ Respect `prefers-reduced-motion`
+```tsx
+const duration = prefersReducedMotion
+  ? tokens.motion.duration.instant
+  : tokens.motion.duration.normal;
+```
+
+✅ Use easeOut for elements entering
+```tsx
+// Dropdown enters smoothly
+transition: `opacity ${tokens.motion.duration.fast} ${tokens.motion.easing.easeOut}`
+```
+
+✅ Use easeIn for elements leaving
+```tsx
+// Modal exits smoothly
+transition: `opacity ${tokens.motion.duration.normal} ${tokens.motion.easing.easeIn}`
+```
+
+### Don'ts
+
+❌ Don't use motion for decoration alone
+```tsx
+// Bad — distracting, no purpose
+<h1 style={{ animation: 'bounce 2s infinite' }}>Title</h1>
+```
+
+❌ Don't use slow animations for frequent interactions
+```tsx
+// Bad — frustratingly slow
+<button style={{
+  transition: `background ${tokens.motion.duration.slower}`, // 500ms is too slow
+}}>
+  Hover me
+</button>
+
+// Good
+<button style={{
+  transition: `background ${tokens.motion.duration.fast}`, // 100ms feels responsive
+}}>
+  Hover me
+</button>
+```
+
+❌ Don't animate too many properties at once
+```tsx
+// Bad — janky performance
+transition: 'all 200ms ease-in-out'
+
+// Good — only animate what changes
+transition: 'opacity 200ms ease-out, transform 200ms ease-out'
+```
+
+❌ Don't ignore reduced motion preferences
+```tsx
+// Bad — forces animation on users who requested reduced motion
+animation: `spin 1s linear infinite`
+
+// Good — respects user preference
+animation: prefersReducedMotion ? 'none' : `spin 1s linear infinite`
+```
+
+## Performance Considerations
+
+### Prefer Transform and Opacity
+
+These properties are GPU-accelerated and perform better:
+
+✅ **Performant:**
+- `transform` (translate, rotate, scale)
+- `opacity`
+
+❌ **Avoid animating:**
+- `width`, `height` (causes layout recalculation)
+- `top`, `left`, `margin` (use `transform` instead)
+- `background-position` (use `transform` on a pseudo-element)
+
+### Use will-change Sparingly
+
+```tsx
+// Only for complex animations you know will happen
+<div style={{
+  willChange: 'transform',
+  transition: `transform ${tokens.motion.duration.normal}`,
+}}>
+  Complex animation
+</div>
+```
+
+Don't apply `will-change` to everything — it uses memory.
+
+## Next Steps
+
+- **[Accessibility](../05-accessibility/Overview)** — Motion and accessibility
+- **[Components](../03-components/ComponentTemplate)** — Animated components
+- **[Design Tokens Overview](./Overview)** — Full token reference

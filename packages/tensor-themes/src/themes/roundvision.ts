@@ -13,4 +13,4 @@ export const roundvision = {
       accent: '#10b981',
     },
   },
-} as const;
+} as const

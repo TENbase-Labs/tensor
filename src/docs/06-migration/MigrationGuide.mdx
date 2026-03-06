@@ -1,0 +1,228 @@
+---
+title: Migration Guide
+description: Upgrading TENsor versions and handling breaking changes
+---
+
+# Migration Guide
+
+This guide helps you upgrade TENsor to newer versions and handle breaking changes.
+
+## Version Migration
+
+### Upgrading to v0.2.0 (Example)
+
+**Breaking Changes:**
+- Removed deprecated `Button.variant="outline"` — use `variant="secondary"` instead
+- Renamed `tokens.spacing.default` to `tokens.spacing.md`
+- Changed `Modal` component API — `visible` prop renamed to `open`
+
+**Migration Steps:**
+
+1. **Update dependencies**
+```bash
+npm install @tenbaselabs/tensor@0.2.0 @tenbaselabs/tensor-react@0.2.0
+```
+
+2. **Replace Button variants**
+```tsx
+// Before
+<Button variant="outline">Click</Button>
+
+// After
+<Button variant="secondary">Click</Button>
+```
+
+3. **Update spacing tokens**
+```tsx
+// Before
+padding: tokens.spacing.default
+
+// After
+padding: tokens.spacing.md
+```
+
+4. **Update Modal usage**
+```tsx
+// Before
+<Modal visible={isVisible} onVisibleChange={setIsVisible} />
+
+// After
+<Modal open={isOpen} onOpenChange={setIsOpen} />
+```
+
+5. **Run tests**
+```bash
+npm test
+```
+
+6. **Check for warnings**
+```bash
+npm run typecheck
+npm run lint
+```
+
+## Deprecation Warnings
+
+TENsor uses console warnings for deprecated APIs:
+
+```typescript
+// Deprecated API triggers warning
+<Button variant="outline">Click</Button>
+
+// Console: Warning: Button variant "outline" is deprecated. Use variant="secondary" instead.
+```
+
+**Fix all warnings** before the next major version, as deprecated APIs will be removed.
+
+## Codemods
+
+Use automated codemods to migrate large codebases:
+
+```bash
+# Install codemod CLI
+npm install -g @tenbaselabs/tensor-codemod
+
+# Run migration
+tensor-codemod v0.1-to-v0.2 ./src
+```
+
+## Breaking Change Policy
+
+TENsor follows semantic versioning:
+
+- **Major (1.0.0 → 2.0.0):** Breaking changes, API removals
+- **Minor (1.0.0 → 1.1.0):** New features, deprecations (backward compatible)
+- **Patch (1.0.0 → 1.0.1):** Bug fixes, no API changes
+
+**Deprecation timeline:**
+1. Feature deprecated in minor release (e.g., v1.1.0)
+2. Warnings added to console
+3. Documentation updated
+4. Removed in next major release (e.g., v2.0.0)
+
+Minimum **6 months** between deprecation and removal.
+
+## Common Migration Scenarios
+
+### Migrating from Hard-Coded Styles
+
+**Before:**
+```tsx
+<button style={{
+  backgroundColor: '#3B82F6',
+  color: '#FFFFFF',
+  padding: '12px 24px',
+  borderRadius: '8px',
+}}>
+  Click me
+</button>
+```
+
+**After:**
+```tsx
+import { Button } from '@tenbaselabs/tensor-react';
+
+<Button variant="primary">
+  Click me
+</Button>
+```
+
+### Migrating from Another Design System
+
+**From Material-UI:**
+```tsx
+// Before (Material-UI)
+import { Button } from '@mui/material';
+
+<Button variant="contained" color="primary">
+  Click
+</Button>
+
+// After (TENsor)
+import { Button } from '@tenbaselabs/tensor-react';
+
+<Button variant="primary">
+  Click
+</Button>
+```
+
+**From Tailwind UI:**
+```tsx
+// Before (Tailwind CSS)
+<button className="bg-blue-500 text-white px-6 py-3 rounded-lg">
+  Click
+</button>
+
+// After (TENsor)
+<Button variant="primary">
+  Click
+</Button>
+```
+
+## Rollback Strategy
+
+If issues arise after upgrading:
+
+1. **Pin to previous version**
+```json
+{
+  "dependencies": {
+    "@tenbaselabs/tensor": "0.1.5",
+    "@tenbaselabs/tensor-react": "0.1.5"
+  }
+}
+```
+
+2. **Lock dependencies**
+```bash
+npm install
+# Commit package-lock.json
+```
+
+3. **Report the issue**
+```bash
+# Include reproduction steps
+https://github.com/TENbase-Labs/tensor/issues/new
+```
+
+## Testing After Migration
+
+### Automated Tests
+
+```bash
+# Run full test suite
+npm test
+
+# Visual regression testing
+npm run test:visual
+
+# TypeScript type checking
+npm run typecheck
+
+# Accessibility testing
+npm run test:a11y
+```
+
+### Manual Testing
+
+- [ ] Test all pages in your application
+- [ ] Verify interactive elements (buttons, forms, modals)
+- [ ] Check responsive layouts
+- [ ] Test with keyboard navigation
+- [ ] Test with screen reader
+- [ ] Verify theme switching (if applicable)
+
+## Getting Help
+
+If you encounter issues:
+
+1. **Check migration guide** for your version
+2. **Search existing issues:** [GitHub Issues](https://github.com/TENbase-Labs/tensor/issues)
+3. **Ask in discussions:** [GitHub Discussions](https://github.com/TENbase-Labs/tensor/discussions)
+4. **Contact support:** [support@tenbaselabs.com](mailto:support@tenbaselabs.com)
+
+## Next Steps
+
+- **[Contributing Guide](../../CONTRIBUTING.md)** — Contribute improvements
+- **[Component Documentation](../03-components/ComponentTemplate)** — Component API reference
+- **[Design Tokens](../02-design-tokens/Overview)** — Token reference

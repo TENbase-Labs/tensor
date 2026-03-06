@@ -1,0 +1,243 @@
+---
+title: ARIA Patterns
+description: Proper ARIA usage in TENsor components
+---
+
+# ARIA Patterns
+
+WAI-ARIA (Accessible Rich Internet Applications) provides semantic meaning to custom UI components for assistive technologies.
+
+## Core ARIA Concepts
+
+### Roles
+
+Roles define what an element is:
+
+```tsx
+<div role="button">Custom Button</div>
+<div role="dialog" aria-modal="true">Modal Dialog</div>
+<div role="alert">Error message</div>
+```
+
+**When to use roles:**
+- ✅ Custom components (div/span acting as button)
+- ❌ Semantic HTML (use `<button>`, not `<div role="button">`)
+
+### States and Properties
+
+Describe element state:
+
+```tsx
+<button aria-pressed="true">Toggle On</button>
+<input aria-invalid="true" aria-describedby="error" />
+<div aria-expanded="true">Accordion Content</div>
+```
+
+### Live Regions
+
+Announce dynamic content:
+
+```tsx
+<div role="status" aria-live="polite">
+  3 items added to cart
+</div>
+
+<div role="alert" aria-live="assertive">
+  Error: Connection lost
+</div>
+```
+
+## Common Patterns
+
+### Button
+
+```tsx
+// Semantic button (preferred)
+<button onClick={handleClick}>Click me</button>
+
+// Custom button (requires ARIA)
+<div
+  role="button"
+  tabIndex={0}
+  onClick={handleClick}
+  onKeyDown={(e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      handleClick();
+    }
+  }}
+>
+  Custom Button
+</div>
+```
+
+### Toggle Button
+
+```tsx
+<button
+  aria-pressed={isPressed}
+  onClick={() => setIsPressed(!isPressed)}
+>
+  {isPressed ? 'On' : 'Off'}
+</button>
+```
+
+### Modal Dialog
+
+```tsx
+<div
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="dialog-title"
+  aria-describedby="dialog-desc"
+>
+  <h2 id="dialog-title">Confirm Action</h2>
+  <p id="dialog-desc">Are you sure you want to proceed?</p>
+  <button onClick={handleConfirm}>Confirm</button>
+  <button onClick={handleCancel}>Cancel</button>
+</div>
+```
+
+### Accordion
+
+```tsx
+<div>
+  <h3>
+    <button
+      aria-expanded={isExpanded}
+      aria-controls="section1"
+      onClick={() => setIsExpanded(!isExpanded)}
+    >
+      Section Title
+    </button>
+  </h3>
+  <div id="section1" hidden={!isExpanded}>
+    Section content
+  </div>
+</div>
+```
+
+### Tabs
+
+```tsx
+<div>
+  <div role="tablist" aria-label="Content sections">
+    <button
+      role="tab"
+      aria-selected={activeTab === 0}
+      aria-controls="panel-0"
+      id="tab-0"
+    >
+      Tab 1
+    </button>
+    <button
+      role="tab"
+      aria-selected={activeTab === 1}
+      aria-controls="panel-1"
+      id="tab-1"
+    >
+      Tab 2
+    </button>
+  </div>
+
+  <div
+    role="tabpanel"
+    id="panel-0"
+    aria-labelledby="tab-0"
+    hidden={activeTab !== 0}
+  >
+    Panel 1 content
+  </div>
+</div>
+```
+
+### Combobox (Select/Autocomplete)
+
+```tsx
+<div>
+  <label id="combo-label">Choose option</label>
+  <input
+    role="combobox"
+    aria-labelledby="combo-label"
+    aria-expanded={isOpen}
+    aria-controls="listbox"
+    aria-activedescendant={`option-${activeIndex}`}
+  />
+  <ul id="listbox" role="listbox">
+    {options.map((option, i) => (
+      <li key={i} id={`option-${i}`} role="option" aria-selected={i === selectedIndex}>
+        {option}
+      </li>
+    ))}
+  </ul>
+</div>
+```
+
+## ARIA Best Practices
+
+### Do's
+
+✅ **Use semantic HTML first**
+```tsx
+<button>Click</button>  // Not <div role="button">
+<a href="/page">Link</a>  // Not <div role="link">
+```
+
+✅ **Provide accessible names**
+```tsx
+<button aria-label="Close dialog">
+  <CloseIcon />
+</button>
+```
+
+✅ **Use aria-describedby for additional context**
+```tsx
+<input aria-describedby="password-requirements" />
+<p id="password-requirements">Must be 8+ characters</p>
+```
+
+### Don'ts
+
+❌ **Don't use ARIA when HTML suffices**
+```tsx
+// Bad
+<div role="button">Submit</div>
+
+// Good
+<button>Submit</button>
+```
+
+❌ **Don't override semantic roles**
+```tsx
+// Bad
+<button role="link">Click</button>
+
+// Good
+<a href="/page">Click</a>
+```
+
+❌ **Don't forget keyboard support with custom roles**
+```tsx
+// Bad — missing keyboard events
+<div role="button" onClick={handle}>Click</div>
+
+// Good
+<div role="button" tabIndex={0} onClick={handle} onKeyDown={handleKey}>
+```
+
+## Testing ARIA
+
+```tsx
+import { render } from '@testing-library/react';
+import { axe } from 'jest-axe';
+
+test('Modal has correct ARIA attributes', () => {
+  const { getByRole } = render(<Modal />);
+
+  const dialog = getByRole('dialog');
+  expect(dialog).toHaveAttribute('aria-modal', 'true');
+  expect(dialog).toHaveAttribute('aria-labelledby');
+});
+```
+
+See [Accessibility Overview](./Overview) for comprehensive testing guidance.

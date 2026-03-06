@@ -3,6 +3,8 @@ title: Design Tokens Overview
 description: Understanding TENsor's design token system
 ---
 
+
+
 # Design Tokens Overview
 
 Design tokens are the core visual design atoms of the TENsor design system. They represent design decisions as data, enabling consistent styling across all TENbase Labs products.
@@ -21,15 +23,18 @@ Design tokens are named entities that store visual design attributes. Instead of
 
 ## Token Categories
 
-TENsor organizes tokens into five main categories:
+TENsor organizes tokens into six main categories (consolidated in Phase 1):
 
-| Category | Purpose | Example Tokens |
-|---|---|---|
-| **[Colors](./Colors)** | Brand colors, semantic colors, neutral palette | `primary`, `danger`, `neutral-100` |
-| **[Typography](./Typography)** | Font families, sizes, weights, line heights | `fontFamily.sans`, `fontSize.lg`, `fontWeight.bold` |
-| **[Spacing](./Spacing)** | Margins, padding, gaps | `spacing.xs`, `spacing.md`, `spacing.xl` |
-| **[Motion](./Motion)** | Animation durations, easing functions | `duration.fast`, `easing.easeInOut` |
-| **Shadows** | Box shadows, elevation levels | `shadow.sm`, `shadow.lg` |
+| Category | Purpose | Example Tokens | Phase 1 Changes |
+|---|---|---|---|
+| **[Colors](./Colors)** | Brand colors, semantic colors, neutral palette | `primary`, `danger`, `neutral.100` | Always-semantic status colors |
+| **[Typography](./Typography)** | Font families, sizes, weights, line heights | `fontFamily.sans`, `fontSize.lg`, `fontWeight.bold` | 9 → 6 font sizes |
+| **[Spacing](./Spacing)** | Margins, padding, gaps | `spacing.xs`, `spacing.md`, `spacing.xl` | 12 → 8 levels |
+| **[Container](./Container)** | Responsive layout widths | `container.sm`, `container.lg`, `container.xl` | 5 semantic sizes (new) |
+| **[Motion](./Motion)** | Animation durations, easing functions | `duration.fast`, `easing.easeInOut` | Simplified durations |
+| **Shadows** | Box shadows, elevation levels | `shadow.sm`, `shadow.lg` | No changes |
+
+> **Phase 1 Foundation Hardening** reduced token count by 36% while maintaining functionality. See [Migration Guide](../../MIGRATION_PHASE1.md).
 
 ## Token Structure
 
@@ -194,7 +199,10 @@ Explore specific token categories:
 - **[Colors](./Colors)** — Color palette, semantic colors, accessibility
 - **[Typography](./Typography)** — Font families, sizes, weights, line heights
 - **[Spacing](./Spacing)** — Spacing scale, layout tokens
+- **[Container](./Container)** — Responsive layout widths and breakpoints
 - **[Motion](./Motion)** — Animation timing and easing
+
+See [Migration Guide](../../MIGRATION_PHASE1.md) for upgrading from pre-Phase-1 tokens.
 
 ## API Reference
 
