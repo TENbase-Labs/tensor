@@ -1,0 +1,10 @@
+{
+  "colors": {
+    "primary": { "value": "#8B5CF6" },
+    "secondary": { "value": "#10B981" },
+    "success": { "value": "#10B981" },
+    "warning": { "value": "#F59E0B" },
+    "danger": { "value": "#EF4444" },
+    "info": { "value": "#8B5CF6" }
+  }
+}

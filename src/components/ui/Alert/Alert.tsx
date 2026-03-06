@@ -193,14 +193,17 @@ export const Alert = forwardRef<HTMLDivElement, AlertProps>(
   ) => {
     const [isVisible, setIsVisible] = useState(true)
 
+    // Resolve variant to non-null value
+    const resolvedVariant = variant ?? 'info'
+
     // Determine ARIA role based on variant
-    const alertRole = role || (variant === 'danger' || variant === 'warning' ? 'alert' : 'status')
+    const alertRole = role || (resolvedVariant === 'danger' || resolvedVariant === 'warning' ? 'alert' : 'status')
 
     // Determine aria-live based on variant
-    const liveRegion = ariaLive || (variant === 'danger' ? 'assertive' : 'polite')
+    const liveRegion = ariaLive || (resolvedVariant === 'danger' ? 'assertive' : 'polite')
 
     // Get default icon for variant
-    const DefaultIcon = icon || variantIcons[variant]
+    const DefaultIcon = icon || variantIcons[resolvedVariant]
 
     const handleDismiss = () => {
       setIsVisible(false)

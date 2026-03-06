@@ -164,7 +164,12 @@ export const Checkbox = forwardRef<HTMLButtonElement, CheckboxProps>(
     if (errorProp && errorMessage) describedByIds.push(errorMessageId)
 
     // Determine checked state for ARIA
-    const ariaChecked = indeterminate ? 'mixed' : props.checked
+    const ariaChecked: boolean | 'mixed' | undefined =
+      indeterminate || props.checked === 'indeterminate'
+        ? 'mixed'
+        : typeof props.checked === 'boolean'
+          ? props.checked
+          : undefined
 
     return (
       <div className={containerClassName}>

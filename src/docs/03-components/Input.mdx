@@ -1,0 +1,778 @@
+---
+title: Input
+description: Single-line text input for forms and data entry
+---
+
+# Input
+
+Single-line text input fields for collecting user information in forms and data entry workflows. Supports validation states, labels, helper text, and various adornments.
+
+## When to Use
+
+✅ **Use Input when:**
+- Collecting single-line text data (name, email, password)
+- User needs to enter a specific value (number, date, URL)
+- Form requires structured data entry
+- Search functionality needs user input
+
+❌ **Don't use Input when:**
+- Multi-line text is needed — use `Textarea`
+- User must choose from predefined options — use `Select` or `Radio`
+- Autocomplete with suggestions is needed — use `Combobox` or `Autocomplete`
+- Rich text formatting is required — use `RichTextEditor`
+
+## Installation
+
+```tsx
+import { Input } from '@tenbaselabs/tensor-react';
+```
+
+## API Reference
+
+### Props
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `label` | `string` | `undefined` | Visible label text displayed above input. |
+| `type` | `string` | `'text'` | HTML input type: `text`, `email`, `password`, `number`, `tel`, `url`, `search`, `date`. |
+| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Input size. `sm` (36px), `md` (44px), `lg` (56px). |
+| `state` | `'default' \| 'error' \| 'success'` | `'default'` | Visual state variant. Usually controlled via `error` or `success` props. |
+| `error` | `boolean` | `false` | Sets input to error state (red border, shows error message). |
+| `success` | `boolean` | `false` | Sets input to success state (green border). |
+| `errorMessage` | `string` | `undefined` | Error message displayed below input when `error={true}`. |
+| `helperText` | `string` | `undefined` | Helper text displayed below input (hidden when error is shown). |
+| `placeholder` | `string` | `undefined` | Placeholder text shown when input is empty. |
+| `disabled` | `boolean` | `false` | Disables input interaction. |
+| `required` | `boolean` | `false` | Marks field as required (shows asterisk, sets `aria-required`). |
+| `leadingIcon` | `ReactNode` | `undefined` | Icon or element displayed at the start of input. |
+| `trailingIcon` | `ReactNode` | `undefined` | Icon or element displayed at the end of input. |
+| `prefix` | `string` | `undefined` | Text prefix displayed before input value (e.g., `$`). |
+| `suffix` | `string` | `undefined` | Text suffix displayed after input value (e.g., `kg`). |
+| `containerClassName` | `string` | `undefined` | Additional CSS classes for the container `<div>`. |
+| `className` | `string` | `undefined` | Additional CSS classes for the `<input>` element. |
+
+### Standard HTML Attributes
+
+Input supports all standard HTML input attributes: `value`, `onChange`, `onBlur`, `onFocus`, `name`, `id`, `maxLength`, `min`, `max`, `step`, `pattern`, `readOnly`, etc.
+
+### TypeScript Interface
+
+```typescript
+import { type InputProps } from '@tenbaselabs/tensor-react';
+
+interface InputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'size'> {
+  label?: string;
+  helperText?: string;
+  errorMessage?: string;
+  error?: boolean;
+  success?: boolean;
+  size?: 'sm' | 'md' | 'lg';
+  state?: 'default' | 'error' | 'success';
+  leadingIcon?: React.ReactNode;
+  trailingIcon?: React.ReactNode;
+  prefix?: string;
+  suffix?: string;
+  containerClassName?: string;
+}
+```
+
+## Usage Examples
+
+### Basic Input
+
+```tsx
+import { Input } from '@tenbaselabs/tensor-react';
+
+<Input
+  label="Email Address"
+  type="email"
+  placeholder="you@example.com"
+/>
+```
+
+### Required Field
+
+```tsx
+<Input
+  label="Full Name"
+  required
+  placeholder="John Doe"
+/>
+// Displays label with red asterisk (*)
+```
+
+### With Helper Text
+
+```tsx
+<Input
+  label="Username"
+  helperText="Use 3-20 characters, letters and numbers only"
+  placeholder="johndoe123"
+/>
+```
+
+### Error State
+
+```tsx
+<Input
+  label="Email"
+  type="email"
+  error
+  errorMessage="Please enter a valid email address"
+  value="invalid-email"
+/>
+```
+
+### Success State
+
+```tsx
+<Input
+  label="Username"
+  success
+  value="johndoe123"
+  readOnly
+/>
+```
+
+### Password Input
+
+Password inputs automatically include a show/hide toggle:
+
+```tsx
+<Input
+  label="Password"
+  type="password"
+  required
+/>
+// Includes eye icon to toggle visibility
+```
+
+### With Icons
+
+```tsx
+import { SearchIcon, XCircleIcon } from '@tenbaselabs/icons';
+
+// Leading icon
+<Input
+  label="Search"
+  type="search"
+  leadingIcon={<SearchIcon className="h-5 w-5" />}
+  placeholder="Search products..."
+/>
+
+// Trailing icon
+<Input
+  label="Website"
+  type="url"
+  trailingIcon={<XCircleIcon className="h-5 w-5" />}
+/>
+```
+
+### With Prefix and Suffix
+
+```tsx
+// Currency input
+<Input
+  label="Price"
+  type="number"
+  prefix="$"
+  placeholder="0.00"
+/>
+
+// Unit input
+<Input
+  label="Weight"
+  type="number"
+  suffix="kg"
+  placeholder="0"
+/>
+```
+
+### Sizes
+
+```tsx
+// Small (36px height)
+<Input size="sm" label="Compact Input" />
+
+// Medium (44px height, default)
+<Input size="md" label="Standard Input" />
+
+// Large (56px height)
+<Input size="lg" label="Large Input" />
+```
+
+### Controlled Input
+
+```tsx
+import { useState } from 'react';
+
+function EmailForm() {
+  const [email, setEmail] = useState('');
+  const [error, setError] = useState('');
+
+  const validateEmail = (value: string) => {
+    if (!value.includes('@')) {
+      setError('Please enter a valid email');
+    } else {
+      setError('');
+    }
+  };
+
+  return (
+    <Input
+      label="Email Address"
+      type="email"
+      value={email}
+      onChange={(e) => setEmail(e.target.value)}
+      onBlur={() => validateEmail(email)}
+      error={!!error}
+      errorMessage={error}
+    />
+  );
+}
+```
+
+### Form Integration
+
+```tsx
+<form onSubmit={handleSubmit}>
+  <Input
+    label="First Name"
+    name="firstName"
+    required
+  />
+
+  <Input
+    label="Last Name"
+    name="lastName"
+    required
+  />
+
+  <Input
+    label="Email"
+    type="email"
+    name="email"
+    required
+    helperText="We'll never share your email"
+  />
+
+  <Button type="submit">Submit</Button>
+</form>
+```
+
+## Input Types
+
+### Text Input
+
+```tsx
+<Input
+  label="Full Name"
+  type="text"
+  placeholder="John Doe"
+/>
+```
+
+### Email Input
+
+```tsx
+<Input
+  label="Email Address"
+  type="email"
+  placeholder="you@example.com"
+/>
+```
+
+### Password Input
+
+Automatically includes show/hide toggle:
+
+```tsx
+<Input
+  label="Password"
+  type="password"
+  helperText="Minimum 8 characters"
+/>
+```
+
+### Number Input
+
+```tsx
+<Input
+  label="Age"
+  type="number"
+  min={0}
+  max={120}
+  step={1}
+/>
+```
+
+### Search Input
+
+```tsx
+import { SearchIcon } from '@tenbaselabs/icons';
+
+<Input
+  label="Search"
+  type="search"
+  leadingIcon={<SearchIcon className="h-5 w-5" />}
+  placeholder="Search..."
+/>
+```
+
+### Date Input
+
+```tsx
+<Input
+  label="Birth Date"
+  type="date"
+/>
+```
+
+### URL Input
+
+```tsx
+<Input
+  label="Website"
+  type="url"
+  placeholder="https://example.com"
+/>
+```
+
+### Telephone Input
+
+```tsx
+<Input
+  label="Phone Number"
+  type="tel"
+  placeholder="+1 (555) 123-4567"
+/>
+```
+
+## Validation Patterns
+
+### Real-Time Validation
+
+```tsx
+function UsernameInput() {
+  const [username, setUsername] = useState('');
+  const [error, setError] = useState('');
+
+  const validate = (value: string) => {
+    if (value.length < 3) {
+      setError('Username must be at least 3 characters');
+    } else if (value.length > 20) {
+      setError('Username must be less than 20 characters');
+    } else if (!/^[a-zA-Z0-9]+$/.test(value)) {
+      setError('Username can only contain letters and numbers');
+    } else {
+      setError('');
+    }
+  };
+
+  return (
+    <Input
+      label="Username"
+      value={username}
+      onChange={(e) => {
+        setUsername(e.target.value);
+        validate(e.target.value);
+      }}
+      error={!!error}
+      errorMessage={error}
+    />
+  );
+}
+```
+
+### Validation on Blur
+
+```tsx
+function EmailInput() {
+  const [email, setEmail] = useState('');
+  const [error, setError] = useState('');
+
+  const validateEmail = () => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      setError('Please enter a valid email address');
+    } else {
+      setError('');
+    }
+  };
+
+  return (
+    <Input
+      label="Email"
+      type="email"
+      value={email}
+      onChange={(e) => setEmail(e.target.value)}
+      onBlur={validateEmail}
+      error={!!error}
+      errorMessage={error}
+    />
+  );
+}
+```
+
+### Async Validation
+
+```tsx
+function UsernameAvailability() {
+  const [username, setUsername] = useState('');
+  const [checking, setChecking] = useState(false);
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState(false);
+
+  const checkAvailability = async (value: string) => {
+    if (value.length < 3) return;
+
+    setChecking(true);
+    setError('');
+    setSuccess(false);
+
+    try {
+      const available = await checkUsernameAPI(value);
+      if (available) {
+        setSuccess(true);
+      } else {
+        setError('Username is already taken');
+      }
+    } catch {
+      setError('Could not verify username');
+    } finally {
+      setChecking(false);
+    }
+  };
+
+  return (
+    <Input
+      label="Username"
+      value={username}
+      onChange={(e) => setUsername(e.target.value)}
+      onBlur={() => checkAvailability(username)}
+      error={!!error}
+      success={success}
+      errorMessage={error}
+      helperText={checking ? 'Checking availability...' : undefined}
+    />
+  );
+}
+```
+
+## Accessibility
+
+### ARIA Attributes
+
+Input automatically manages accessibility attributes:
+
+```tsx
+// Basic input with label
+<Input label="Email" />
+// Renders: <label htmlFor="input-xyz">Email</label>
+//          <input id="input-xyz" aria-required="false" />
+
+// Required input
+<Input label="Email" required />
+// Renders: aria-required="true"
+
+// Input with helper text
+<Input label="Username" helperText="3-20 characters" />
+// Renders: aria-describedby="input-xyz-helper"
+
+// Input with error
+<Input label="Email" error errorMessage="Invalid email" />
+// Renders: aria-invalid="true" aria-describedby="input-xyz-error"
+//          <p role="alert">Invalid email</p>
+```
+
+### Keyboard Navigation
+
+| Key | Action |
+|---|---|
+| `Tab` | Moves focus to input (or next focusable element) |
+| `Shift + Tab` | Moves focus to previous element |
+| `Backspace` | Deletes character before cursor |
+| `Delete` | Deletes character after cursor |
+| `Arrow Left/Right` | Moves cursor within text |
+| `Home` | Moves cursor to start of text |
+| `End` | Moves cursor to end of text |
+| `Ctrl/Cmd + A` | Selects all text |
+
+**Type-specific keys:**
+- `number`: Arrow Up/Down increments/decrements by `step`
+- `search`: Escape clears value
+
+### Focus Management
+
+Inputs have visible focus indicators meeting WCAG 2.1 guidelines:
+- 2px ring with focus color
+- 2px offset for clarity
+- Focus ring color changes based on input state (default: primary, error: danger)
+
+### Screen Reader Support
+
+| State | Announcement |
+|---|---|
+| Default | "Email Address, edit text" |
+| Required | "Email Address, required, edit text" |
+| With value | "Email Address, edit text, user@example.com" |
+| With helper text | "Username, edit text. Use 3-20 characters, letters and numbers only" |
+| With error | "Email, invalid entry, edit text. Please enter a valid email address" |
+| Disabled | "Email, edit text, dimmed" or "unavailable" |
+
+### Label Requirements
+
+**Always provide labels** for accessibility. Use either:
+
+1. **Visible label** (recommended):
+```tsx
+<Input label="Email Address" />
+```
+
+2. **aria-label** (when visible label not desired):
+```tsx
+<Input aria-label="Search" placeholder="Search..." />
+```
+
+**Don't rely on placeholder alone** — it disappears when typing and has insufficient contrast.
+
+## Best Practices
+
+### Do's
+
+✅ **Always provide labels**
+```tsx
+<Input label="Email Address" type="email" />
+```
+
+✅ **Use helper text for input requirements**
+```tsx
+<Input
+  label="Password"
+  type="password"
+  helperText="Minimum 8 characters, include a number and symbol"
+/>
+```
+
+✅ **Show clear error messages**
+```tsx
+<Input
+  label="Email"
+  error
+  errorMessage="Please enter a valid email address"
+/>
+// Not: "Invalid input" or "Error"
+```
+
+✅ **Validate on blur, not on every keystroke**
+```tsx
+<Input
+  onBlur={validateEmail}  // Good — validate when user finishes
+  // Not: onChange={validateEmail}  // Bad — interrupts typing
+/>
+```
+
+✅ **Use appropriate input types**
+```tsx
+<Input type="email" />  // Triggers email keyboard on mobile
+<Input type="tel" />    // Triggers phone number keyboard
+<Input type="number" /> // Triggers numeric keyboard
+```
+
+✅ **Mark required fields**
+```tsx
+<Input label="Email" required />  // Shows asterisk
+```
+
+### Don'ts
+
+❌ **Don't use placeholder as label**
+```tsx
+// Bad — no visible label, placeholder disappears
+<Input placeholder="Email Address" />
+
+// Good — visible label persists
+<Input label="Email Address" placeholder="you@example.com" />
+```
+
+❌ **Don't validate while user is typing**
+```tsx
+// Bad — interrupts user mid-input
+<Input onChange={validate} />
+
+// Good — validate after user finishes
+<Input onBlur={validate} />
+```
+
+❌ **Don't show vague errors**
+```tsx
+// Bad
+<Input error errorMessage="Error" />
+<Input error errorMessage="Invalid" />
+
+// Good
+<Input error errorMessage="Email must include @ symbol" />
+```
+
+❌ **Don't use error state without a message**
+```tsx
+// Bad — user doesn't know what's wrong
+<Input error />
+
+// Good
+<Input error errorMessage="This field is required" />
+```
+
+❌ **Don't disable autocomplete for appropriate fields**
+```tsx
+// Bad — makes forms harder to fill
+<Input label="Email" autoComplete="off" />
+
+// Good — helps users complete forms
+<Input label="Email" autoComplete="email" />
+<Input label="Name" autoComplete="name" />
+```
+
+## Common Patterns
+
+### Login Form
+
+```tsx
+<form onSubmit={handleLogin}>
+  <Input
+    label="Email"
+    type="email"
+    name="email"
+    autoComplete="email"
+    required
+  />
+
+  <Input
+    label="Password"
+    type="password"
+    name="password"
+    autoComplete="current-password"
+    required
+  />
+
+  <Button type="submit">Sign In</Button>
+</form>
+```
+
+### Search Bar
+
+```tsx
+import { SearchIcon } from '@tenbaselabs/icons';
+
+<Input
+  type="search"
+  placeholder="Search products..."
+  leadingIcon={<SearchIcon className="h-5 w-5" />}
+  aria-label="Search"
+/>
+```
+
+### Price Input
+
+```tsx
+<Input
+  label="Price"
+  type="number"
+  prefix="$"
+  placeholder="0.00"
+  min={0}
+  step={0.01}
+/>
+```
+
+### Form with Validation
+
+```tsx
+function RegistrationForm() {
+  const [formData, setFormData] = useState({
+    email: '',
+    password: '',
+    confirmPassword: '',
+  });
+  const [errors, setErrors] = useState({});
+
+  const validate = () => {
+    const newErrors = {};
+
+    if (!formData.email.includes('@')) {
+      newErrors.email = 'Invalid email address';
+    }
+
+    if (formData.password.length < 8) {
+      newErrors.password = 'Password must be at least 8 characters';
+    }
+
+    if (formData.password !== formData.confirmPassword) {
+      newErrors.confirmPassword = 'Passwords do not match';
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (validate()) {
+      // Submit form
+    }
+  };
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <Input
+        label="Email"
+        type="email"
+        value={formData.email}
+        onChange={(e) => setFormData({...formData, email: e.target.value})}
+        error={!!errors.email}
+        errorMessage={errors.email}
+      />
+
+      <Input
+        label="Password"
+        type="password"
+        value={formData.password}
+        onChange={(e) => setFormData({...formData, password: e.target.value})}
+        error={!!errors.password}
+        errorMessage={errors.password}
+        helperText="Minimum 8 characters"
+      />
+
+      <Input
+        label="Confirm Password"
+        type="password"
+        value={formData.confirmPassword}
+        onChange={(e) => setFormData({...formData, confirmPassword: e.target.value})}
+        error={!!errors.confirmPassword}
+        errorMessage={errors.confirmPassword}
+      />
+
+      <Button type="submit">Create Account</Button>
+    </form>
+  );
+}
+```
+
+## Related Components
+
+- **Textarea** — Multi-line text input
+- **Select** — Choose from predefined options
+- **Checkbox** — Binary choice input
+- **Radio** — Choose one from multiple options
+- **Combobox** — Input with autocomplete suggestions
+
+## Theming
+
+Input colors are controlled by design tokens and automatically adapt to theme changes. Border colors, focus rings, and text colors all respect the active theme.
+
+---
+
+**Related Documentation:**
+- [Form Patterns](/patterns/forms)
+- [Validation Patterns](/patterns/validation)
+- [Accessibility Guidelines](../05-accessibility/Overview)

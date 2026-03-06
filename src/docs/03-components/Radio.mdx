@@ -1,0 +1,628 @@
+---
+title: Radio
+description: Choose exactly one option from a mutually exclusive set
+---
+
+# Radio
+
+Radio buttons allow users to select exactly one option from a mutually exclusive set. Use radio groups when users must make a single choice from visible options.
+
+## When to Use
+
+✅ **Use Radio when:**
+- User must choose exactly one option from 2-5 options
+- Options are mutually exclusive
+- All options should be visible at once for comparison
+- Selection doesn't take effect immediately (requires form submission)
+
+❌ **Don't use Radio when:**
+- User can select multiple options — use `Checkbox`
+- More than 5-7 options — use `Select` dropdown
+- Options take effect immediately — use `Switch` or button toggle
+- Single yes/no choice — use `Checkbox` or `Switch`
+
+## Installation
+
+```tsx
+import { RadioGroup } from '@tenbaselabs/tensor-react';
+```
+
+## API Reference
+
+### Props
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `label` | `string` | `undefined` | Group label (rendered as `<legend>` in `<fieldset>`). |
+| `options` | `RadioOption[]` | **required** | Array of options. Each: `{ value: string, label: string, description?: string, disabled?: boolean }`. |
+| `value` | `string` | `undefined` | Currently selected value (controlled component). |
+| `defaultValue` | `string` | `undefined` | Initial value (uncontrolled component). |
+| `onValueChange` | `(value: string) => void` | `undefined` | Callback fired when selection changes. Receives the selected value. |
+| `orientation` | `'vertical' \| 'horizontal'` | `'vertical'` | Layout direction. Vertical stacks options, horizontal arranges them in a row. |
+| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Radio button size. `sm` (16px), `md` (20px), `lg` (24px). |
+| `error` | `boolean` | `false` | Sets radio group to error state (red borders, shows error message). |
+| `errorMessage` | `string` | `undefined` | Error message displayed below radio group when `error={true}`. |
+| `helperText` | `string` | `undefined` | Helper text displayed below radio group (hidden when error shown). |
+| `disabled` | `boolean` | `false` | Disables all radio buttons in the group. |
+| `required` | `boolean` | `false` | Marks field as required (shows asterisk, sets `aria-required`). |
+| `id` | `string` | auto-generated | ID for the radio group. |
+| `name` | `string` | `undefined` | Name attribute for form submission. |
+| `containerClassName` | `string` | `undefined` | Additional CSS classes for the container `<fieldset>`. |
+
+### RadioOption Interface
+
+```typescript
+interface RadioOption {
+  value: string;         // Unique value for this option
+  label: string;         // Display text for this option
+  description?: string;  // Optional helper text below label
+  disabled?: boolean;    // Optional — disables this option
+}
+```
+
+### TypeScript Interface
+
+```typescript
+import { type RadioGroupProps, type RadioOption } from '@tenbaselabs/tensor-react';
+
+interface RadioGroupProps {
+  label?: string;
+  options: RadioOption[];
+  value?: string;
+  defaultValue?: string;
+  onValueChange?: (value: string) => void;
+  orientation?: 'vertical' | 'horizontal';
+  size?: 'sm' | 'md' | 'lg';
+  error?: boolean;
+  errorMessage?: string;
+  helperText?: string;
+  disabled?: boolean;
+  required?: boolean;
+  id?: string;
+  name?: string;
+  containerClassName?: string;
+}
+```
+
+## Usage Examples
+
+### Basic Radio Group
+
+```tsx
+import { RadioGroup } from '@tenbaselabs/tensor-react';
+
+<RadioGroup
+  label="Payment Method"
+  options={[
+    { value: 'credit', label: 'Credit Card' },
+    { value: 'paypal', label: 'PayPal' },
+    { value: 'bank', label: 'Bank Transfer' },
+  ]}
+/>
+```
+
+### Controlled Radio Group
+
+```tsx
+import { useState } from 'react';
+import { RadioGroup } from '@tenbaselabs/tensor-react';
+
+function PaymentMethod() {
+  const [method, setMethod] = useState('credit');
+
+  return (
+    <RadioGroup
+      label="Payment Method"
+      value={method}
+      onValueChange={setMethod}
+      options={[
+        { value: 'credit', label: 'Credit Card' },
+        { value: 'paypal', label: 'PayPal' },
+        { value: 'bank', label: 'Bank Transfer' },
+      ]}
+    />
+  );
+}
+```
+
+### Uncontrolled Radio Group
+
+```tsx
+<RadioGroup
+  label="Shipping Speed"
+  defaultValue="standard"
+  name="shippingMethod"
+  options={[
+    { value: 'standard', label: 'Standard (5-7 days)' },
+    { value: 'express', label: 'Express (2-3 days)' },
+    { value: 'overnight', label: 'Overnight (1 day)' },
+  ]}
+/>
+```
+
+### With Descriptions
+
+```tsx
+<RadioGroup
+  label="Plan"
+  options={[
+    {
+      value: 'free',
+      label: 'Free Plan',
+      description: 'Basic features for personal use',
+    },
+    {
+      value: 'pro',
+      label: 'Pro Plan',
+      description: 'Advanced features for professionals',
+    },
+    {
+      value: 'enterprise',
+      label: 'Enterprise Plan',
+      description: 'Full features with priority support',
+    },
+  ]}
+/>
+```
+
+### Horizontal Orientation
+
+```tsx
+<RadioGroup
+  label="Size"
+  orientation="horizontal"
+  options={[
+    { value: 's', label: 'Small' },
+    { value: 'm', label: 'Medium' },
+    { value: 'l', label: 'Large' },
+    { value: 'xl', label: 'Extra Large' },
+  ]}
+/>
+```
+
+### Required Field
+
+```tsx
+<RadioGroup
+  label="Gender"
+  required
+  options={[
+    { value: 'male', label: 'Male' },
+    { value: 'female', label: 'Female' },
+    { value: 'other', label: 'Prefer not to say' },
+  ]}
+/>
+// Displays label with red asterisk (*)
+```
+
+### With Helper Text
+
+```tsx
+<RadioGroup
+  label="Notification Frequency"
+  helperText="You can change this setting later in preferences"
+  options={[
+    { value: 'instant', label: 'Instant' },
+    { value: 'daily', label: 'Daily Digest' },
+    { value: 'weekly', label: 'Weekly Summary' },
+    { value: 'never', label: 'Never' },
+  ]}
+/>
+```
+
+### Error State
+
+```tsx
+<RadioGroup
+  label="Shipping Method"
+  error
+  errorMessage="Please select a shipping method"
+  options={shippingOptions}
+/>
+```
+
+### Disabled Options
+
+```tsx
+<RadioGroup
+  label="Delivery Time"
+  options={[
+    { value: 'morning', label: 'Morning (8am-12pm)' },
+    { value: 'afternoon', label: 'Afternoon (12pm-5pm)' },
+    { value: 'evening', label: 'Evening (5pm-9pm)', disabled: true },
+  ]}
+/>
+```
+
+### Sizes
+
+```tsx
+// Small (16px radio buttons)
+<RadioGroup size="sm" label="Small" options={options} />
+
+// Medium (20px radio buttons, default)
+<RadioGroup size="md" label="Medium" options={options} />
+
+// Large (24px radio buttons)
+<RadioGroup size="lg" label="Large" options={options} />
+```
+
+## Common Patterns
+
+### Form Integration
+
+```tsx
+function CheckoutForm() {
+  const [shippingMethod, setShippingMethod] = useState('');
+  const [paymentMethod, setPaymentMethod] = useState('');
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <RadioGroup
+        label="Shipping Method"
+        name="shipping"
+        value={shippingMethod}
+        onValueChange={setShippingMethod}
+        options={[
+          { value: 'standard', label: 'Standard (5-7 days) - Free' },
+          { value: 'express', label: 'Express (2-3 days) - $9.99' },
+          { value: 'overnight', label: 'Overnight - $24.99' },
+        ]}
+        required
+      />
+
+      <RadioGroup
+        label="Payment Method"
+        name="payment"
+        value={paymentMethod}
+        onValueChange={setPaymentMethod}
+        options={[
+          { value: 'credit', label: 'Credit Card' },
+          { value: 'paypal', label: 'PayPal' },
+          { value: 'bank', label: 'Bank Transfer' },
+        ]}
+        required
+      />
+
+      <Button type="submit">Place Order</Button>
+    </form>
+  );
+}
+```
+
+### With Validation
+
+```tsx
+function ValidatedRadioGroup() {
+  const [selected, setSelected] = useState('');
+  const [error, setError] = useState('');
+
+  const validate = () => {
+    if (!selected) {
+      setError('Please select an option');
+      return false;
+    }
+    setError('');
+    return true;
+  };
+
+  return (
+    <RadioGroup
+      label="Priority"
+      value={selected}
+      onValueChange={(value) => {
+        setSelected(value);
+        setError(''); // Clear error when user selects
+      }}
+      onBlur={validate}
+      error={!!error}
+      errorMessage={error}
+      options={[
+        { value: 'low', label: 'Low Priority' },
+        { value: 'medium', label: 'Medium Priority' },
+        { value: 'high', label: 'High Priority' },
+      ]}
+      required
+    />
+  );
+}
+```
+
+### Conditional Content
+
+```tsx
+function ConditionalRadio() {
+  const [method, setMethod] = useState('pickup');
+
+  return (
+    <>
+      <RadioGroup
+        label="Delivery Method"
+        value={method}
+        onValueChange={setMethod}
+        options={[
+          { value: 'pickup', label: 'In-store Pickup' },
+          { value: 'delivery', label: 'Home Delivery' },
+        ]}
+      />
+
+      {method === 'delivery' && (
+        <div className="mt-4">
+          <Input label="Delivery Address" required />
+          <Input label="City" required />
+          <Input label="Postal Code" required />
+        </div>
+      )}
+
+      {method === 'pickup' && (
+        <div className="mt-4">
+          <Select
+            label="Pickup Location"
+            options={storeLocations}
+            required
+          />
+        </div>
+      )}
+    </>
+  );
+}
+```
+
+### Dynamic Options
+
+```tsx
+function DynamicRadioGroup() {
+  const [loading, setLoading] = useState(true);
+  const [options, setOptions] = useState([]);
+
+  useEffect(() => {
+    fetchOptions().then(data => {
+      setOptions(data.map(item => ({
+        value: item.id,
+        label: item.name,
+        description: item.description,
+        disabled: !item.available,
+      })));
+      setLoading(false);
+    });
+  }, []);
+
+  if (loading) {
+    return <p>Loading options...</p>;
+  }
+
+  return (
+    <RadioGroup
+      label="Select an option"
+      options={options}
+      disabled={options.length === 0}
+    />
+  );
+}
+```
+
+### Survey/Questionnaire
+
+```tsx
+function SurveyQuestion() {
+  const [rating, setRating] = useState('');
+
+  return (
+    <RadioGroup
+      label="How satisfied are you with our service?"
+      value={rating}
+      onValueChange={setRating}
+      options={[
+        { value: '5', label: 'Very Satisfied' },
+        { value: '4', label: 'Satisfied' },
+        { value: '3', label: 'Neutral' },
+        { value: '2', label: 'Dissatisfied' },
+        { value: '1', label: 'Very Dissatisfied' },
+      ]}
+      required
+    />
+  );
+}
+```
+
+## Accessibility
+
+### ARIA Attributes
+
+RadioGroup automatically manages accessibility as a native `<fieldset>` with `<legend>`:
+
+```tsx
+// Basic radio group
+<RadioGroup label="Size" options={sizes} />
+// Renders: <fieldset>
+//            <legend id="radiogroup-xyz-legend">Size</legend>
+//            <div role="radiogroup" aria-labelledby="radiogroup-xyz-legend">
+
+// Required radio group
+<RadioGroup label="Size" required options={sizes} />
+// Renders: aria-required="true"
+
+// With helper text
+<RadioGroup label="Size" helperText="Choose your size" options={sizes} />
+// Renders: aria-describedby="radiogroup-xyz-helper"
+
+// With error
+<RadioGroup label="Size" error errorMessage="Required" options={sizes} />
+// Renders: aria-invalid="true" aria-describedby="radiogroup-xyz-error"
+//          <p role="alert">Required</p>
+
+// Individual radio button
+// Renders: <button role="radio" aria-checked="true/false">
+```
+
+### Keyboard Navigation
+
+| Key | Action |
+|---|---|
+| `Tab` | Moves focus into/out of radio group |
+| `Arrow Up/Left` | Selects previous radio button |
+| `Arrow Down/Right` | Selects next radio button |
+| `Space` | Selects focused radio button |
+
+**Important:** Arrow keys automatically select the option (not just focus). This is standard radio button behavior.
+
+### Focus Management
+
+- Focus indicator visible on focused radio button (2px ring, 3:1 contrast)
+- First radio button receives focus when tabbing into group
+- If a radio is already selected, that radio receives focus
+- Arrow keys move focus and selection together
+
+### Screen Reader Support
+
+| State | Announcement |
+|---|---|
+| Group label | "Payment Method, radio group" |
+| Unchecked option | "Credit Card, radio button, not checked, 1 of 3" |
+| Checked option | "Credit Card, radio button, checked, 1 of 3" |
+| With description | "Pro Plan, radio button, checked. Advanced features for professionals" |
+| Disabled option | "Evening, radio button, dimmed, not checked" |
+
+### Color Contrast
+
+All radio states meet WCAG 2.1 Level AA:
+- Default border: 3.1:1
+- Checked indicator: 4.5:1
+- Focus ring: 4.5:1
+- Text: 16.1:1 (AAA)
+- Error border: 4.3:1
+
+## Best Practices
+
+### Do's
+
+✅ **Always provide group labels**
+```tsx
+<RadioGroup label="Shipping Method" options={options} />
+```
+
+✅ **Use for 2-5 mutually exclusive options**
+```tsx
+<RadioGroup
+  label="Size"
+  options={[
+    { value: 's', label: 'Small' },
+    { value: 'm', label: 'Medium' },
+    { value: 'l', label: 'Large' },
+  ]}
+/>
+```
+
+✅ **Add descriptions for clarity**
+```tsx
+options={[
+  { value: 'free', label: 'Free Plan', description: 'Basic features' },
+  { value: 'pro', label: 'Pro Plan', description: 'Advanced features' },
+]}
+```
+
+✅ **Use vertical orientation for easier scanning**
+```tsx
+<RadioGroup orientation="vertical" options={options} />
+```
+
+✅ **Pre-select a default when appropriate**
+```tsx
+<RadioGroup
+  label="Language"
+  defaultValue="en"
+  options={languages}
+/>
+```
+
+### Don'ts
+
+❌ **Don't use radio for binary yes/no**
+```tsx
+// Bad — only 2 options
+<RadioGroup
+  options={[
+    { value: 'yes', label: 'Yes' },
+    { value: 'no', label: 'No' },
+  ]}
+/>
+
+// Good — use checkbox or switch
+<Checkbox label="I agree to the terms" />
+```
+
+❌ **Don't use radio for many options (> 7)**
+```tsx
+// Bad — too many options, hard to scan
+<RadioGroup
+  options={allCountries}  // 200+ options
+/>
+
+// Good — use Select dropdown
+<Select options={allCountries} />
+```
+
+❌ **Don't use radio for multi-select**
+```tsx
+// Bad — radio only allows one selection
+<RadioGroup label="Choose preferences" options={preferences} />
+
+// Good — use checkbox group
+{preferences.map(pref => (
+  <Checkbox key={pref.value} label={pref.label} />
+))}
+```
+
+❌ **Don't use vague error messages**
+```tsx
+// Bad
+<RadioGroup error errorMessage="Error" />
+
+// Good
+<RadioGroup error errorMessage="Please select a shipping method" />
+```
+
+❌ **Don't use horizontal orientation for long labels**
+```tsx
+// Bad — labels get truncated or wrap awkwardly
+<RadioGroup
+  orientation="horizontal"
+  options={[
+    { value: 'a', label: 'This is a very long option label that will wrap' },
+    { value: 'b', label: 'Another long label that creates layout issues' },
+  ]}
+/>
+
+// Good — use vertical for long labels
+<RadioGroup orientation="vertical" options={options} />
+```
+
+## When to Use Radio vs Checkbox vs Select vs Switch
+
+| Scenario | Use Radio | Use Checkbox | Use Select | Use Switch |
+|---|---|---|---|---|
+| Choose exactly 1 of 2-5 options | ✅ Visible comparison | ❌ | ❌ | ❌ |
+| Choose 0-n independent options | ❌ | ✅ Multiple selection | ❌ | ❌ |
+| Choose 1 of 5+ options | ⚠️ Takes space | ❌ | ✅ Compact dropdown | ❌ |
+| Binary yes/no | ❌ | ✅ Explicit choice | ❌ | ✅ If immediate |
+| Immediate toggle effect | ❌ | ❌ | ❌ | ✅ On/off |
+| Requires form submission | ✅ Standard | ✅ Standard | ✅ Standard | ⚠️ Use radio |
+
+## Related Components
+
+- **Checkbox** — Select zero, one, or multiple independent options
+- **Select** — Choose from dropdown list (5+ options)
+- **Switch** — Toggle a single setting on/off with immediate effect
+
+## Theming
+
+Radio colors (border, indicator, focus ring) are controlled by design tokens and automatically adapt to theme changes.
+
+---
+
+**Related Documentation:**
+- [Form Patterns](/patterns/forms)
+- [Checkbox Component](./Checkbox)
+- [Select Component](./Select)
+- [Switch Component](./Switch)
+- [Accessibility Guidelines](../05-accessibility/Overview)

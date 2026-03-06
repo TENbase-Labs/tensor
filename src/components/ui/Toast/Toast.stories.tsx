@@ -111,14 +111,14 @@ function ToastDemo() {
         <button
           type="button"
           onClick={() => {
-            toast.info('Toast 1', { position: 'top-left' })
-            toast.success('Toast 2', { position: 'top-right' })
-            toast.warning('Toast 3', { position: 'bottom-left' })
-            toast.error('Toast 4', { position: 'bottom-right' })
+            toast.info('Toast 1')
+            toast.success('Toast 2')
+            toast.warning('Toast 3')
+            toast.error('Toast 4')
           }}
           className="rounded border border-gray-300 bg-white px-4 py-2 hover:bg-gray-50"
         >
-          Show in All Corners
+          Show Multiple Toasts
         </button>
 
         <button

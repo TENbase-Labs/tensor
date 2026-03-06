@@ -1,7 +1,8 @@
 import * as RadixTooltip from '@radix-ui/react-tooltip'
 import { forwardRef, type ReactNode } from 'react'
 
-export interface TooltipProps extends RadixTooltip.TooltipContentProps {
+export interface TooltipProps
+  extends Omit<RadixTooltip.TooltipContentProps, 'content' | 'children'> {
   /**
    * Element that triggers the tooltip
    */

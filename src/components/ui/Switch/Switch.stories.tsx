@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react'
+import { useState } from 'react'
 import { Switch } from './Switch'
 
 const meta: Meta<typeof Switch> = {
@@ -204,7 +205,7 @@ export const AllStates: Story = {
  */
 export const Interactive: Story = {
   render: () => {
-    const [checked, setChecked] = React.useState(false)
+    const [checked, setChecked] = useState(false)
 
     return (
       <div className="space-y-4">

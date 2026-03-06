@@ -356,7 +356,7 @@ export const Motion: StoryObj = {
                 <button
                   onClick={() => {
                     setActive(name)
-                    setTimeout(() => setActive(null), parseInt(duration))
+                    setTimeout(() => setActive(null), parseInt(duration, 10))
                   }}
                   style={{
                     padding: `${tokens.spacing.sm} ${tokens.spacing.md}`,

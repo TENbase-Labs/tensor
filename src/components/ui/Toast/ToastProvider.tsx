@@ -1,10 +1,4 @@
-import {
-  type ReactNode,
-  createContext,
-  useCallback,
-  useContext,
-  useState,
-} from 'react'
+import { createContext, type ReactNode, useCallback, useContext, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { Toast, type ToastProps } from './Toast'
 
@@ -46,15 +40,12 @@ const positionStyles: Record<ToastPosition, string> = {
 export function ToastProvider({ children }: { children: ReactNode }) {
   const [toasts, setToasts] = useState<ToastInstance[]>([])
 
-  const show = useCallback(
-    (props: Omit<ToastProps, 'id'> & { position?: ToastPosition }) => {
-      const id = `toast-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`
-      const toast: ToastInstance = { ...props, id }
-      setToasts((prev) => [...prev, toast])
-      return id
-    },
-    [],
-  )
+  const show = useCallback((props: Omit<ToastProps, 'id'> & { position?: ToastPosition }) => {
+    const id = `toast-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`
+    const toast: ToastInstance = { ...props, id }
+    setToasts((prev) => [...prev, toast])
+    return id
+  }, [])
 
   const dismiss = useCallback((id: string) => {
     setToasts((prev) => prev.filter((t) => t.id !== id))
@@ -123,18 +114,16 @@ export function ToastProvider({ children }: { children: ReactNode }) {
       {children}
       {typeof document !== 'undefined' &&
         createPortal(
-          <>
-            {Object.entries(toastsByPosition).map(([position, positionToasts]) => (
-              <div
-                key={position}
-                className={`pointer-events-none fixed z-50 flex flex-col gap-2 ${positionStyles[position as ToastPosition]}`}
-              >
-                {positionToasts.map((toast) => (
-                  <Toast key={toast.id} {...toast} onDismiss={() => dismiss(toast.id)} />
-                ))}
-              </div>
-            ))}
-          </>,
+          Object.entries(toastsByPosition).map(([position, positionToasts]) => (
+            <div
+              key={position}
+              className={`pointer-events-none fixed z-50 flex flex-col gap-2 ${positionStyles[position as ToastPosition]}`}
+            >
+              {positionToasts.map((toast) => (
+                <Toast key={toast.id} {...toast} onDismiss={() => dismiss(toast.id)} />
+              ))}
+            </div>
+          )),
           document.body,
         )}
     </ToastContext.Provider>

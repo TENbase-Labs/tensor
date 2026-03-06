@@ -1,0 +1,599 @@
+---
+title: Select
+description: Choose one option from a dropdown list
+---
+
+# Select
+
+Select allows users to choose a single option from a dropdown list. Use selects for forms where users must pick from predefined choices.
+
+## When to Use
+
+✅ **Use Select when:**
+- User must choose one option from 5+ predefined choices
+- Options are mutually exclusive
+- Space is limited (dropdown saves vertical space)
+- Options are familiar to users (country, state, category)
+
+❌ **Don't use Select when:**
+- Less than 5 options — use `Radio` buttons for better visibility
+- User needs to select multiple items — use multi-select or `Checkbox` group
+- User needs to enter custom text — use `Input` or `Combobox`
+- Options require extensive explanation — use `Radio` with descriptions
+
+## Installation
+
+```tsx
+import { Select } from '@tenbaselabs/tensor-react';
+```
+
+## API Reference
+
+### Props
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `label` | `string` | `undefined` | Visible label text displayed above select. |
+| `placeholder` | `string` | `'Select...'` | Placeholder text shown when no value is selected. |
+| `options` | `SelectOption[]` | **required** | Array of options. Each option: `{ value: string, label: string, disabled?: boolean }`. |
+| `value` | `string` | `undefined` | Currently selected value (controlled component). |
+| `defaultValue` | `string` | `undefined` | Initial value (uncontrolled component). |
+| `onValueChange` | `(value: string) => void` | `undefined` | Callback fired when selection changes. Receives the selected value. |
+| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Select size. `sm` (36px), `md` (44px), `lg` (56px). |
+| `error` | `boolean` | `false` | Sets select to error state (red border, shows error message). |
+| `errorMessage` | `string` | `undefined` | Error message displayed below select when `error={true}`. |
+| `helperText` | `string` | `undefined` | Helper text displayed below select (hidden when error shown). |
+| `disabled` | `boolean` | `false` | Disables select interaction. |
+| `required` | `boolean` | `false` | Marks field as required (shows asterisk, sets `aria-required`). |
+| `id` | `string` | auto-generated | ID for the select trigger element. |
+| `containerClassName` | `string` | `undefined` | Additional CSS classes for the container `<div>`. |
+
+### SelectOption Interface
+
+```typescript
+interface SelectOption {
+  value: string;      // Unique value for this option
+  label: string;      // Display text shown in dropdown
+  disabled?: boolean; // Optional — disables this option
+}
+```
+
+### TypeScript Interface
+
+```typescript
+import { type SelectProps, type SelectOption } from '@tenbaselabs/tensor-react';
+
+interface SelectProps {
+  label?: string;
+  placeholder?: string;
+  options: SelectOption[];
+  value?: string;
+  defaultValue?: string;
+  onValueChange?: (value: string) => void;
+  size?: 'sm' | 'md' | 'lg';
+  error?: boolean;
+  errorMessage?: string;
+  helperText?: string;
+  disabled?: boolean;
+  required?: boolean;
+  id?: string;
+  containerClassName?: string;
+}
+```
+
+## Usage Examples
+
+### Basic Select
+
+```tsx
+import { Select } from '@tenbaselabs/tensor-react';
+
+<Select
+  label="Country"
+  placeholder="Select a country"
+  options={[
+    { value: 'us', label: 'United States' },
+    { value: 'ca', label: 'Canada' },
+    { value: 'mx', label: 'Mexico' },
+    { value: 'uk', label: 'United Kingdom' },
+  ]}
+/>
+```
+
+### Controlled Select
+
+```tsx
+import { useState } from 'react';
+import { Select } from '@tenbaselabs/tensor-react';
+
+function CountrySelect() {
+  const [country, setCountry] = useState('');
+
+  return (
+    <Select
+      label="Country"
+      value={country}
+      onValueChange={setCountry}
+      options={[
+        { value: 'us', label: 'United States' },
+        { value: 'ca', label: 'Canada' },
+        { value: 'mx', label: 'Mexico' },
+      ]}
+    />
+  );
+}
+```
+
+### Uncontrolled Select
+
+```tsx
+<Select
+  label="Language"
+  defaultValue="en"
+  options={[
+    { value: 'en', label: 'English' },
+    { value: 'es', label: 'Spanish' },
+    { value: 'fr', label: 'French' },
+  ]}
+/>
+```
+
+### Required Field
+
+```tsx
+<Select
+  label="Country"
+  required
+  placeholder="Please select"
+  options={countries}
+/>
+// Displays label with red asterisk (*)
+```
+
+### With Helper Text
+
+```tsx
+<Select
+  label="Shipping Method"
+  helperText="Delivery times may vary by location"
+  options={[
+    { value: 'standard', label: 'Standard (5-7 days)' },
+    { value: 'express', label: 'Express (2-3 days)' },
+    { value: 'overnight', label: 'Overnight (1 day)' },
+  ]}
+/>
+```
+
+### Error State
+
+```tsx
+<Select
+  label="State"
+  error
+  errorMessage="Please select a state"
+  placeholder="Select your state"
+  options={states}
+/>
+```
+
+### Disabled Options
+
+```tsx
+<Select
+  label="Plan"
+  options={[
+    { value: 'free', label: 'Free Plan' },
+    { value: 'pro', label: 'Pro Plan' },
+    { value: 'enterprise', label: 'Enterprise (Coming Soon)', disabled: true },
+  ]}
+/>
+```
+
+### Sizes
+
+```tsx
+// Small (36px height)
+<Select
+  size="sm"
+  label="Compact Select"
+  options={options}
+/>
+
+// Medium (44px height, default)
+<Select
+  size="md"
+  label="Standard Select"
+  options={options}
+/>
+
+// Large (56px height)
+<Select
+  size="lg"
+  label="Large Select"
+  options={options}
+/>
+```
+
+### Form Integration
+
+```tsx
+function ShippingForm() {
+  const [formData, setFormData] = useState({
+    country: '',
+    state: '',
+    shippingMethod: '',
+  });
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <Select
+        label="Country"
+        name="country"
+        value={formData.country}
+        onValueChange={(value) => setFormData({...formData, country: value})}
+        options={countries}
+        required
+      />
+
+      <Select
+        label="State"
+        name="state"
+        value={formData.state}
+        onValueChange={(value) => setFormData({...formData, state: value})}
+        options={states}
+        required
+      />
+
+      <Select
+        label="Shipping Method"
+        name="shippingMethod"
+        value={formData.shippingMethod}
+        onValueChange={(value) => setFormData({...formData, shippingMethod: value})}
+        options={shippingOptions}
+        required
+      />
+
+      <Button type="submit">Continue</Button>
+    </form>
+  );
+}
+```
+
+## Common Patterns
+
+### Country/State Selector
+
+```tsx
+function AddressForm() {
+  const [country, setCountry] = useState('');
+  const [state, setState] = useState('');
+
+  // Filter states based on selected country
+  const availableStates = country
+    ? states.filter(s => s.country === country)
+    : [];
+
+  return (
+    <>
+      <Select
+        label="Country"
+        value={country}
+        onValueChange={(value) => {
+          setCountry(value);
+          setState(''); // Reset state when country changes
+        }}
+        options={countries}
+        required
+      />
+
+      <Select
+        label="State/Province"
+        value={state}
+        onValueChange={setState}
+        options={availableStates}
+        disabled={!country} // Disable until country selected
+        helperText={!country ? 'Select a country first' : undefined}
+        required
+      />
+    </>
+  );
+}
+```
+
+### With Validation
+
+```tsx
+function CategorySelect() {
+  const [category, setCategory] = useState('');
+  const [error, setError] = useState('');
+
+  const validate = () => {
+    if (!category) {
+      setError('Please select a category');
+      return false;
+    }
+    setError('');
+    return true;
+  };
+
+  return (
+    <Select
+      label="Category"
+      value={category}
+      onValueChange={(value) => {
+        setCategory(value);
+        setError(''); // Clear error when user selects
+      }}
+      onBlur={validate}
+      error={!!error}
+      errorMessage={error}
+      options={categories}
+      required
+    />
+  );
+}
+```
+
+### Dynamic Options
+
+```tsx
+function DynamicSelect() {
+  const [loading, setLoading] = useState(true);
+  const [options, setOptions] = useState([]);
+
+  useEffect(() => {
+    fetchOptions().then(data => {
+      setOptions(data.map(item => ({
+        value: item.id,
+        label: item.name,
+        disabled: !item.available,
+      })));
+      setLoading(false);
+    });
+  }, []);
+
+  if (loading) {
+    return <Select label="Loading..." disabled options={[]} />;
+  }
+
+  return (
+    <Select
+      label="Choose an option"
+      options={options}
+      placeholder={options.length === 0 ? 'No options available' : 'Select...'}
+      disabled={options.length === 0}
+    />
+  );
+}
+```
+
+### Grouped Options (Manual)
+
+Since Select doesn't support option groups natively, use option labels to create visual groups:
+
+```tsx
+<Select
+  label="Location"
+  options={[
+    { value: '', label: '— North America —', disabled: true },
+    { value: 'us', label: 'United States' },
+    { value: 'ca', label: 'Canada' },
+    { value: 'mx', label: 'Mexico' },
+    { value: '', label: '— Europe —', disabled: true },
+    { value: 'uk', label: 'United Kingdom' },
+    { value: 'fr', label: 'France' },
+    { value: 'de', label: 'Germany' },
+  ]}
+/>
+```
+
+## Accessibility
+
+### ARIA Attributes
+
+Select automatically manages accessibility:
+
+```tsx
+// Basic select with label
+<Select label="Country" options={countries} />
+// Renders: aria-labelledby="select-xyz-label"
+
+// Required select
+<Select label="Country" required options={countries} />
+// Renders: aria-required="true"
+
+// Select with helper text
+<Select label="State" helperText="Choose your state" options={states} />
+// Renders: aria-describedby="select-xyz-helper"
+
+// Select with error
+<Select label="Country" error errorMessage="Required field" options={countries} />
+// Renders: aria-invalid="true" aria-describedby="select-xyz-error"
+```
+
+### Keyboard Navigation
+
+| Key | Action |
+|---|---|
+| `Tab` | Moves focus to select trigger |
+| `Space` / `Enter` | Opens dropdown menu |
+| `Arrow Up/Down` | Navigate through options (menu open or closed) |
+| `Home` | Select first option |
+| `End` | Select last option |
+| `Escape` | Closes dropdown (if open) |
+| `A-Z` | Jump to option starting with typed letter |
+
+### Focus Management
+
+- Focus indicator visible on trigger (2px ring, 3:1 contrast)
+- Focus moves to dropdown content when opened
+- Focus returns to trigger when dropdown closes
+- Selected option is highlighted in dropdown
+
+### Screen Reader Support
+
+| State | Announcement |
+|---|---|
+| Closed | "Country, button, collapsed" |
+| Open | "Country, button, expanded" |
+| With value | "Country, button, United States, collapsed" |
+| Option focused | "United States, option, 1 of 5" |
+| Option selected | "United States selected" |
+
+### Color Contrast
+
+All select states meet WCAG 2.1 Level AA:
+- Default border: 2.1:1 (borders only, non-text)
+- Focus ring: 4.5:1 (against background)
+- Error border: 4.3:1
+- Text: 16.1:1 (AAA)
+- Highlighted option: Sufficient contrast maintained
+
+## Best Practices
+
+### Do's
+
+✅ **Always provide labels**
+```tsx
+<Select label="Country" options={countries} />
+```
+
+✅ **Use clear, descriptive option labels**
+```tsx
+options={[
+  { value: 'std', label: 'Standard Shipping (5-7 days)' },
+  { value: 'exp', label: 'Express Shipping (2-3 days)' },
+]}
+```
+
+✅ **Provide helper text for clarity**
+```tsx
+<Select
+  label="Time Zone"
+  helperText="All events will be displayed in this time zone"
+  options={timeZones}
+/>
+```
+
+✅ **Use meaningful placeholder text**
+```tsx
+<Select
+  placeholder="Select your country"
+  // Not: "Select..."
+  options={countries}
+/>
+```
+
+✅ **Disable unavailable options instead of hiding them**
+```tsx
+options={[
+  { value: 'free', label: 'Free Plan' },
+  { value: 'pro', label: 'Pro Plan' },
+  { value: 'enterprise', label: 'Enterprise (Contact Sales)', disabled: true },
+]}
+```
+
+### Don'ts
+
+❌ **Don't use select for binary choices**
+```tsx
+// Bad — only 2 options
+<Select
+  options={[
+    { value: 'yes', label: 'Yes' },
+    { value: 'no', label: 'No' },
+  ]}
+/>
+
+// Good — use radio or switch
+<RadioGroup options={[...]} />
+```
+
+❌ **Don't use select for few options (< 5)**
+```tsx
+// Bad — only 3 options, hard to scan
+<Select
+  options={[
+    { value: 's', label: 'Small' },
+    { value: 'm', label: 'Medium' },
+    { value: 'l', label: 'Large' },
+  ]}
+/>
+
+// Good — use radio buttons for visibility
+<RadioGroup options={[...]} />
+```
+
+❌ **Don't use vague error messages**
+```tsx
+// Bad
+<Select error errorMessage="Error" />
+<Select error errorMessage="Invalid" />
+
+// Good
+<Select error errorMessage="Please select a shipping method" />
+```
+
+❌ **Don't use select for searchable data**
+```tsx
+// Bad — 100+ countries in a select is hard to navigate
+<Select options={allCountries} />  // 200+ options
+
+// Good — use combobox with search
+<Combobox options={allCountries} searchable />
+```
+
+❌ **Don't forget to handle dependent selects**
+```tsx
+// Bad — state select doesn't reset when country changes
+<Select label="Country" value={country} onValueChange={setCountry} />
+<Select label="State" value={state} onValueChange={setState} />
+
+// Good — reset dependent values
+<Select
+  label="Country"
+  value={country}
+  onValueChange={(value) => {
+    setCountry(value);
+    setState(''); // Reset state when country changes
+  }}
+/>
+<Select
+  label="State"
+  value={state}
+  onValueChange={setState}
+  disabled={!country}
+/>
+```
+
+## When to Use Radio vs Select
+
+| Scenario | Use Radio | Use Select |
+|---|---|---|
+| 2-4 options | ✅ Visible comparison | ❌ Unnecessary click |
+| 5-10 options | ⚠️ Takes vertical space | ✅ Compact dropdown |
+| 10+ options | ❌ Too much space | ✅ Scrollable list |
+| Options need descriptions | ✅ Space for details | ❌ Label-only |
+| User needs to compare | ✅ All visible at once | ❌ Hidden in dropdown |
+| Space is limited | ❌ Tall component | ✅ Compact trigger |
+
+**General rule:** Radio for ≤ 4 options, Select for 5+ options.
+
+## Related Components
+
+- **Radio** — Choose one option from a visible group (2-4 options)
+- **Checkbox** — Select multiple options
+- **Combobox** — Select with search/autocomplete
+- **Input** — Free-form text entry
+
+## Theming
+
+Select colors (borders, focus rings, dropdown background) are controlled by design tokens and automatically adapt to theme changes.
+
+---
+
+**Related Documentation:**
+- [Form Patterns](/patterns/forms)
+- [Validation Patterns](/patterns/validation)
+- [Radio Component](./Radio)
+- [Accessibility Guidelines](../05-accessibility/Overview)

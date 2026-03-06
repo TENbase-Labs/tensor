@@ -1,4 +1,4 @@
-import { act, render, screen, waitFor } from '@testing-library/react'
+import { act, render, screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { describe, expect, it, vi } from 'vitest'
 import { Toast } from './Toast'
@@ -43,9 +43,7 @@ describe('Toast', () => {
   it('calls action onClick when action button clicked', async () => {
     const user = userEvent.setup()
     const handleAction = vi.fn()
-    render(
-      <Toast id="test" message="Test" action={{ label: 'Undo', onClick: handleAction }} />,
-    )
+    render(<Toast id="test" message="Test" action={{ label: 'Undo', onClick: handleAction }} />)
 
     await user.click(screen.getByText('Undo'))
     expect(handleAction).toHaveBeenCalledOnce()
@@ -70,7 +68,13 @@ describe('Toast', () => {
     vi.useFakeTimers()
     const handleDismiss = vi.fn()
     render(
-      <Toast id="test" message="Test" duration={1000} autoDismiss={false} onDismiss={handleDismiss} />,
+      <Toast
+        id="test"
+        message="Test"
+        duration={1000}
+        autoDismiss={false}
+        onDismiss={handleDismiss}
+      />,
     )
 
     act(() => {

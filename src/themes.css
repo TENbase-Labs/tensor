@@ -1,0 +1,16 @@
+/**
+ * Theme Switcher Styles
+ * Loads theme-specific CSS custom properties based on data-theme attribute
+ */
+
+/* Import default theme tokens (RoundVision) */
+@import "../packages/tensor/dist/css/roundvision.css";
+
+/* Smooth transitions when switching themes */
+:root,
+[data-theme="roundvision"],
+[data-theme="tenbase"] {
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease;
+}

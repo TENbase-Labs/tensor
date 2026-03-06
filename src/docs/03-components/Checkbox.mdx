@@ -1,0 +1,616 @@
+---
+title: Checkbox
+description: Toggle independent options on or off
+---
+
+# Checkbox
+
+Checkboxes allow users to select one or more options from a set. Use checkboxes for independent choices that don't affect each other.
+
+## When to Use
+
+✅ **Use Checkbox when:**
+- User can select zero, one, or multiple options independently
+- Options are not mutually exclusive
+- Enabling/disabling settings or features
+- Accepting terms, policies, or agreements
+
+❌ **Don't use Checkbox when:**
+- User must choose exactly one option — use `Radio`
+- Options are mutually exclusive — use `Radio` or `Select`
+- Toggling a single on/off state — use `Switch`
+- Binary choice with immediate effect — use `Switch`
+
+## Installation
+
+```tsx
+import { Checkbox } from '@tenbaselabs/tensor-react';
+```
+
+## API Reference
+
+### Props
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `checked` | `boolean \| 'indeterminate'` | `false` | Checkbox state. `true` (checked), `false` (unchecked), or `'indeterminate'` (partial). |
+| `defaultChecked` | `boolean` | `false` | Initial checked state (uncontrolled component). |
+| `onCheckedChange` | `(checked: boolean) => void` | `undefined` | Callback fired when checkbox state changes. |
+| `label` | `string` | `undefined` | Label text displayed next to checkbox. |
+| `description` | `string` | `undefined` | Helper text displayed below label. |
+| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Checkbox size. `sm` (16px), `md` (20px), `lg` (24px). |
+| `error` | `boolean` | `false` | Sets checkbox to error state (red border, shows error message). |
+| `errorMessage` | `string` | `undefined` | Error message displayed below checkbox when `error={true}`. |
+| `disabled` | `boolean` | `false` | Disables checkbox interaction. |
+| `required` | `boolean` | `false` | Marks field as required (shows asterisk, sets `aria-required`). |
+| `indeterminate` | `boolean` | `false` | Sets checkbox to indeterminate state (used for parent checkboxes with partial selection). |
+| `id` | `string` | auto-generated | ID for the checkbox element. |
+| `name` | `string` | `undefined` | Name attribute for form submission. |
+| `value` | `string` | `undefined` | Value attribute for form submission. |
+| `containerClassName` | `string` | `undefined` | Additional CSS classes for the container `<div>`. |
+
+### TypeScript Interface
+
+```typescript
+import { type CheckboxProps } from '@tenbaselabs/tensor-react';
+
+interface CheckboxProps {
+  checked?: boolean | 'indeterminate';
+  defaultChecked?: boolean;
+  onCheckedChange?: (checked: boolean) => void;
+  label?: string;
+  description?: string;
+  size?: 'sm' | 'md' | 'lg';
+  error?: boolean;
+  errorMessage?: string;
+  disabled?: boolean;
+  required?: boolean;
+  indeterminate?: boolean;
+  id?: string;
+  name?: string;
+  value?: string;
+  containerClassName?: string;
+}
+```
+
+## Usage Examples
+
+### Basic Checkbox
+
+```tsx
+import { Checkbox } from '@tenbaselabs/tensor-react';
+
+<Checkbox label="I agree to the terms and conditions" />
+```
+
+### Controlled Checkbox
+
+```tsx
+import { useState } from 'react';
+import { Checkbox } from '@tenbaselabs/tensor-react';
+
+function NewsletterCheckbox() {
+  const [subscribed, setSubscribed] = useState(false);
+
+  return (
+    <Checkbox
+      label="Subscribe to newsletter"
+      checked={subscribed}
+      onCheckedChange={setSubscribed}
+    />
+  );
+}
+```
+
+### Uncontrolled Checkbox
+
+```tsx
+<Checkbox
+  label="Remember me"
+  defaultChecked={true}
+  name="rememberMe"
+/>
+```
+
+### With Description
+
+```tsx
+<Checkbox
+  label="Enable notifications"
+  description="Receive email updates about your account activity"
+/>
+```
+
+### Required Checkbox
+
+```tsx
+<Checkbox
+  label="I accept the privacy policy"
+  required
+/>
+// Displays label with red asterisk (*)
+```
+
+### Error State
+
+```tsx
+<Checkbox
+  label="I agree to the terms"
+  error
+  errorMessage="You must accept the terms to continue"
+/>
+```
+
+### Disabled Checkbox
+
+```tsx
+<Checkbox
+  label="This feature is unavailable"
+  disabled
+/>
+
+// Disabled and checked
+<Checkbox
+  label="Read-only setting"
+  checked={true}
+  disabled
+/>
+```
+
+### Sizes
+
+```tsx
+// Small (16px)
+<Checkbox size="sm" label="Small checkbox" />
+
+// Medium (20px, default)
+<Checkbox size="md" label="Medium checkbox" />
+
+// Large (24px)
+<Checkbox size="lg" label="Large checkbox" />
+```
+
+### Indeterminate State
+
+Used for parent checkboxes when some (but not all) children are selected:
+
+```tsx
+function CheckboxGroup() {
+  const [checkedItems, setCheckedItems] = useState({
+    option1: false,
+    option2: true,
+    option3: false,
+  });
+
+  const allChecked = Object.values(checkedItems).every(Boolean);
+  const someChecked = Object.values(checkedItems).some(Boolean);
+  const isIndeterminate = someChecked && !allChecked;
+
+  return (
+    <>
+      {/* Parent checkbox */}
+      <Checkbox
+        label="Select all"
+        checked={allChecked}
+        indeterminate={isIndeterminate}
+        onCheckedChange={(checked) => {
+          setCheckedItems({
+            option1: checked,
+            option2: checked,
+            option3: checked,
+          });
+        }}
+      />
+
+      {/* Child checkboxes */}
+      <div className="ml-6 space-y-2">
+        <Checkbox
+          label="Option 1"
+          checked={checkedItems.option1}
+          onCheckedChange={(checked) =>
+            setCheckedItems({...checkedItems, option1: checked})
+          }
+        />
+        <Checkbox
+          label="Option 2"
+          checked={checkedItems.option2}
+          onCheckedChange={(checked) =>
+            setCheckedItems({...checkedItems, option2: checked})
+          }
+        />
+        <Checkbox
+          label="Option 3"
+          checked={checkedItems.option3}
+          onCheckedChange={(checked) =>
+            setCheckedItems({...checkedItems, option3: checked})
+          }
+        />
+      </div>
+    </>
+  );
+}
+```
+
+## Common Patterns
+
+### Checkbox Group
+
+```tsx
+function PreferencesForm() {
+  const [preferences, setPreferences] = useState({
+    emailNotifications: true,
+    smsNotifications: false,
+    pushNotifications: true,
+  });
+
+  const handleChange = (key: string, checked: boolean) => {
+    setPreferences(prev => ({
+      ...prev,
+      [key]: checked,
+    }));
+  };
+
+  return (
+    <div className="space-y-4">
+      <h3>Notification Preferences</h3>
+
+      <Checkbox
+        label="Email notifications"
+        description="Receive updates via email"
+        checked={preferences.emailNotifications}
+        onCheckedChange={(checked) => handleChange('emailNotifications', checked)}
+      />
+
+      <Checkbox
+        label="SMS notifications"
+        description="Receive text message alerts"
+        checked={preferences.smsNotifications}
+        onCheckedChange={(checked) => handleChange('smsNotifications', checked)}
+      />
+
+      <Checkbox
+        label="Push notifications"
+        description="Receive browser push notifications"
+        checked={preferences.pushNotifications}
+        onCheckedChange={(checked) => handleChange('pushNotifications', checked)}
+      />
+    </div>
+  );
+}
+```
+
+### Form Integration
+
+```tsx
+<form onSubmit={handleSubmit}>
+  <Input label="Email" type="email" name="email" />
+
+  <Checkbox
+    label="Subscribe to newsletter"
+    name="subscribe"
+    value="yes"
+  />
+
+  <Checkbox
+    label="I agree to the terms and conditions"
+    name="terms"
+    required
+  />
+
+  <Button type="submit">Sign Up</Button>
+</form>
+```
+
+### Conditional Fields
+
+```tsx
+function ConditionalForm() {
+  const [showAdvanced, setShowAdvanced] = useState(false);
+
+  return (
+    <>
+      <Checkbox
+        label="Show advanced options"
+        checked={showAdvanced}
+        onCheckedChange={setShowAdvanced}
+      />
+
+      {showAdvanced && (
+        <div className="mt-4 space-y-4">
+          <Input label="Advanced Setting 1" />
+          <Input label="Advanced Setting 2" />
+        </div>
+      )}
+    </>
+  );
+}
+```
+
+### Terms Acceptance
+
+```tsx
+function TermsCheckbox() {
+  const [accepted, setAccepted] = useState(false);
+  const [error, setError] = useState('');
+
+  const validate = () => {
+    if (!accepted) {
+      setError('You must accept the terms to continue');
+      return false;
+    }
+    setError('');
+    return true;
+  };
+
+  return (
+    <>
+      <Checkbox
+        label="I agree to the terms and conditions"
+        checked={accepted}
+        onCheckedChange={(checked) => {
+          setAccepted(checked);
+          setError(''); // Clear error when checked
+        }}
+        error={!!error}
+        errorMessage={error}
+        required
+      />
+
+      <Button
+        onClick={validate}
+        disabled={!accepted}
+      >
+        Continue
+      </Button>
+    </>
+  );
+}
+```
+
+### Multi-Select with Select All
+
+```tsx
+function MultiSelectList() {
+  const [selected, setSelected] = useState<string[]>([]);
+  const allItems = ['item1', 'item2', 'item3', 'item4'];
+
+  const allSelected = selected.length === allItems.length;
+  const someSelected = selected.length > 0 && selected.length < allItems.length;
+
+  const toggleAll = () => {
+    setSelected(allSelected ? [] : allItems);
+  };
+
+  const toggleItem = (item: string) => {
+    setSelected(prev =>
+      prev.includes(item)
+        ? prev.filter(i => i !== item)
+        : [...prev, item]
+    );
+  };
+
+  return (
+    <div className="space-y-2">
+      <Checkbox
+        label="Select all items"
+        checked={allSelected}
+        indeterminate={someSelected}
+        onCheckedChange={toggleAll}
+      />
+
+      <div className="ml-6 space-y-2">
+        {allItems.map(item => (
+          <Checkbox
+            key={item}
+            label={`Item ${item.slice(-1)}`}
+            checked={selected.includes(item)}
+            onCheckedChange={() => toggleItem(item)}
+          />
+        ))}
+      </div>
+
+      <p className="text-sm text-gray-600">
+        {selected.length} of {allItems.length} selected
+      </p>
+    </div>
+  );
+}
+```
+
+## Accessibility
+
+### ARIA Attributes
+
+Checkbox automatically manages accessibility:
+
+```tsx
+// Basic checkbox
+<Checkbox label="Accept terms" />
+// Renders: role="checkbox" aria-checked="false"
+
+// Checked checkbox
+<Checkbox label="Accept terms" checked />
+// Renders: aria-checked="true"
+
+// Indeterminate checkbox
+<Checkbox label="Select all" indeterminate />
+// Renders: aria-checked="mixed"
+
+// Required checkbox
+<Checkbox label="Accept terms" required />
+// Renders: aria-required="true"
+
+// With description
+<Checkbox label="Enable" description="Turn on this feature" />
+// Renders: aria-describedby="checkbox-xyz-description"
+
+// With error
+<Checkbox label="Accept" error errorMessage="Required" />
+// Renders: aria-invalid="true" aria-describedby="checkbox-xyz-error"
+//          <p role="alert">Required</p>
+```
+
+### Keyboard Navigation
+
+| Key | Action |
+|---|---|
+| `Tab` | Moves focus to checkbox |
+| `Shift + Tab` | Moves focus to previous element |
+| `Space` | Toggles checkbox state (checked ↔ unchecked) |
+
+### Focus Management
+
+- Visible focus indicator (2px ring, 3:1 contrast)
+- Focus outline color matches primary color
+- Focus remains on checkbox after state change
+
+### Screen Reader Support
+
+| State | Announcement |
+|---|---|
+| Unchecked | "Accept terms, checkbox, not checked" |
+| Checked | "Accept terms, checkbox, checked" |
+| Indeterminate | "Select all, checkbox, mixed" |
+| With description | "Enable notifications, checkbox, not checked. Receive email updates about your account activity" |
+| Required | "Accept terms, required, checkbox, not checked" |
+
+### Label Requirements
+
+**Always provide labels** for accessibility:
+
+1. **Visible label** (recommended):
+```tsx
+<Checkbox label="I agree to the terms" />
+```
+
+2. **aria-label** (when no visible label):
+```tsx
+<Checkbox aria-label="Accept terms" />
+```
+
+## Best Practices
+
+### Do's
+
+✅ **Always provide labels**
+```tsx
+<Checkbox label="Subscribe to newsletter" />
+```
+
+✅ **Use descriptions for clarity**
+```tsx
+<Checkbox
+  label="Enable two-factor authentication"
+  description="Add an extra layer of security to your account"
+/>
+```
+
+✅ **Make labels clickable**
+```tsx
+// Label automatically clickable with label prop
+<Checkbox label="Remember me" />
+```
+
+✅ **Group related checkboxes**
+```tsx
+<fieldset>
+  <legend>Notification Preferences</legend>
+  <Checkbox label="Email" />
+  <Checkbox label="SMS" />
+  <Checkbox label="Push" />
+</fieldset>
+```
+
+✅ **Use indeterminate for partial selection**
+```tsx
+<Checkbox
+  label="Select all"
+  indeterminate={someSelected && !allSelected}
+/>
+```
+
+### Don'ts
+
+❌ **Don't use checkboxes for mutually exclusive options**
+```tsx
+// Bad — only one can be selected
+<Checkbox label="Small" />
+<Checkbox label="Medium" />
+<Checkbox label="Large" />
+
+// Good — use Radio instead
+<RadioGroup options={sizes} />
+```
+
+❌ **Don't use checkbox for single binary toggle**
+```tsx
+// Bad — checkbox for single on/off
+<Checkbox label="Dark mode" />
+
+// Good — use Switch for toggles
+<Switch label="Dark mode" />
+```
+
+❌ **Don't nest checkboxes without parent/child relationship**
+```tsx
+// Bad — confusing hierarchy
+<Checkbox label="Parent" />
+  <Checkbox label="Unrelated child" />
+
+// Good — clear parent/child with indeterminate
+<Checkbox label="Select all" indeterminate={someChecked} />
+<div className="ml-6">
+  <Checkbox label="Child 1" />
+  <Checkbox label="Child 2" />
+</div>
+```
+
+❌ **Don't use vague error messages**
+```tsx
+// Bad
+<Checkbox error errorMessage="Error" />
+
+// Good
+<Checkbox error errorMessage="You must accept the terms to continue" />
+```
+
+❌ **Don't make assumptions about checked state**
+```tsx
+// Bad — assuming unchecked means "no"
+if (!checked) {
+  // User might not have seen this option
+}
+
+// Good — explicit opt-in
+<Checkbox label="I do not want to receive emails" />
+// Now checked = true means explicit choice
+```
+
+## When to Use Checkbox vs Radio vs Switch
+
+| Scenario | Use Checkbox | Use Radio | Use Switch |
+|---|---|---|---|
+| Select 0-n options | ✅ Multiple independent | ❌ | ❌ |
+| Select exactly 1 option | ❌ | ✅ Mutually exclusive | ❌ |
+| Binary on/off toggle | ❌ | ❌ | ✅ Immediate effect |
+| Accept terms/agreement | ✅ Explicit consent | ❌ | ❌ |
+| Enable/disable settings | ⚠️ If multiple | ❌ | ✅ If single |
+| Multi-select list | ✅ Independent items | ❌ | ❌ |
+
+## Related Components
+
+- **Radio** — Choose exactly one option from a group
+- **Switch** — Toggle a single setting on or off
+- **Select** — Choose from dropdown list (5+ options)
+
+## Theming
+
+Checkbox colors (border, background, focus ring) are controlled by design tokens and automatically adapt to theme changes.
+
+---
+
+**Related Documentation:**
+- [Form Patterns](/patterns/forms)
+- [Radio Component](./Radio)
+- [Switch Component](./Switch)
+- [Accessibility Guidelines](../05-accessibility/Overview)

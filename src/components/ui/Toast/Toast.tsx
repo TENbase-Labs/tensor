@@ -49,7 +49,7 @@ const iconMap = {
 }
 
 export function Toast({
-  id,
+  id: _id,
   variant = 'info',
   title,
   message,
