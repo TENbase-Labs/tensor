@@ -1,0 +1,64 @@
+{
+  "name": "@tenbaselabs/tensor-react",
+  "version": "0.1.0",
+  "description": "React components for the Tensor design system",
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsc && vite build",
+    "dev": "storybook dev -p 6006",
+    "test": "vitest",
+    "lint": "eslint src",
+    "typecheck": "tsc --noEmit",
+    "storybook": "storybook dev -p 6006",
+    "build-storybook": "storybook build"
+  },
+  "keywords": [
+    "design-system",
+    "react",
+    "components",
+    "ui",
+    "tenbase"
+  ],
+  "author": "TENbase Labs",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/TENbase-Labs/tensor.git",
+    "directory": "packages/tensor-react"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
+  "peerDependencies": {
+    "react": "^19.2.3",
+    "react-dom": "^19.2.3"
+  },
+  "dependencies": {
+    "@tenbaselabs/tensor": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^5.1.4",
+    "react": "^19.2.3",
+    "react-dom": "^19.2.3",
+    "typescript": "^5.9.3",
+    "vite": "^7.3.1"
+  }
+}

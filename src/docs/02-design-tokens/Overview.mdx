@@ -1,0 +1,203 @@
+---
+title: Design Tokens Overview
+description: Understanding TENsor's design token system
+---
+
+# Design Tokens Overview
+
+Design tokens are the core visual design atoms of the TENsor design system. They represent design decisions as data, enabling consistent styling across all TENbase Labs products.
+
+## What are Design Tokens?
+
+Design tokens are named entities that store visual design attributes. Instead of hard-coding values like `#3B82F6` or `16px`, you reference tokens like `tokens.colors.primary` or `tokens.spacing.md`.
+
+### Benefits
+
+✅ **Consistency** — All products share the same foundational values
+✅ **Maintainability** — Update once, apply everywhere
+✅ **Multi-brand Support** — Swap themes without changing component code
+✅ **Type Safety** — Full TypeScript support prevents typos
+✅ **Scalability** — Add new tokens without breaking existing code
+
+## Token Categories
+
+TENsor organizes tokens into five main categories:
+
+| Category | Purpose | Example Tokens |
+|---|---|---|
+| **[Colors](./Colors)** | Brand colors, semantic colors, neutral palette | `primary`, `danger`, `neutral-100` |
+| **[Typography](./Typography)** | Font families, sizes, weights, line heights | `fontFamily.sans`, `fontSize.lg`, `fontWeight.bold` |
+| **[Spacing](./Spacing)** | Margins, padding, gaps | `spacing.xs`, `spacing.md`, `spacing.xl` |
+| **[Motion](./Motion)** | Animation durations, easing functions | `duration.fast`, `easing.easeInOut` |
+| **Shadows** | Box shadows, elevation levels | `shadow.sm`, `shadow.lg` |
+
+## Token Structure
+
+Tokens are organized hierarchically:
+
+```typescript
+export const tokens = {
+  colors: {
+    primary: '#3B82F6',
+    secondary: '#10B981',
+    danger: '#EF4444',
+    neutral: {
+      100: '#F3F4F6',
+      200: '#E5E7EB',
+      // ...
+    }
+  },
+  spacing: {
+    xs: '0.25rem',  // 4px
+    sm: '0.5rem',   // 8px
+    md: '1rem',     // 16px
+    lg: '1.5rem',   // 24px
+    xl: '2rem',     // 32px
+  },
+  // ...
+} as const;
+```
+
+## Usage
+
+### In TypeScript/JavaScript
+
+```typescript
+import { tokens } from '@tenbaselabs/tensor';
+
+const styles = {
+  backgroundColor: tokens.colors.primary,
+  padding: tokens.spacing.md,
+  fontFamily: tokens.typography.fontFamily.sans,
+};
+```
+
+### With React Components
+
+```tsx
+import { tokens } from '@tenbaselabs/tensor';
+
+function Alert({ children }) {
+  return (
+    <div style={{
+      backgroundColor: tokens.colors.danger,
+      padding: tokens.spacing.md,
+      borderRadius: tokens.borderRadius.md,
+    }}>
+      {children}
+    </div>
+  );
+}
+```
+
+### With Tailwind CSS
+
+TENsor integrates design tokens with Tailwind CSS v4 through CSS custom properties:
+
+```tsx
+<div className="bg-primary text-white p-md rounded-md">
+  Styled with design tokens
+</div>
+```
+
+## Token Resolution
+
+Tokens are resolved in the following order:
+
+1. **Theme overrides** — Brand-specific theme values
+2. **Base tokens** — Default system values
+3. **Fallback** — CSS default or inherited value
+
+This allows themes to override specific tokens while inheriting others.
+
+## Theme-Aware Tokens
+
+Some tokens change based on the active theme:
+
+```typescript
+// Base token
+tokens.colors.primary → '#3B82F6'
+
+// With PlusOne theme applied
+tokens.colors.primary → '#FF6B35' (brand-specific)
+
+// With HooverSheet theme applied
+tokens.colors.primary → '#4A90E2' (different brand)
+```
+
+See [Themes Documentation](../04-themes/Overview) for details on theme customization.
+
+## Best Practices
+
+### Do's
+
+✅ **Use semantic tokens** for meaning, not values
+```typescript
+// Good
+color: tokens.colors.danger
+
+// Bad
+color: tokens.colors.red
+```
+
+✅ **Reference tokens, don't copy values**
+```typescript
+// Good
+padding: tokens.spacing.md
+
+// Bad
+padding: '1rem'  // Hard-coded value
+```
+
+✅ **Use TypeScript autocomplete** to discover tokens
+```typescript
+tokens.  // Autocomplete shows all available categories
+tokens.colors.  // Autocomplete shows all color tokens
+```
+
+### Don'ts
+
+❌ **Don't hard-code values** that should be tokens
+❌ **Don't create custom tokens** outside the system (escalate to design team)
+❌ **Don't override tokens** with inline styles (use themes instead)
+❌ **Don't assume token values** — they vary by theme
+
+## Token Naming Convention
+
+TENsor follows a consistent naming pattern:
+
+```
+{category}.{semantic-name}.{variant}
+```
+
+Examples:
+- `colors.primary` — Primary brand color
+- `spacing.md` — Medium spacing value
+- `typography.fontFamily.sans` — Sans-serif font family
+- `shadow.lg` — Large shadow elevation
+
+## Migration from Hard-Coded Values
+
+If migrating from hard-coded styles:
+
+1. **Identify hard-coded values** in your codebase
+2. **Map to semantic tokens** (e.g., `#EF4444` → `tokens.colors.danger`)
+3. **Replace values** with token references
+4. **Test across themes** to ensure correct appearance
+
+See [Migration Guide](../06-migration/MigrationGuide) for detailed steps.
+
+## Next Steps
+
+Explore specific token categories:
+
+- **[Colors](./Colors)** — Color palette, semantic colors, accessibility
+- **[Typography](./Typography)** — Font families, sizes, weights, line heights
+- **[Spacing](./Spacing)** — Spacing scale, layout tokens
+- **[Motion](./Motion)** — Animation timing and easing
+
+## API Reference
+
+Full token schema and TypeScript types are auto-generated from `packages/tensor/src/tokens.ts`.
+
+Run `npm run build` to generate the latest token documentation.

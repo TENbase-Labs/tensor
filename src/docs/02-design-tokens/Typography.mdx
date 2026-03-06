@@ -1,0 +1,352 @@
+---
+title: Typography Tokens
+description: Font families, sizes, weights, and line heights
+---
+
+# Typography Tokens
+
+TENsor's typography system provides consistent, scalable text styling across all TENbase Labs products.
+
+## Font Families
+
+### Sans-Serif (Default)
+
+```typescript
+import { tokens } from '@tenbaselabs/tensor';
+
+tokens.typography.fontFamily.sans
+// System font stack for optimal performance and native feel
+```
+
+**Use for:**
+- UI components (buttons, inputs, labels)
+- Body text
+- Navigation
+- Most application content
+
+### Serif
+
+```typescript
+tokens.typography.fontFamily.serif
+```
+
+**Use for:**
+- Long-form content (articles, blog posts)
+- Editorial design
+- Formal documentation
+- Brand-specific typography (when theme specifies)
+
+### Monospace
+
+```typescript
+tokens.typography.fontFamily.mono
+```
+
+**Use for:**
+- Code snippets
+- Technical content
+- Data tables (aligned numbers)
+- Terminal/console output
+
+## Font Sizes
+
+TENsor uses a modular scale for font sizes:
+
+```typescript
+tokens.typography.fontSize.xs     // 0.75rem (12px)
+tokens.typography.fontSize.sm     // 0.875rem (14px)
+tokens.typography.fontSize.base   // 1rem (16px)
+tokens.typography.fontSize.lg     // 1.125rem (18px)
+tokens.typography.fontSize.xl     // 1.25rem (20px)
+tokens.typography.fontSize['2xl'] // 1.5rem (24px)
+tokens.typography.fontSize['3xl'] // 1.875rem (30px)
+tokens.typography.fontSize['4xl'] // 2.25rem (36px)
+tokens.typography.fontSize['5xl'] // 3rem (48px)
+```
+
+### Size Guidelines
+
+| Token | Size | Use Case |
+|---|---|---|
+| `xs` | 12px | Captions, legal text, metadata |
+| `sm` | 14px | Secondary labels, helper text |
+| `base` | 16px | Body text (default), form inputs |
+| `lg` | 18px | Emphasized body text, large UI text |
+| `xl` | 20px | Section titles, card headers |
+| `2xl` | 24px | Page subtitles, prominent headings |
+| `3xl` | 30px | H3 headings |
+| `4xl` | 36px | H2 headings |
+| `5xl` | 48px | H1 headings, hero text |
+
+## Font Weights
+
+```typescript
+tokens.typography.fontWeight.light      // 300
+tokens.typography.fontWeight.normal     // 400
+tokens.typography.fontWeight.medium     // 500
+tokens.typography.fontWeight.semibold   // 600
+tokens.typography.fontWeight.bold       // 700
+tokens.typography.fontWeight.extrabold  // 800
+```
+
+### Weight Usage
+
+| Weight | Value | Use Case |
+|---|---|---|
+| `light` | 300 | Large headings, decorative text |
+| `normal` | 400 | Body text, descriptions |
+| `medium` | 500 | Subheadings, emphasized text |
+| `semibold` | 600 | Button text, form labels |
+| `bold` | 700 | Headings (H1-H3), strong emphasis |
+| `extrabold` | 800 | Display text, hero titles |
+
+## Line Heights
+
+```typescript
+tokens.typography.lineHeight.tight    // 1.25
+tokens.typography.lineHeight.snug     // 1.375
+tokens.typography.lineHeight.normal   // 1.5
+tokens.typography.lineHeight.relaxed  // 1.625
+tokens.typography.lineHeight.loose    // 2
+```
+
+### Line Height Pairing
+
+| Font Size | Recommended Line Height | Use Case |
+|---|---|---|
+| `xs`, `sm` | `normal` (1.5) | Compact UI text |
+| `base`, `lg` | `relaxed` (1.625) | Readable body text |
+| `xl`, `2xl` | `snug` (1.375) | Headings with balance |
+| `3xl`+ | `tight` (1.25) | Large display text |
+
+## Letter Spacing
+
+```typescript
+tokens.typography.letterSpacing.tighter  // -0.05em
+tokens.typography.letterSpacing.tight    // -0.025em
+tokens.typography.letterSpacing.normal   // 0em
+tokens.typography.letterSpacing.wide     // 0.025em
+tokens.typography.letterSpacing.wider    // 0.05em
+tokens.typography.letterSpacing.widest   // 0.1em
+```
+
+### Tracking Guidelines
+
+- **Tighter/Tight** — Large headings, display text
+- **Normal** — Body text, default
+- **Wide/Wider** — Uppercase text, all-caps labels
+- **Widest** — Buttons, badges (all-caps)
+
+## Typography Patterns
+
+### Headings
+
+```tsx
+// H1 — Page title
+<h1 style={{
+  fontSize: tokens.typography.fontSize['5xl'],
+  fontWeight: tokens.typography.fontWeight.bold,
+  lineHeight: tokens.typography.lineHeight.tight,
+}}>
+  Page Title
+</h1>
+
+// H2 — Section heading
+<h2 style={{
+  fontSize: tokens.typography.fontSize['4xl'],
+  fontWeight: tokens.typography.fontWeight.semibold,
+  lineHeight: tokens.typography.lineHeight.snug,
+}}>
+  Section Heading
+</h2>
+
+// H3 — Subsection heading
+<h3 style={{
+  fontSize: tokens.typography.fontSize['2xl'],
+  fontWeight: tokens.typography.fontWeight.medium,
+  lineHeight: tokens.typography.lineHeight.normal,
+}}>
+  Subsection Heading
+</h3>
+```
+
+### Body Text
+
+```tsx
+// Default body text
+<p style={{
+  fontSize: tokens.typography.fontSize.base,
+  fontWeight: tokens.typography.fontWeight.normal,
+  lineHeight: tokens.typography.lineHeight.relaxed,
+}}>
+  Body paragraph text with comfortable reading line height.
+</p>
+
+// Small print
+<p style={{
+  fontSize: tokens.typography.fontSize.sm,
+  color: tokens.colors.text.secondary,
+}}>
+  Legal disclaimers, footnotes, captions.
+</p>
+```
+
+### Code
+
+```tsx
+<code style={{
+  fontFamily: tokens.typography.fontFamily.mono,
+  fontSize: tokens.typography.fontSize.sm,
+  backgroundColor: tokens.colors.neutral[100],
+  padding: `${tokens.spacing.xs} ${tokens.spacing.sm}`,
+  borderRadius: tokens.borderRadius.sm,
+}}>
+  npm install @tenbaselabs/tensor
+</code>
+```
+
+## Responsive Typography
+
+Font sizes should scale for different screen sizes:
+
+```tsx
+// Mobile-first approach
+<h1 style={{
+  fontSize: tokens.typography.fontSize['3xl'], // Base mobile size
+}}>
+  Responsive Heading
+</h1>
+
+// With media query (if using CSS-in-JS)
+const headingStyle = {
+  fontSize: tokens.typography.fontSize['3xl'],
+  '@media (min-width: 768px)': {
+    fontSize: tokens.typography.fontSize['5xl'], // Tablet/desktop
+  },
+};
+```
+
+Or use Tailwind responsive classes:
+
+```tsx
+<h1 className="text-3xl md:text-5xl">
+  Responsive Heading
+</h1>
+```
+
+## Accessibility Considerations
+
+### Minimum Font Sizes
+
+❌ **Don't use font sizes smaller than `xs` (12px)** for critical content.
+
+✅ **For accessibility:**
+- Body text: minimum `base` (16px)
+- Secondary text: minimum `sm` (14px)
+- Metadata/captions: minimum `xs` (12px)
+
+### Contrast with Font Size
+
+Smaller text requires higher contrast ratios:
+
+| Font Size | Minimum Contrast (WCAG AA) |
+|---|---|
+| < 18px regular | 4.5:1 |
+| ≥ 18px regular | 3:1 |
+| ≥ 14px bold | 3:1 |
+
+### Line Length
+
+For optimal readability, limit line length to 60-80 characters:
+
+```tsx
+<p style={{
+  maxWidth: '65ch', // ~65 characters per line
+  fontSize: tokens.typography.fontSize.base,
+  lineHeight: tokens.typography.lineHeight.relaxed,
+}}>
+  Long-form content with comfortable line length for reading.
+</p>
+```
+
+## Do's and Don'ts
+
+### Do's
+
+✅ Use semantic hierarchy
+```tsx
+<h1>Main Title</h1>        {/* 5xl, bold */}
+<h2>Section</h2>           {/* 4xl, semibold */}
+<p>Body text</p>           {/* base, normal */}
+```
+
+✅ Pair line height with font size
+```tsx
+// Large text, tight line height
+<h1 style={{
+  fontSize: tokens.typography.fontSize['5xl'],
+  lineHeight: tokens.typography.lineHeight.tight,
+}}>Title</h1>
+
+// Body text, relaxed line height
+<p style={{
+  fontSize: tokens.typography.fontSize.base,
+  lineHeight: tokens.typography.lineHeight.relaxed,
+}}>Paragraph</p>
+```
+
+✅ Use tokens for consistency
+```tsx
+fontSize: tokens.typography.fontSize.lg  // ✅
+fontSize: '18px'  // ❌
+```
+
+### Don'ts
+
+❌ Don't use too many font weights in one design
+```tsx
+// Bad — too many weights
+<div>
+  <span style={{ fontWeight: 300 }}>Light</span>
+  <span style={{ fontWeight: 400 }}>Normal</span>
+  <span style={{ fontWeight: 500 }}>Medium</span>
+  <span style={{ fontWeight: 600 }}>Semibold</span>
+  <span style={{ fontWeight: 700 }}>Bold</span>
+</div>
+
+// Good — stick to 2-3 weights
+<div>
+  <span style={{ fontWeight: tokens.typography.fontWeight.normal }}>Normal</span>
+  <span style={{ fontWeight: tokens.typography.fontWeight.semibold }}>Semibold</span>
+</div>
+```
+
+❌ Don't skip hierarchy levels
+```tsx
+// Bad
+<h1>Title</h1>
+<h4>Subheading</h4>  {/* Skipped h2, h3 */}
+
+// Good
+<h1>Title</h1>
+<h2>Section</h2>
+<h3>Subsection</h3>
+```
+
+❌ Don't use color alone for emphasis
+```tsx
+// Bad (inaccessible for colorblind users)
+<p style={{ color: tokens.colors.danger }}>Important text</p>
+
+// Good (use weight + color)
+<p style={{
+  color: tokens.colors.danger,
+  fontWeight: tokens.typography.fontWeight.semibold,
+}}>Important text</p>
+```
+
+## Next Steps
+
+- **[Spacing Tokens](./Spacing)** — Layout and spacing system
+- **[Color Tokens](./Colors)** — Text color and contrast
+- **[Accessibility Guidelines](../05-accessibility/Overview)** — Typography accessibility

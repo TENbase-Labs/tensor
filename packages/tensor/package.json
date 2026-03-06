@@ -1,0 +1,49 @@
+{
+  "name": "@tenbaselabs/tensor",
+  "version": "0.1.0",
+  "description": "Core design system tokens and utilities for TENbase Labs products",
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsc && vite build",
+    "dev": "vite",
+    "test": "vitest",
+    "lint": "eslint src",
+    "typecheck": "tsc --noEmit"
+  },
+  "keywords": [
+    "design-system",
+    "design-tokens",
+    "css-variables",
+    "tenbase"
+  ],
+  "author": "TENbase Labs",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/TENbase-Labs/tensor.git",
+    "directory": "packages/tensor"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.3",
+    "vite": "^7.3.1"
+  }
+}

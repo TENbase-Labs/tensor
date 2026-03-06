@@ -1,0 +1,64 @@
+{
+  "name": "@tenbaselabs/tensor-themes",
+  "version": "0.1.0",
+  "description": "Theme packages for the Tensor design system (PlusOne, HooverSheet, etc.)",
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./plusone": {
+      "import": "./dist/themes/plusone.mjs",
+      "require": "./dist/themes/plusone.js",
+      "types": "./dist/themes/plusone.d.ts"
+    },
+    "./hooversheet": {
+      "import": "./dist/themes/hooversheet.mjs",
+      "require": "./dist/themes/hooversheet.js",
+      "types": "./dist/themes/hooversheet.d.ts"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsc && vite build",
+    "dev": "vite",
+    "test": "vitest",
+    "lint": "eslint src",
+    "typecheck": "tsc --noEmit"
+  },
+  "keywords": [
+    "design-system",
+    "themes",
+    "css-variables",
+    "tenbase",
+    "plusone",
+    "hooversheet"
+  ],
+  "author": "TENbase Labs",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/TENbase-Labs/tensor.git",
+    "directory": "packages/tensor-themes"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
+  "dependencies": {
+    "@tenbaselabs/tensor": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.3",
+    "vite": "^7.3.1"
+  }
+}

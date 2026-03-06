@@ -1,0 +1,101 @@
+---
+title: Installation
+description: Get started with TENsor design system
+---
+
+# Installation
+
+TENsor is a multi-brand design system for TENbase Labs products, built with React 19, Tailwind CSS v4, and TypeScript.
+
+## Package Overview
+
+TENsor consists of three main packages:
+
+- **`@tenbaselabs/tensor`** — Core design tokens and utilities
+- **`@tenbaselabs/tensor-react`** — React components
+- **`@tenbaselabs/tensor-themes`** — Brand-specific themes (PlusOne, HooverSheet, etc.)
+
+## Installation Methods
+
+### Using npm
+
+```bash
+# Install core package
+npm install @tenbaselabs/tensor
+
+# Install React components (includes core as peer dependency)
+npm install @tenbaselabs/tensor-react @tenbaselabs/tensor
+
+# Install themes (optional)
+npm install @tenbaselabs/tensor-themes
+```
+
+### Using yarn
+
+```bash
+# Install core package
+yarn add @tenbaselabs/tensor
+
+# Install React components
+yarn add @tenbaselabs/tensor-react @tenbaselabs/tensor
+
+# Install themes
+yarn add @tenbaselabs/tensor-themes
+```
+
+### Using pnpm
+
+```bash
+# Install core package
+pnpm add @tenbaselabs/tensor
+
+# Install React components
+pnpm add @tenbaselabs/tensor-react @tenbaselabs/tensor
+
+# Install themes
+pnpm add @tenbaselabs/tensor-themes
+```
+
+## Peer Dependencies
+
+TENsor React requires the following peer dependencies:
+
+- `react` ^19.2.3
+- `react-dom` ^19.2.3
+
+These must be installed in your project:
+
+```bash
+npm install react react-dom
+```
+
+## Package Scope
+
+All TENsor packages are published under the `@tenbaselabs` npm scope with public access.
+
+## Version Requirements
+
+- **Node.js**: >= 18.0.0
+- **TypeScript**: >= 5.0.0 (if using TypeScript)
+- **React**: ^19.2.3
+
+## Next Steps
+
+Once installed, proceed to the [Quick Start Guide](./QuickStart) to begin using TENsor in your project.
+
+## Troubleshooting
+
+### Module Not Found
+
+If you encounter "Cannot find module" errors:
+
+1. Ensure all peer dependencies are installed
+2. Clear your package manager cache
+3. Delete `node_modules` and reinstall
+
+### TypeScript Errors
+
+If TypeScript cannot find type definitions:
+
+1. Ensure `@tenbaselabs/tensor` types are available in `node_modules/@tenbaselabs/tensor/dist/index.d.ts`
+2. Check that your `tsconfig.json` includes `"moduleResolution": "bundler"` or `"node"`

@@ -1,0 +1,272 @@
+---
+title: Color Tokens
+description: Color palette and semantic color tokens
+---
+
+# Color Tokens
+
+TENsor's color system provides a comprehensive palette for building accessible, brand-consistent interfaces.
+
+## Color Categories
+
+### Semantic Colors
+
+Use semantic colors for meaning-based styling:
+
+```typescript
+import { tokens } from '@tenbaselabs/tensor';
+
+// Semantic color tokens
+tokens.colors.primary     // Primary brand color
+tokens.colors.secondary   // Secondary brand color
+tokens.colors.success     // Success states (green)
+tokens.colors.warning     // Warning states (amber)
+tokens.colors.danger      // Error/destructive states (red)
+tokens.colors.info        // Informational states (blue)
+```
+
+**When to use:**
+- `primary` — Call-to-action buttons, links, primary actions
+- `secondary` — Secondary actions, alternative emphasis
+- `success` — Confirmations, success messages, completed states
+- `warning` — Warnings, caution messages, non-critical alerts
+- `danger` — Errors, destructive actions, critical alerts
+- `info` — Informational messages, tips, neutral emphasis
+
+### Neutral Colors
+
+Neutral palette for text, backgrounds, and borders:
+
+```typescript
+tokens.colors.neutral.50   // Lightest neutral
+tokens.colors.neutral.100
+tokens.colors.neutral.200
+// ...
+tokens.colors.neutral.900  // Darkest neutral
+```
+
+**Usage guidance:**
+- `neutral.50-100` — Light backgrounds, subtle borders
+- `neutral.200-400` — Disabled states, secondary text, dividers
+- `neutral.500-700` — Body text, icons, borders
+- `neutral.800-900` — Headings, high-emphasis text
+
+### Surface Colors
+
+Background colors for components and layouts:
+
+```typescript
+tokens.colors.surface.base       // Default background
+tokens.colors.surface.raised     // Elevated components (cards)
+tokens.colors.surface.overlay    // Modals, popovers
+tokens.colors.surface.sunken     // Input backgrounds, wells
+```
+
+### Text Colors
+
+Pre-defined text color tokens for accessibility:
+
+```typescript
+tokens.colors.text.primary      // High-emphasis text
+tokens.colors.text.secondary    // Medium-emphasis text
+tokens.colors.text.tertiary     // Low-emphasis text
+tokens.colors.text.disabled     // Disabled text
+tokens.colors.text.inverse      // Text on dark backgrounds
+```
+
+## Color Contrast & Accessibility
+
+All TENsor color combinations meet WCAG 2.1 AA contrast requirements (4.5:1 for normal text, 3:1 for large text).
+
+### Contrast Validation
+
+Use semantic color pairs for guaranteed accessibility:
+
+| Foreground | Background | Contrast Ratio | WCAG Level |
+|---|---|---|---|
+| `text.primary` | `surface.base` | 7:1 | AAA |
+| `text.secondary` | `surface.base` | 4.8:1 | AA |
+| `text.inverse` | `primary` | 4.6:1 | AA |
+| `danger` | `surface.base` | 4.5:1 | AA |
+
+### Accessible Color Combinations
+
+✅ **Safe combinations:**
+```tsx
+// High contrast — meets AAA
+<p style={{ color: tokens.colors.text.primary }}>Body text</p>
+
+// Sufficient contrast — meets AA
+<button style={{
+  backgroundColor: tokens.colors.primary,
+  color: tokens.colors.text.inverse
+}}>
+  Primary Button
+</button>
+```
+
+❌ **Avoid these combinations:**
+```tsx
+// Insufficient contrast
+<p style={{ color: tokens.colors.neutral.300 }}>Hard to read</p>
+
+// Don't use semantic colors for text on colored backgrounds without validation
+<div style={{ backgroundColor: tokens.colors.warning }}>
+  <p style={{ color: tokens.colors.text.secondary }}>May fail contrast</p>
+</div>
+```
+
+## Theme-Specific Colors
+
+Colors change based on the active theme. Brand themes override semantic colors:
+
+```typescript
+// Base theme
+tokens.colors.primary → '#3B82F6' (blue)
+
+// PlusOne theme
+tokens.colors.primary → '#FF6B35' (orange)
+
+// HooverSheet theme
+tokens.colors.primary → '#4A90E2' (light blue)
+```
+
+**Important:** Always use semantic tokens, not hard-coded hex values, to support multi-brand theming.
+
+## Color Usage Patterns
+
+### Button Colors
+
+```tsx
+import { tokens } from '@tenbaselabs/tensor';
+
+// Primary action
+<button style={{ backgroundColor: tokens.colors.primary }}>
+  Save Changes
+</button>
+
+// Destructive action
+<button style={{ backgroundColor: tokens.colors.danger }}>
+  Delete Account
+</button>
+
+// Secondary action
+<button style={{
+  backgroundColor: 'transparent',
+  borderColor: tokens.colors.neutral.300,
+  color: tokens.colors.text.primary
+}}>
+  Cancel
+</button>
+```
+
+### Status Indicators
+
+```tsx
+// Success state
+<div style={{ backgroundColor: tokens.colors.success }}>
+  ✓ Changes saved successfully
+</div>
+
+// Warning state
+<div style={{ backgroundColor: tokens.colors.warning }}>
+  ⚠ Network connection unstable
+</div>
+
+// Error state
+<div style={{ backgroundColor: tokens.colors.danger }}>
+  ✕ Failed to save changes
+</div>
+```
+
+## Do's and Don'ts
+
+### Do's
+
+✅ Use semantic colors for meaning
+```tsx
+<button style={{ backgroundColor: tokens.colors.danger }}>Delete</button>
+```
+
+✅ Use neutral palette for structure
+```tsx
+<div style={{ borderColor: tokens.colors.neutral.200 }} />
+```
+
+✅ Use text tokens for readability
+```tsx
+<p style={{ color: tokens.colors.text.primary }}>High emphasis</p>
+<p style={{ color: tokens.colors.text.secondary }}>Medium emphasis</p>
+```
+
+### Don'ts
+
+❌ Don't hard-code hex values
+```tsx
+// Bad
+<button style={{ backgroundColor: '#3B82F6' }}>Button</button>
+
+// Good
+<button style={{ backgroundColor: tokens.colors.primary }}>Button</button>
+```
+
+❌ Don't use color names as semantic meaning
+```tsx
+// Bad (what if "blue" changes?)
+<div style={{ backgroundColor: tokens.colors.blue }}>Info message</div>
+
+// Good (semantic meaning preserved)
+<div style={{ backgroundColor: tokens.colors.info }}>Info message</div>
+```
+
+❌ Don't override brand colors in component styles
+```tsx
+// Bad (breaks theming)
+<button style={{ backgroundColor: '#FF0000' }}>Emergency</button>
+
+// Good (respects theme)
+<button style={{ backgroundColor: tokens.colors.danger }}>Emergency</button>
+```
+
+## Color Opacity
+
+For transparent colors, use CSS color-mix or opacity:
+
+```tsx
+// Semi-transparent overlay
+<div style={{
+  backgroundColor: `color-mix(in srgb, ${tokens.colors.neutral[900]} 80%, transparent)`
+}}>
+  Modal overlay
+</div>
+
+// Or use opacity
+<div style={{
+  backgroundColor: tokens.colors.neutral[900],
+  opacity: 0.8
+}}>
+  Modal overlay
+</div>
+```
+
+## Dark Mode Support
+
+TENsor supports dark mode through theme switching. Color tokens automatically adapt:
+
+```typescript
+// Light mode
+tokens.colors.surface.base → '#FFFFFF'
+tokens.colors.text.primary → '#111827'
+
+// Dark mode (when dark theme applied)
+tokens.colors.surface.base → '#1F2937'
+tokens.colors.text.primary → '#F9FAFB'
+```
+
+No code changes required — components automatically adapt when the theme changes.
+
+## Next Steps
+
+- **[Typography Tokens](./Typography)** — Font styling tokens
+- **[Spacing Tokens](./Spacing)** — Layout and spacing system
+- **[Themes](../04-themes/Overview)** — Customizing color themes

@@ -1,0 +1,186 @@
+---
+title: Quick Start
+description: Start building with TENsor in minutes
+---
+
+# Quick Start
+
+This guide walks you through setting up TENsor and building your first themed component.
+
+## 1. Install TENsor
+
+```bash
+npm install @tenbaselabs/tensor-react @tenbaselabs/tensor
+```
+
+## 2. Import Design Tokens
+
+Access design tokens from the core package:
+
+```typescript
+import { tokens } from '@tenbaselabs/tensor';
+
+// Use tokens in your styles
+const buttonStyles = {
+  padding: tokens.spacing.md,
+  color: tokens.colors.primary,
+  fontFamily: tokens.typography.fontFamily.sans,
+};
+```
+
+## 3. Use React Components
+
+Import and use pre-built components:
+
+```tsx
+import { Button, Card } from '@tenbaselabs/tensor-react';
+
+function App() {
+  return (
+    <Card>
+      <h1>Welcome to TENsor</h1>
+      <Button variant="primary">Get Started</Button>
+    </Card>
+  );
+}
+
+export default App;
+```
+
+## 4. Apply a Theme (Optional)
+
+Choose a brand theme for your application:
+
+```typescript
+import { plusone } from '@tenbaselabs/tensor-themes/plusone';
+import { hooversheet } from '@tenbaselabs/tensor-themes/hooversheet';
+
+// Apply theme to document root
+document.documentElement.classList.add(plusone);
+```
+
+### Runtime Theme Switching
+
+Switch themes dynamically at runtime:
+
+```tsx
+import { useState } from 'react';
+import { plusone, hooversheet } from '@tenbaselabs/tensor-themes';
+
+function ThemeSwitcher() {
+  const [theme, setTheme] = useState(plusone);
+
+  const switchTheme = (newTheme: string) => {
+    document.documentElement.classList.remove(plusone, hooversheet);
+    document.documentElement.classList.add(newTheme);
+    setTheme(newTheme);
+  };
+
+  return (
+    <div>
+      <button onClick={() => switchTheme(plusone)}>PlusOne Theme</button>
+      <button onClick={() => switchTheme(hooversheet)}>HooverSheet Theme</button>
+    </div>
+  );
+}
+```
+
+## 5. TypeScript Support
+
+TENsor is fully typed. Enable strict type checking for the best experience:
+
+```json
+{
+  "compilerOptions": {
+    "strict": true,
+    "moduleResolution": "bundler",
+    "jsx": "react-jsx"
+  }
+}
+```
+
+### Typed Component Props
+
+All components export their prop types:
+
+```tsx
+import { Button, type ButtonProps } from '@tenbaselabs/tensor-react';
+
+const customButton: ButtonProps = {
+  variant: 'primary',
+  size: 'lg',
+  disabled: false,
+};
+```
+
+## 6. Styling Approach
+
+TENsor uses Tailwind CSS v4 with design token integration:
+
+```tsx
+import { Button } from '@tenbaselabs/tensor-react';
+
+// Components accept className for custom styling
+<Button className="rounded-lg shadow-md">
+  Custom Styled Button
+</Button>
+```
+
+## Common Patterns
+
+### Do's
+
+✅ Use design tokens for consistent spacing, colors, and typography
+✅ Leverage TypeScript for type-safe component usage
+✅ Apply themes at the document root level
+✅ Use semantic component variants (`primary`, `secondary`, `danger`)
+
+### Don'ts
+
+❌ Don't hard-code color values — use tokens
+❌ Don't mix multiple themes on the same page
+❌ Don't bypass component props with direct DOM manipulation
+❌ Don't use deprecated component APIs (check migration guides)
+
+## Next Steps
+
+- **[Design Tokens](../02-design-tokens/Overview)** — Learn about available tokens
+- **[Components](../03-components/ComponentTemplate)** — Explore component APIs
+- **[Themes](../04-themes/Overview)** — Deep dive into theming
+- **[Accessibility](../05-accessibility/Overview)** — Ensure accessible implementations
+
+## Example Application
+
+Here's a complete minimal example:
+
+```tsx
+import { StrictMode } from 'react';
+import { createRoot } from 'react-dom/client';
+import { Button, Card } from '@tenbaselabs/tensor-react';
+import { plusone } from '@tenbaselabs/tensor-themes/plusone';
+
+// Apply theme
+document.documentElement.classList.add(plusone);
+
+function App() {
+  return (
+    <div className="p-8">
+      <Card>
+        <h1 className="text-2xl font-bold mb-4">TENsor Quick Start</h1>
+        <p className="mb-4">Your multi-brand design system is ready.</p>
+        <Button variant="primary">Explore Components</Button>
+      </Card>
+    </div>
+  );
+}
+
+createRoot(document.getElementById('root')!).render(
+  <StrictMode>
+    <App />
+  </StrictMode>
+);
+```
+
+## Questions?
+
+See the [Contributing Guide](../../CONTRIBUTING.md) for how to report issues or contribute improvements.
