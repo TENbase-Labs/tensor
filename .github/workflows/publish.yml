@@ -76,10 +76,12 @@ jobs:
           registry-url: 'https://registry.npmjs.org'
 
       - name: Install dependencies
+        working-directory: packages/${{ matrix.package }}
         run: npm ci
 
       - name: Build package
-        run: npm run build --workspace=packages/${{ matrix.package }}
+        working-directory: packages/${{ matrix.package }}
+        run: npm run build
 
       - name: Publish to NPM
         working-directory: packages/${{ matrix.package }}
