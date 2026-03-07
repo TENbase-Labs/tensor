@@ -1,0 +1,566 @@
+---
+title: Switch
+description: Toggle a single setting on or off with immediate effect
+---
+
+# Switch
+
+Switches toggle settings instantly on or off. Use switches when you need binary on/off toggles with immediate effect and no form submission required.
+
+## When to Use
+
+✅ **Use Switch when:**
+- Toggling a single setting on or off
+- Immediate effect (no form submission needed)
+- Clear binary state (enabled/disabled, on/off)
+- allowing users to opt-in/opt-out of features
+
+❌ **Don't use Switch when:**
+- User must choose between multiple options (use `Radio` or `Select`)
+- Multiple items can be selected (use `Checkbox`)
+- Requires confirmation before taking effect
+- Need to support indeterminate state (use `Checkbox` with `indeterminate`)
+- State is part of a larger form (use `Checkbox` for better form sematics)
+
+## Installation
+
+```tsx
+import { Switch } from '@tenbaselabs/tensor-react';
+```
+
+## API Reference
+
+### Props
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `checked` | `boolean` | `false` | Switch state. `true` (on/checked), `false` (off/unchecked). |
+| `defaultChecked` | `boolean` | `false` | Initial checked state (uncontrolled component). |
+| `onCheckedChange` | `(checked: boolean) => void` | `undefined` | Callback fired when switch state changes. Receives new state. |
+| `label` | `string` | `undefined` | Label text displayed next to switch. |
+| `description` | `string` | `undefined` | Description text displayed below label. |
+| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Switch size. `sm` (18px height), `md` (24px height), `lg` (32px height). |
+| `loading` | `boolean` | `false` | Shows spinner inside switch and disables interaction. |
+| `disabled` | `boolean` | `false` | Disables switch interaction. When `true`, also disables `loading`. |
+| `onLabel` | `string` | `undefined` | Text shown inside track when switch is on (small, partially visible). |
+| `offLabel` | `string` | `undefined` | Text shown inside track when switch is off (small, partially visible). |
+| `id` | `string` | auto-generated | ID for the switch button element. |
+| `name` | `string` | `undefined` | Name attribute for form submission. |
+| `value` | `string` | `undefined` | Value attribute for form submission. |
+| `containerClassName` | `string` | `undefined` | Additional CSS classes for the container `<div>`. |
+
+### TypeScript Interface
+
+```typescript
+import { type SwitchProps } from '@tenbaselabs/tensor-react';
+
+interface SwitchProps {
+  checked?: boolean;
+  defaultChecked?: boolean;
+  onCheckedChange?: (checked: boolean) => void;
+  label?: string;
+  description?: string;
+  size?: 'sm' | 'md' | 'lg';
+  loading?: boolean;
+  disabled?: boolean;
+  onLabel?: string;
+  offLabel?: string;
+  id?: string;
+  name?: string;
+  value?: string;
+  containerClassName?: string;
+}
+```
+
+## Usage Examples
+
+### Basic Switch
+
+```tsx
+import { Switch } from '@tenbaselabs/tensor-react';
+
+<Switch label="Enable dark mode" />
+```
+
+### Controlled Switch
+
+```tsx
+import { useState } from 'react';
+import { Switch } from '@tenbaselabs/tensor-react';
+
+function DarkModeToggle() {
+  const [darkMode, setDarkMode] = useState(false);
+
+  return (
+    <Switch
+      label="Dark Mode"
+      checked={darkMode}
+      onCheckedChange={setDarkMode}
+    />
+  );
+}
+```
+
+### Uncontrolled Switch
+
+```tsx
+<Switch
+  label="Email Notifications"
+  defaultChecked={true}
+  name="notifications"
+/>
+```
+
+### With Description
+
+```tsx
+<Switch
+  label="Auto-save drafts"
+  description="Save your work automatically every 30 seconds"
+/>
+```
+
+### Loading State
+
+```tsx
+function ToggleWithLoading() {
+  const [enabled, setEnabled] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  const toggle = () => {
+    setLoading(true);
+    setTimeout(() => {
+      setEnabled(!enabled);
+      setLoading(false);
+    }, 1000);
+  };
+
+  return (
+    <Switch
+      label="Two-factor Authentication"
+      checked={enabled}
+      loading={loading}
+      onCheckedChange={toggle}
+    />
+  );
+}
+```
+
+### Switch as Toggle Button (No Label)
+
+```tsx
+// Minimal toggle without label
+<Switch
+  checked={enabled}
+  onCheckedChange={setEnabled}
+  aria-label="Enable notifications"
+/>
+```
+
+### With On/Off Labels
+
+```tsx
+<Switch
+  label="Wi-Fi"
+  onLabel="ON"
+  offLabel="OFF"
+  defaultChecked={true}
+/>
+```
+
+### Disabled Switch
+
+```tsx
+<Switch
+  label="Premium Feature"
+  disabled
+  description="Requires premium subscription"
+/>
+```
+
+### Sizes
+
+```tsx
+// Small (18px height, 32px width)
+<Switch size="sm" label="Small" defaultChecked />
+
+// Medium (24px height, 44px width, default)
+<Switch size="md" label="Medium" defaultChecked />
+
+// Large (32px height, 56px width)
+<Switch size="lg" label="Large" defaultChecked />
+```
+
+## Common Patterns
+
+### Theme Toggle
+
+```tsx
+import { useState, useEffect } from 'react';
+import { Switch } from '@tenbaselabs/tensor-react';
+
+function ThemeSwitcher() {
+  const [theme, setTheme] = useState('light');
+
+  useEffect(() => {
+    if (theme === 'dark') {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  }, [theme]);
+
+  return (
+    <div className="flex items-center gap-3">
+      <span className="text-sm">🌙</span>
+      <Switch
+        label="Dark Mode"
+        checked={theme === 'dark'}
+        onCheckedChange={(checked) => setTheme(checked ? 'dark' : 'light')}
+      />
+      <span className="text-sm">☀️</span>
+    </div>
+  );
+}
+```
+
+### Feature Flags in Settings
+
+```tsx
+function UserPreferences() {
+  const [settings, setSettings] = useState({
+    emailNotifications: true,
+    pushNotifications: false,
+    darkMode: false,
+    autoSave: true,
+    twoFactorAuth: false,
+  });
+
+  const toggleSetting = (key: keyof typeof settings) => {
+    setSettings(prev => ({
+      ...prev,
+      [key]: !prev[key],
+    }));
+  };
+
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <h4 className="font-medium">Email Notifications</h4>
+          <p className="text-sm text-gray-600">Receive email updates and newsletters</p>
+        </div>
+        <Switch
+          checked={settings.emailNotifications}
+          onCheckedChange={() => toggleSetting('emailNotifications')}
+        />
+      </div>
+
+      <div className="flex items-center justify-between">
+        <div>
+          <h4 className="font-medium">Push Notifications</h4>
+          <p className="text-sm text-gray-600">Receive browser push alerts</p>
+        </div>
+        <Switch
+          checked={settings.pushNotifications}
+          onCheckedChange={() => toggleSetting('pushNotifications')}
+        />
+      </div>
+
+      <div className="flex items-center justify-between">
+        <div>
+          <h4 className="font-medium">Dark Mode</h4>
+          <p className="text-sm text-gray-600">Use dark color scheme</p>
+        </div>
+        <Switch
+          checked={settings.darkMode}
+          onCheckedChange={() => toggleSetting('darkMode')}
+        />
+      </div>
+    </div>
+  );
+}
+```
+
+### Privacy Settings
+
+```tsx
+function PrivacySettings() {
+  const [settings, setSettings] = useState({
+    profileVisible: true,
+    activityShared: false,
+    locationShared: false,
+  });
+
+  const toggle = (key: keyof typeof settings) => {
+    setSettings(prev => ({ ...prev, [key]: !prev[key] }));
+  };
+
+  const isEnabled = (key: keyof typeof settings) => {
+    return settings[key] ? 'Enabled' : 'Disabled';
+  };
+
+  return (
+    <div className="space-y-4">
+      <div className="flex items-center gap-4">
+        <div className="flex-1">
+          <label className="font-medium">Profile visibility</label>
+          <p className="text-sm text-gray-600">{isEnabled('profileVisible')}</p>
+        </div>
+        <Switch
+          checked={settings.profileVisible}
+          onCheckedChange={() => toggle('profileVisible')}
+        />
+      </div>
+
+      <div className="flex items-center gap-4">
+        <div className="flex-1">
+          <label className="font-medium">Share activity</label>
+          <p className="text-sm text-gray-600">{isEnabled('activityShared')}</p>
+        </div>
+        <Switch
+          checked={settings.activityShared}
+          onCheckedChange={() => toggle('activityShared')}
+        />
+      </div>
+
+      <div className="flex items-center gap-4">
+        <div className="flex-1">
+          <label className="font-medium">Location sharing</label>
+          <p className="text-sm text-gray-600">{isEnabled('locationShared')}</p>
+        </div>
+        <Switch
+          checked={settings.locationShared}
+          onCheckedChange={() => toggle('locationShared')}
+        />
+      </div>
+    </div>
+  );
+}
+```
+
+### Conditional Feature Preview
+
+```tsx
+function FeaturePreview() {
+  const [enabled, setEnabled] = useState(false);
+
+  return (
+    <div className="border p-4 rounded-lg">
+      <div className="flex items-start gap-3">
+        <div className="flex-1">
+          <h3 className="font-medium">Preview Feature</h3>
+          <p className="text-sm text-gray-600">
+            This feature is currently in beta. Enable to try it out.
+          </p>
+        </div>
+        <Switch
+          checked={enabled}
+          onCheckedChange={setEnabled}
+          disabled={!enabled} // Only allow enabling, not disabling after acceptance
+        />
+      </div>
+
+      {enabled && (
+        <div className="mt-3 text-sm text-green-600 bg-green-50 p-3 rounded">
+          ✓ Feature enabled! Try it out below.
+        </div>
+      )}
+    </div>
+  );
+}
+```
+
+## Accessibility
+
+### ARIA Attributes
+
+Switch automatically manages accessibility:
+
+```tsx
+// Basic switch
+<Switch label="Notifications" />
+// Renders: <button role="switch" aria-checked="false" aria-labelledby="switch-xyz-label">
+
+// Checked switch
+<Switch label="Notifications" checked />
+// Renders: aria-checked="true"
+
+// Loading switch
+<Switch label="Notifications" loading />
+// Renders: aria-busy="true" aria-disabled="true" disabled
+
+// With description
+<Switch label="Notifications" description="Receive email updates" />
+// Renders: aria-describedby="switch-xyz-description"
+```
+
+### Keyboard Navigation
+
+| Key | Action |
+|---|---|
+| `Tab` | Moves focus to switch |
+| `Space` | Toggles switch state |
+| `Enter` | Toggles switch state |
+| `Arrow Right` | Move to next focusable element |
+| `Arrow Left` | Move to previous focusable element |
+
+**Important:** Switch behavior matches native checkbox/toggle behavior with both Space and Enter keys.
+
+### Focus Management
+
+- Visible focus indicator (2px ring, 3:1 contrast against background)
+- Focus ring color is primary color
+- Focus remains on switch after state change
+- Click anywhere on the switch (track or thumb) toggles it
+
+### Screen Reader Support
+
+| State | Announcement |
+|---|---|
+| Unchecked | "Dark Mode, switch, off" |
+| Checked | "Dark Mode, switch, on" |
+| Disabled | "Dark Mode, switch, off, disabled" |
+| Loading | "Dark Mode, switch, busy" (announced repeatedly) |
+| With description | "Dark Mode, switch, off. Use dark color scheme" |
+
+## Best Practices
+
+### Do's
+
+✅ **Use for immediate toggles**
+```tsx
+<Switch label="Dark mode" checked={dark} onCheckedChange={setDark} />
+// Immediate effect - no form needed
+```
+
+✅ **Provide labels for clarity**
+```tsx
+<Switch label="Email notifications" />
+```
+
+✅ **Add descriptions for context**
+```tsx
+<Switch
+  label="Auto-save"
+  description="Save work every 30 seconds automatically"
+/>
+```
+
+✅ **Use loading state for async operations**
+```tsx
+<Switch
+  checked={enabled}
+  loading={saving}
+  onCheckedChange={handleToggle}
+/>
+```
+
+✅ **Make labels clickable**
+```tsx
+// Label is automatically clickable with label prop
+<Switch label="Enable feature" />
+```
+
+### Don'ts
+
+❌ **Don't use for form fields**
+```tsx
+// Bad — use Checkbox for form data
+<Switch label="Subscribe to newsletter" />
+
+// Good — Checkbox for form submission
+<Checkbox label="Subscribe to newsletter" name="subscribe" />
+```
+
+❌ **Don't use for multiple options**
+```tsx
+// Bad — only one can be selected
+<Switch label="Option 1" />
+<Switch label="Option 2" />
+
+// Good — use Radio group
+<RadioGroup
+  label="Choose one"
+  options={[
+    { value: '1', label: 'Option 1' },
+    { value: '2', label: 'Option 2' },
+  ]}
+/>
+```
+
+❌ **Don't hide the thumb/track when off**
+```tsx
+// Bad — unclear what the switch is for
+<Switch checked={enabled} />
+
+// Good — clear label and description
+<Switch
+  label="Notifications"
+  description="Receive email and push notifications"
+  checked={enabled}
+/>
+```
+
+❌ **Don't use switch for destructive actions without confirmation**
+```tsx
+// Bad — no confirmation for destructive action
+<Switch
+  label="Delete account"
+  onCheckedChange={handleDelete}
+/>
+
+// Good — Confirmation modal required first
+<Switch
+  label="Delete account"
+  checked={false} // Only switches when confirmed
+/>
+```
+
+❌ **Don't use loading state for long operations**
+```tsx
+// Bad — loading for > 5 seconds is confusing
+<Switch loading={veryLongOperation} />
+
+// Good — use a button with confirmation for long operations
+<Button
+  loading={loading}
+  onClick={confirmAndDisable}
+>
+  Disable Account
+</Button>
+```
+
+## When to Use Switch vs Checkbox vs Radio vs Select
+
+| Scenario | Use Switch | Use Checkbox | Use Radio | Use Select |
+|---|---|---|---|---|
+| Toggle single setting (immediate) | ✅ On/off toggle | ❌ | ❌ | ❌ |
+| Multiple independent options | ❌ | ✅ Check multiple | ❌ | ❌ |
+| Choose exactly one from few | ❌ | ❌ | ✅ 2-5 visible | ❌ |
+| Choose one from many | ❌ | ❌ | ❌ | ✅ Dropdown |
+| Form field submission | ⚠️ Use Checkbox | ✅ Standard | ✅ Standard | ✅ Standard |
+| Requires confirmation | ❌ | ⚠️ Use Checkbox | ⚠️ Use Radio | ⚠️ Use Select |
+| Binary on/off toggle | ✅ Best fit | ❌ | ❌ | ❌ |
+
+**General rule:**
+- **Switch** — Binary toggle with immediate effect (saves user a click)
+- **Checkbox** — Form fields, multiple selection, holds value until submitted
+
+## Related Components
+
+- **Checkbox** — Toggle options with form submission
+- **Radio** — Choose exactly one from mutually exclusive options
+- **Button** — Actions requiring confirmation
+
+## Theming
+
+Switch colors (track, thumb, focus ring) are controlled by design tokens and automatically adapt to theme changes. The thumb position animates smoothly between on and off states.
+
+---
+
+**Related Documentation:**
+- [Form Patterns](/patterns/forms)
+- [Checkbox Component](./Checkbox)
+- [Radio Component](./Radio)
+- [Accessibility Guidelines](../05-accessibility/Overview)

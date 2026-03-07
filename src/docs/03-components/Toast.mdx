@@ -1,0 +1,601 @@
+---
+title: Toast
+description: Non-blocking notifications that auto-dismiss with configurable duration
+---
+
+# Toast
+
+Toast notifications provide quick, non-intrusive feedback for actions. Use toasts for success confirmations, error messages, and general information that doesn't require immediate user attention.
+
+## When to Use
+
+✅ **Use Toast when:**
+- Confirming an action the user just completed
+- Showing passing information that doesn't block the user
+- Notifications that auto-dismiss after a few seconds
+- Batch action results (e.g., "3 messages sent")
+- Background process completion
+
+❌ **Don't use Toast when:**
+- User must acknowledge the message (use `Alert`)
+- Message contains errors requiring action (use `Alert`)
+- Message content is critical (use persistent `Alert`)
+- User needs time to read carefully (use `Alert`)
+- Tooltips needed for UI help (use `Tooltip`)
+
+## Installation
+
+```tsx
+import { Toast } from '@tenbaselabs/tensor-react';
+```
+
+## API Reference
+
+### Props
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `id` | `string` | **required** | Unique identifier for the toast (used for programmatic dismissal). |
+| `variant` | `'info' \| 'success' \| 'warning' \| 'danger'` | `'info'` | Toast style variant. `info` (blue), `success` (green), `warning` (amber), `danger` (red). |
+| `title` | `string` | `undefined` | Toast heading (optional, bold). |
+| `message` | `string` | **required** | Main toast message content. |
+| `description` | `string` | `undefined` | Additional description text (smaller, secondary color). |
+| `icon` | `ReactNode` | `undefined` | Custom icon override (replaces default emoji icon). |
+| `showIcon` | `boolean` | `true` | Whether to show the variant-specific icon. |
+| `duration` | `number` | `5000` | Milliseconds before auto-dismissal. Set to `0` for no auto-dismiss. |
+| `autoDismiss` | `boolean` | `true` | Whether to auto-dismiss after duration. |
+| `dismissible` | `boolean` | `true` | Whether to show the dismiss (X) button. |
+| `onDismiss` | `() => void` | `undefined` | Callback when toast is dismissed (manually or automatically). |
+| `action` | `{ label: string, onClick: () => void }` | `undefined` | Action button shown on the right side. |
+
+### TypeScript Interface
+
+```typescript
+import { type ToastProps } from '@tenbaselabs/tendor-react';
+
+interface ToastProps {
+  id: string;
+  variant?: 'info' | 'success' | 'warning' | 'danger';
+  title?: string;
+  message: string;
+  description?: string;
+  icon?: ReactNode;
+  showIcon?: boolean;
+  duration?: number;
+  autoDismiss?: boolean;
+  dismissible?: boolean;
+  onDismiss?: () => void;
+  action?: {
+    label: string;
+    onClick: () => void;
+  };
+}
+```
+
+## Usage Examples
+
+### Basic Toast
+
+```tsx
+import { Toast } from '@tenbaselabs/tensor-react';
+
+<Toast id="1" message="Settings saved" />
+```
+
+### Success Toast
+
+```tsx
+<Toast
+  id="success-1"
+  variant="success"
+  title="Success"
+  message="Your profile has been updated"
+/>
+```
+
+### Info Toast
+
+```tsx
+<Toast
+  id="info-1"
+  variant="info"
+  title="New Feature"
+  message="Dark mode is now available"
+/>
+```
+
+### Warning Toast
+
+```tsx
+<Toast
+  id="warning-1"
+  variant="warning"
+  title="Warning"
+  message="Storage usage is at 90%"
+  description="Upgrade your plan to get more space"
+/>
+```
+
+### Error/ Danger Toast
+
+```tsx
+<Toast
+  id="error-1"
+  variant="danger"
+  title="Error"
+  message="Failed to save changes"
+/>
+```
+
+### Custom Duration
+
+```tsx
+// Long duration (10 seconds)
+<Toast
+  id="long-1"
+  duration={10000}
+  message="Backup completed successfully"
+/>
+```
+
+### Disable Auto-Dismiss
+
+```tsx
+// Toast stays until manually dismissed
+<Toast
+  id="permanent-1"
+  autoDismiss={false}
+  message="Backup in progress..."
+  dismissible={false} // Also hide dismiss button
+/>
+```
+
+### Toast with Action
+
+```tsx
+function ToastWithAction() {
+  return (
+    <Toast
+      id="action-1"
+      variant="warning"
+      title="Attachment Failed"
+      message="The file 'report.pdf' could not be uploaded"
+      action={{
+        label: 'Try Again',
+        onClick: () => console.log('Retrying upload'),
+      }}
+    />
+  );
+}
+```
+
+### Custom Icon
+
+```tsx
+import { CustomIcon } from './CustomIcon';
+
+<Toast
+  id="custom-icon-1"
+  icon={<CustomIcon />}
+  title="Beta Available"
+  message="New features are ready for testing"
+/>
+```
+
+### No Icon
+
+```tsx
+<Toast
+  id="no-icon-1"
+  showIcon={false}
+  message="Syncing data in background..."
+  duration={0}
+  autoDismiss={false}
+  dismissible={false}
+/>
+```
+
+### Dismissal Callback
+
+```tsx
+function ToastCallback() {
+  const handleDismiss = (id: string) => {
+    console.log(`Toast ${id} dismissed`);
+  };
+
+  return (
+    <Toast
+      id="callback-1"
+      message="Saved successfully"
+      onDismiss={() => handleDismiss('callback-1')}
+    />
+  );
+}
+```
+
+## Common Patterns
+
+### Toast Queue Manager
+
+```tsx
+import { useState, useEffect, useCallback } from 'react';
+
+function ToastManager() {
+  const [toasts, setToasts] = useState<ToastProps[]>([]);
+
+  const addToast = useCallback((toast: Omit<ToastProps, 'id'>) => {
+    const id = Math.random().toString(36).slice(2, 9);
+    setToasts(prev => [...prev, { ...toast, id }]);
+  }, []);
+
+  const removeToast = useCallback((id: string) => {
+    setToasts(prev => prev.filter(t => t.id !== id));
+  }, []);
+
+  // Remove toast after auto-dismiss
+  useEffect(() => {
+    const timers = toasts.map(toast => {
+      if (toast.autoDismiss && toast.duration > 0) {
+        return setTimeout(() => {
+          removeToast(toast.id);
+        }, toast.duration);
+      }
+      return null;
+    });
+
+    return () => timers.forEach(clearTimeout);
+  }, [toasts, removeToast]);
+
+  // Expose addToast function for use in components
+  return (
+    <div className="fixed top-4 right-4 z-50 flex flex-col gap-2">
+      {toasts.map(toast => (
+        <Toast
+          key={toast.id}
+          {...toast}
+          onDismiss={() => removeToast(toast.id)}
+        />
+      ))}
+    </div>
+  );
+}
+
+// Usage in a component
+function ComponentWithToasts() {
+  const manager = useToastManager(); // Custom hook or context
+  const showToast = manager.addToast;
+
+  const handleSubmit = async () => {
+    try {
+      await submitForm();
+      showToast({
+        variant: 'success',
+        title: 'Success',
+        message: 'Form submitted successfully',
+      });
+    } catch {
+      showToast({
+        variant: 'danger',
+        title: 'Error',
+        message: 'Failed to submit form',
+      });
+    }
+  };
+
+  return <Button onClick={handleSubmit}>Submit</Button>;
+}
+```
+
+### Toast List with Action Reveal
+
+```tsx
+function ToastWithUndo() {
+  const [item, setItem] = useState<string | null>(null);
+
+  const handleDelete = (itemId: string) => {
+    const deletedItem = `Item ${itemId}`;
+    setItem(deletedItem);
+
+    showToast({
+      id: `delete-${itemId}`,
+      variant: 'info',
+      title: 'Deleted',
+      message: `${deletedItem} has been deleted`,
+      action: {
+        label: 'Undo',
+        onClick: () => {
+          // Restore item
+          setItem(null);
+          // Also remove toast
+          removeToast(`delete-${itemId}`);
+        },
+      },
+    });
+  };
+
+  return (
+    <div>
+      <button onClick={() => handleDelete('123')}>
+        Delete Item
+      </button>
+    </div>
+  );
+}
+```
+
+### Batch Operation Completion
+
+```tsx
+function BatchOperationToasts() {
+  const showToast = useToastManager().addToast;
+
+  const processItems = async (ids: string[]) => {
+    let successCount = 0;
+    let failCount = 0;
+
+    for (const id of ids) {
+      try {
+        await processItem(id);
+        successCount++;
+      } catch {
+        failCount++;
+      }
+    }
+
+    if (successCount > 0) {
+      showToast({
+        variant: 'success',
+        title: 'Processing Complete',
+        message: `${successCount} item(s) processed successfully`,
+        description: `${failCount} failed`
+      });
+    } else {
+      showToast({
+        variant: 'danger',
+        title: 'Processing Failed',
+        message: 'None of the items could be processed',
+      });
+    }
+  };
+}
+```
+
+### Persistent Toast (No Auto-Dismiss)
+
+```tsx
+function PersistentToast() {
+  return (
+    <Toast
+      id="sync-status"
+      autoDismiss={false}
+      duration={0}
+      dismissible={false}
+      variant="info"
+      message="Syncing data with server..."
+      showIcon={false}
+    />
+  );
+}
+```
+
+### Toast with Content Typography
+
+```tsx
+function ToastWithRichContent() {
+  return (
+    <Toast
+      id="rich-content"
+      variant="success"
+      title="Welcome!"
+      message={
+        <span>
+          Your account has been created.{' '}
+          <a href="/dashboard" className="font-medium hover:underline">
+            Go to dashboard
+          </a>
+        </span>
+      }
+      description="Check your email for verification steps."
+    />
+  );
+}
+```
+
+## Accessibility
+
+### ARIA Attributes
+
+Toast automatically manages accessibility:
+
+```tsx
+<Toast
+  id="toast-1"
+  variant="success"
+  message="Changes saved"
+/>
+// Renders: role="alert" aria-live="assertive"
+```
+
+**Note:** Toast uses `role="alert"` with `aria-live="assertive"` by default, making it immediately announced to screen readers.
+
+### Keyboard Navigation
+
+| Key | Action |
+|---|---|
+| `Tab` | Moves focus into toast (if interactive elements) |
+| `Enter` | Activates action button or close button |
+| `Space` | Activates action button or close button |
+| `Escape` | Not applicable - use close button |
+
+**Important:** Toasts do not trap focus - users can navigate away normally.
+
+### Screen Reader Support
+
+| State | Announcement |
+|---|---|
+| Info toast | "Settings saved, alert" |
+| Success toast | "Success. Profile updated, alert" |
+| Warning toast | "Warning. Storage at 90%, alert" |
+| Danger toast | "Error. Failed to save, alert" |
+| With action | "Settings saved, alert. Undo button" |
+
+### Hover/Focus Interaction
+
+```tsx
+// Hovering over toast pauses auto-dismiss (optional UI enhancement)
+// Users can manually dismiss at any time
+```
+
+## Best Practices
+
+### Do's
+
+✅ **Use for non-blocking feedback**
+```tsx
+// Good - doesn't interrupt user flow
+<Toast
+  id="save-1"
+  variant="success"
+  message="Changes saved"
+/>
+```
+
+✅ **Provide clear titles for important toasts**
+```tsx
+<Toast
+  id="success-1"
+  title="Success"
+  message="Profile updated"
+/>
+```
+
+✅ **Use appropriate duration**
+```tsx
+// Short for simple confirmations
+<Toast id="short" duration={2000} />
+
+// Longer for complex information
+<Toast id="long" duration={8000} />
+```
+
+✅ **Use action for quick follow-up**
+```tsx
+<Toast
+  variant="info"
+  message="Backup completed"
+  action={{ label: 'View', onClick: openBackup }}
+/>
+```
+
+### Don'ts
+
+❌ **Don't use toasts for errors requiring action**
+```tsx
+// Bad - user needs to take action
+<Toast
+  variant="danger"
+  message="Payment failed"
+/>
+// Should be Alert with clear action buttons
+
+// Good
+<Alert
+  variant="danger"
+  title="Payment Failed"
+  actions={<button>Update Card</button>}
+>
+  Your card was declined.
+</Alert>
+```
+
+❌ **Don't use toasts for critical information**
+```tsx
+// Bad - toasts auto-dismiss
+<Toast
+  variant="danger"
+  duration={3000}
+  message="Account will be deleted in 24 hours"
+/>
+// Should be persistent Alert
+
+// Good
+<Alert
+  variant="danger"
+  title="Warning"
+  dismissible={false}
+>
+  Account will be deleted in 24 hours. Renew now to keep your data.
+</Alert>
+```
+
+❌ **Don't show too many toasts rapidly**
+```tsx
+// Bad - toast spam
+items.forEach(item => {
+  showToast({
+    id: item.id,
+    message: `${item.name} created`,
+  });
+});
+// Use batch toast instead
+
+// Good
+showToast({
+  variant: 'success',
+  title: 'Created',
+  message: `${items.length} items created`,
+});
+```
+
+❌ **Don't forget to dismiss manually**
+```tsx
+// Bad - toast lingers
+toasts.push({ ... });
+
+// Good - track and remove
+<Toast id="dynamic" onDismiss={() => removeToast('dynamic')} />
+```
+
+##Choosing Your Variant
+
+| Variant | Use For | Emoji |
+|---|---|---|
+| **info** | General information, tips | 🔵 |
+| **success** | Successful actions | ✅ |
+| **warning** | Warnings, cautions | ⚠️ |
+| **danger** | Errors, failures | ❌ |
+
+## When to Use Toast vs Alert
+
+| Scenario | Use Toast | Use Alert |
+|---|---|---|
+| Action confirmation | ✅ Quick feedback | ❌ Too persisting |
+| User must acknowledge | ❌ May auto-dismiss | ✅ Required attention |
+| Background updates | ✅ Non-intrusive | ❌ Too disruptive |
+| Error requiring action | ❌ Not clear enough | ✅ With action buttons |
+| Time-sensitive info | ❌ May disappear | ✅ Persistent |
+| Batch results summary | ✅ Perfect fit | ⚠️ Too much space |
+
+**General rule:**
+- **Toast** — "Did you see that?" feedback
+- **Alert** — "You need to do something" messages
+
+## Related Components
+
+- **Alert** — Priority messages requiring attention
+- **Tooltip** — Hover/focus help text
+- **Modal** — Full-screen dialogs
+
+## Theming
+
+Toast colors (border, background, icons) are controlled by design tokens. Toasts automatically:
+- Fade in from top when appearing
+- Fade out when dismissed
+- Pause auto-dismiss on hover
+
+---
+
+**Related Documentation:**
+- [Alert Component](./Alert)
+- [Modal Component](./Modal)
+- [Accessibility Guidelines](../05-accessibility/Overview)

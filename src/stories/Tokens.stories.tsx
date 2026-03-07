@@ -354,6 +354,7 @@ export const Motion: StoryObj = {
                   <span style={{ color: tokens.colors.text.secondary }}>({duration})</span>
                 </div>
                 <button
+                  type="button"
                   onClick={() => {
                     setActive(name)
                     setTimeout(() => setActive(null), parseInt(duration, 10))
@@ -405,6 +406,7 @@ export const Motion: StoryObj = {
                   <span style={{ fontWeight: tokens.typography.fontWeight.medium }}>{name}</span>
                 </div>
                 <button
+                  type="button"
                   onClick={() => {
                     setActive(name)
                     setTimeout(() => setActive(null), 300)

@@ -79,5 +79,5 @@ export function useTheme(): [Theme, (theme: Theme) => void] {
   return [currentTheme, updateTheme]
 }
 
-// Export for ES modules
-export { themes as default }
+// This file already exported themes above, no need for duplicate export
+// The export { themes } at line 83 was redundant with the const export at line 15

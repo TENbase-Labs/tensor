@@ -1,0 +1,599 @@
+---
+title: Alert
+description: Display important messages and status feedback
+---
+
+# Alert
+
+Alerts display important messages that require user attention. Use alerts for success confirmations, errors, warnings, and informational messages.
+
+## When to Use
+
+✅ **Use Alert when:**
+- Showing success after an action completes
+- Displaying an error message that needs attention
+- Warning about a potential issue or danger
+- Providing important informational messages
+- Messages that need to be dismissible or persistent
+
+❌ **Don't use Alert when:**
+- Simple inline form validation — use error messages on the input
+- Busy/loading state — use a spinner or progress indicator
+- Non-urgent notifications — use Toast for async confirmations
+- General content — use regular text blocks
+
+## Installation
+
+```tsx
+import { Alert } from '@tenbaselabs/tensor-react';
+```
+
+## API Reference
+
+### Props
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `variant` | `'info' \| 'success' \| 'warning' \| 'danger'` | `'info'` | Alert style variant. `info` for neutral messages, `success` for completions, `warning` for cautions, `danger` for errors. |
+| `size` | `'sm' \| 'md'` | `'md'` | Alert size. `sm` (compact padding 16px), `md` (standard padding 24px). |
+| `title` | `string` | `undefined` | Alert heading text. |
+| `children` | `ReactNode` | **required** | Alert message content (text or element). |
+| `icon` | `ReactNode` | `undefined` | Custom icon (overrides default variant icon). |
+| `showIcon` | `boolean` | `true` | Whether to show the variant-specific icon. |
+| `dismissible` | `boolean` | `false` | Show dismiss button (X icon). |
+| `onDismiss` | `() => void` | `undefined` | Callback when alert is dismissed. |
+| `actions` | `ReactNode` | `undefined` | Action buttons (e.g., Undo, View) shown at end of alert. |
+| `role` | `'alert' \| 'status'` | auto-determined | ARIA role. `alert` for danger/warning (urgent), `status` for info/success. |
+| `aria-live` | `'polite' \| 'assertive'` | auto-determined | Screen reader announcement priority. `assertive` for danger, `polite` for others. |
+| `className` | `string` | `undefined` | Additional CSS classes for the alert container. |
+
+### TypeScript Interface
+
+```typescript
+import { type AlertProps } from '@tenbaselabs/tensor-react';
+
+interface AlertProps {
+  variant?: 'info' | 'success' | 'warning' | 'danger';
+  size?: 'sm' | 'md';
+  title?: string;
+  children: React.ReactNode;
+  icon?: React.ReactNode;
+  showIcon?: boolean;
+  dismissible?: boolean;
+  onDismiss?: () => void;
+  actions?: React.ReactNode;
+  role?: 'alert' | 'status';
+  'aria-live'?: 'polite' | 'assertive';
+  className?: string;
+}
+```
+
+## Usage Examples
+
+### Basic Alert
+
+```tsx
+import { Alert } from '@tenbaselabs/tensor-react';
+
+<Alert>Settings saved successfully</Alert>
+```
+
+### Info Alert
+
+```tsx
+<Alert variant="info" title="Important Notice">
+  New features will be available starting next week.
+</Alert>
+```
+
+### Success Alert
+
+```tsx
+<Alert variant="success" title="Success">
+  Your profile has been updated successfully.
+</Alert>
+```
+
+### Warning Alert
+
+```tsx
+<Alert variant="warning" title="Warning">
+  Your storage is 90% full. Please delete some files to free up space.
+</Alert>
+```
+
+### Danger Alert
+
+```tsx
+<Alert variant="danger" title="Error">
+  Failed to save changes. Please try again.
+</Alert>
+```
+
+### Dismissible Alert
+
+```tsx
+function DismissibleAlert() {
+  const [isVisible, setIsVisible] = useState(true);
+
+  if (!isVisible) return null;
+
+  return (
+    <Alert
+      variant="success"
+      title="Saved"
+      dismissible
+      onDismiss={() => setIsVisible(false)}
+    >
+      Your changes have been saved.
+    </Alert>
+  );
+}
+```
+
+### Alert with Custom Action
+
+```tsx
+function AlertWithAction() {
+  return (
+    <Alert
+      variant="warning"
+      title="Attachment Failed"
+      actions={
+        <>
+          <button>Try Again</button>
+          <button>Remove</button>
+        </>
+      }
+    >
+      The file "report.pdf" failed to upload.
+    </Alert>
+  );
+}
+```
+
+### Alert with Links
+
+```tsx
+<Alert
+  variant="danger"
+  title="Payment Failed"
+  actions={
+    <a href="/billing" className="text-primary hover:underline">
+      Update Payment Method
+    </a>
+  }
+>
+  Your payment of $49.99 could not be processed.
+</Alert>
+```
+
+### Custom Icon
+
+```tsx
+import { CustomIcon } from './CustomIcon';
+
+<Alert
+  variant="info"
+  title="Beta Feature"
+  icon={<CustomIcon />}
+>
+  This feature is currently in beta. Feedback welcome!
+</Alert>
+```
+
+### Small Size
+
+```tsx
+<Alert variant="success" size="sm" title="Saved">
+  Changes saved at 2:30 PM
+</Alert>
+```
+
+### Without Icon
+
+```tsx
+<Alert variant="info" showIcon={false}>
+  This alert has no icon.
+</Alert>
+```
+
+## Common Patterns
+
+### Form Success/Error Alerts
+
+```tsx
+function FormWithAlerts() {
+  const [status, setStatus] = useState<'success' | 'error' | null>(null);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setStatus(null);
+
+    try {
+      await submitForm();
+      setStatus('success');
+    } catch {
+      setStatus('error');
+    }
+  };
+
+  if (status === 'success') {
+    return (
+      <Alert variant="success" title="Success" dismissible onDismiss={() => setStatus(null)}>
+        Your changes have been saved successfully.
+      </Alert>
+    );
+  }
+
+  if (status === 'error') {
+    return (
+      <Alert variant="danger" title="Error" dismissible onDismiss={() => setStatus(null)}>
+        Failed to save changes. Please try again.
+      </Alert>
+    );
+  }
+
+  return (
+    <form onSubmit={handleSubmit}>
+      {/* form fields */}
+    </form>
+  );
+}
+```
+
+### Batch Operation Status
+
+```tsx
+function BatchOperationResult() {
+  const results = {
+    success: 8,
+    failed: 2,
+    total: 10,
+  };
+
+  return (
+    <Alert
+      variant={results.failed > 0 ? 'warning' : 'success'}
+      title={results.failed > 0 ? 'Partial Success' : 'Complete'}
+      actions={
+        <button>View Details</button>
+      }
+    >
+      Processed {results.success} of {results.total} items. {results.failed} failed.
+    </Alert>
+  );
+}
+```
+
+### Real-time Status Updates
+
+```tsx
+function StatusIndicator() {
+  const [status, setStatus] = useState<'idle' | 'syncing' | 'complete' | 'error'>('idle');
+
+  useEffect(() => {
+    if (status === 'syncing') {
+      setTimeout(() => {
+        // Simulate sync result
+        setStatus(Math.random() > 0.2 ? 'complete' : 'error');
+      }, 2000);
+    }
+  }, [status]);
+
+  if (status === 'syncing') {
+    return <Alert variant="info" title="Syncing">同步中...</Alert>;
+  }
+
+  if (status === 'complete') {
+    return (
+      <Alert variant="success" title="Sync Complete" dismissible onDismiss={() => setStatus('idle')}>
+        All data has been synchronized with the server.
+      </Alert>
+    );
+  }
+
+  if (status === 'error') {
+    return (
+      <Alert variant="danger" title="Sync Failed" dismissible onDismiss={() => setStatus('idle')}>
+        Could not connect to server. Check your internet connection.
+      </Alert>
+    );
+  }
+
+  return (
+    <button onClick={() => setStatus('syncing')}>
+      Sync Now
+    </button>
+  );
+}
+```
+
+### Security/Privacy Alert
+
+```tsx
+function SecurityAlert() {
+  const [dismissed, setDismissed] = useState(false);
+
+  if (dismissed) return null;
+
+  return (
+    <Alert
+      variant="warning"
+      title="Security Alert"
+      actions={
+        <>
+          <button onClick={() => setDismissed(true)}>I Understand</button>
+        </>
+      }
+    >
+      Your account has an inactive recovery method. Consider updating your security settings.
+    </Alert>
+  );
+}
+```
+
+### Toast Alternative (Non-Dismissable)
+
+```tsx
+function ToastLikeAlert() {
+  const [isVisible, setIsVisible] = useState(true);
+
+  useEffect(() => {
+    if (isVisible) {
+      const timer = setTimeout(() => {
+        setIsVisible(false);
+      }, 4000);
+      return () => clearTimeout(timer);
+    }
+  }, [isVisible]);
+
+  return (
+    <div className={isVisible ? 'transition-opacity duration-300' : 'opacity-0 pointer-events-none'}>
+      <Alert variant="success" title="Action Complete">
+        Your request has been processed.
+      </Alert>
+    </div>
+  );
+}
+```
+
+## Accessibility
+
+### ARIA Attributes
+
+Alert automatically manages accessibility based on variant:
+
+```tsx
+// Info alert (non-urgent)
+<Alert variant="info" title="Notice">
+  <p>System maintenance scheduled for Sunday.</p>
+</Alert>
+// Renders: role="status" aria-live="polite" (background update)
+
+// Success alert
+<Alert variant="success" title="Saved">
+  Changes saved successfully.
+</Alert>
+// Renders: role="status" aria-live="polite"
+
+// Warning alert (needs attention)
+<Alert variant="warning" title="Warning">
+  Low disk space.
+</Alert>
+// Renders: role="alert" aria-live="polite" (urgent announcement)
+
+// Danger alert (error)
+<Alert variant="danger" title="Error">
+  Failed to save.
+</Alert>
+// Renders: role="alert" aria-live="assertive" (immediate announcement)
+```
+
+### Dismissible Alerts
+
+When dismissible, the close button has proper accessibility:
+
+```tsx
+<Alert
+  variant="info"
+  dismissible
+  onDismiss={handleDismiss}
+>
+  <p>Message content</p>
+</Alert>
+// Renders: <button aria-label="Dismiss alert">...</button>
+```
+
+### Keyboard Navigation
+
+| Key | Action |
+|---|---|
+| `Tab` | Moves focus into alert (if interactive elements present) |
+| `Enter` | Activates any buttons in the alert |
+| `Space` | Activates any buttons in the alert |
+| `Escape` | Not applicable (use dismiss button instead) |
+
+**Note:** Alerts are not focus-trapping components. They do not traps focus - users can tab out normally.
+
+### Screen Reader Support
+
+| State | Announcement |
+|---|---|
+| Info alert | "Notice, status. System maintenance scheduled for Sunday." |
+| Success alert | "Saved, status. Changes saved successfully." |
+| Warning alert | "Warning, alert. Low disk space." |
+| Danger alert | "Error, alert. Failed to save changes." |
+
+### Icon Handling
+
+Icons are marked as `aria-hidden="true"` since the alert content provides the meaning:
+
+```tsx
+<Alert variant="success" title="Saved">
+  Changes saved successfully.
+</Alert>
+// Icon is hidden from screen readers, title "Saved" provides context
+```
+
+### Color Contrast
+
+All alert variants meet WCAG 2.1 Level AA:
+- Info: 4.5:1 background/to-text
+- Success: 4.5:1 background/to-text
+- Warning: 4.5:1 background/to-text
+- Danger: 4.5:1 background/to-text
+- Icons: 3:1 (non-text graphic)
+- Border: 2.1:1 (non-text border)
+
+## Best Practices
+
+### Do's
+
+✅ **Use variants appropriately**
+```tsx
+// Use the right variant for the message
+<Alert variant="success">Saved</Alert>
+<Alert variant="danger">Error</Alert>
+```
+
+✅ **Provide clear titles for important alerts**
+```tsx
+<Alert variant="warning" title="Warning">
+  Low disk space.
+</Alert>
+```
+
+✅ **Use dismissible for non-critical alerts**
+```tsx
+<Alert
+  variant="info"
+  title="Tip"
+  dismissible
+  onDismiss={handleTipRead}
+>
+  You can adjust this setting anytime.
+</Alert>
+```
+
+✅ **Use actions for quick follow-up**
+```tsx
+<Alert
+  variant="danger"
+  title="Payment Failed"
+  actions={<button>Update Card</button>}
+>
+  Your card was declined.
+</Alert>
+```
+
+✅ **Use role and aria-live for real-time updates**
+```tsx
+<Alert
+  variant="info"
+  role="status"
+  aria-live="polite"
+>
+  Syncing data...
+</Alert>
+```
+
+### Don'ts
+
+❌ **Don't use alerts for inline form validation**
+```tsx
+// Bad — use input error instead
+<Input error errorMessage="Invalid email" />
+
+// Good — use Alert for form submission errors
+<Alert variant="danger" title="Form Error">
+  Please fix the errors below.
+</Alert>
+```
+
+❌ **Don't use alerts for loading states**
+```tsx
+// Bad
+<Alert variant="info" title="Loading">...</Alert>
+
+// Good
+<Spinner aria-label="Loading..." />
+```
+
+❌ **Don't overuse dismissible alerts**
+```tsx
+// Bad — users can't learn about important messages
+<Alert variant="info" dismissible>
+  New to the platform? Start with our guided tour.
+</Alert>
+
+// Good — show once, maybe with a "Don't show again" checkbox
+{!hasSeenTour && <TourFeature />}
+```
+
+❌ **Don't use alert titles for non-distinct messages**
+```tsx
+// Bad — title is too vague
+<Alert variant="info" title="Status">
+  Settings saved.
+</Alert>
+
+// Good — specific title
+<Alert variant="info" title="Settings Saved">
+  Your preferences have been updated.
+</Alert>
+```
+
+❌ **Don't forget dismissible for time-quality improvements**
+```tsx
+// Bad — no way to dismiss non-urgent info
+<Alert variant="info">Company holiday schedule updated.</Alert>
+
+// Good — let users dismiss non-urgent info
+<Alert variant="info" title="Notice" dismissible>
+  Company holiday schedule updated.
+</Alert>
+```
+
+## Choosing Your Variant
+
+| Variant | Use For | ARIA Role | ARIA Live |
+|---|---|---|---|
+| **info** | General information, tips, notices | `status` | `polite` |
+| **success** | Successful actions, completions | `status` | `polite` |
+| **warning** | Warnings, possible issues | `alert` | `polite` |
+| **danger** | Errors, failures, critical issues | `alert` | `assertive` |
+
+**Key difference:** `alert` role with `assertive` priority interrupts screen reader announcements immediately, while `status` with `polite` waits for natural pause.
+
+## When to Use Alert vs Toast
+
+| Scenario | Use Alert | Use Toast |
+|---|---|---|
+| Immediate user attention required | ✅ Urgent messages | ❌ Toasts may be missed |
+| Dismissible informational message | ✅ With dismiss button | ❌ Too ephemeral |
+| Action needs to be taken | ✅ With action buttons | ⚠️ Limited to basic actions |
+| Page context matters | ✅_inline with content_ | ⚠️ Overlay, may disappear |
+| Batch operation results | ✅ Full details | ⚠️ Summary only |
+| Real-time updates | ✅ Persistent until acknowledged | ❌ Auto-dismisses |
+| Success after complex action | ⚠️ Persistent, can be missed | ✅ Non-blocking, dismisses |
+
+**General rule:**
+- **Alert** — When user needs to see and potentially act on the message
+- **Toast** — When confirming an action the user already completed
+
+## Related Components
+
+- **Toast** — Non-blocking notifications that auto-dismiss
+- **Input Error** — Inline validation feedback on form fields
+- **Tooltip** — Hover/focus help text for UI elements
+
+## Theming
+
+Alert colors (background, border, icon) are controlled by design tokens and automatically adapt to theme changes. The fade-out animation when dismissed is 200ms.
+
+---
+
+**Related Documentation:**
+- [Toast Component](./Toast)
+- [Accessibility Guidelines](../05-accessibility/Overview)

@@ -1,0 +1,479 @@
+---
+title: Tooltip
+description: Contextual information overlay for interactive elements
+---
+
+# Tooltip
+
+Tooltips display contextual information when users hover over or focus on an interactive element. Use for providing additional context,Labels for icons, or clarifying abbreviations.
+
+## When to Use
+
+✅ **Use Tooltip when:**
+- Explaining icon-only buttons or actions
+- Providing additional context for form labels
+- Showing full text when abbreviated
+- Describing complex UI elements
+- Accessibility labeling for screen readers
+
+❌ **Don't use Tooltip when:**
+- Information is critical (users won't know to hover)
+- Instructions are needed for basic use
+- Content is longer than a sentence or two
+- User must make a decision based on tooltip content
+- tooltip is the only place important information exists
+
+## Installation
+
+```tsx
+import { Tooltip } from '@tenbaselabs/tensor-react';
+```
+
+## API Reference
+
+### Props
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `children` | `ReactNode` | **required** | The element that triggers the tooltip (e.g., button, icon). |
+| `content` | `ReactNode` | **required** | The content to display in the tooltip. |
+| `delayDuration` | `number` | `200` | Delay in milliseconds before tooltip shows on hover. |
+| `skipDelayDuration` | `number` | `300` | Delay when moving between triggers (shorter to prevent flicker). |
+| `sideOffset` | `number` | `4` | Offset from the trigger element (pixels). |
+| `side` | `'top' \| 'right' \| 'bottom' \| 'left'` | auto | Position of tooltip relative to trigger. Auto-fit detects available space. |
+| `align` | `'start' \| 'center' \| 'end'` | `center` | Alignment of tooltip relative to trigger. |
+| `alignOffset` | `number` | `0` | Additional alignment offset in pixels. |
+| `avoidCollisions` | `boolean` | `true` | Whether to reposition if tooltip would overflow viewport. |
+
+### Base TooltipProps (Radix)
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `disableHoverableContent` | `boolean` | `false` | Close tooltip when hovering over tooltip content. |
+| `open` | `boolean` | undefined | Controlled open state. |
+| `defaultOpen` | `boolean` | `false` | Initial open state (uncontrolled). |
+| `onOpenChange` | `(open: boolean) => void` | `undefined` | Callback when open state changes. |
+| `openDelay` | `number` | `0` | Additional delay before showing. |
+| `closeDelay` | `number` | `0` | Delay before closing on mouse leave. |
+
+### Keyboard Support
+
+Tooltip can be opened via keyboard for accessibility:
+
+| Key | Action |
+|---|---|
+| `Focus` | Tooltip appears (after delay) |
+| `Shift + Tab` | Tooltip disappears |
+
+### JavaScript Accessibility
+
+Tooltips are announced to screen readers:
+
+**Note:** Tooltip text is announced via `aria-describedby` for content that benefits from it. Standard tooltips use `role="tooltip"`.
+
+## Usage Examples
+
+### Basic Tooltip
+
+```tsx
+import { Tooltip } from '@tenbaselabs/tensor-react';
+
+<Tooltip content="Delete item">
+  <Button variant="ghost">
+    <TrashIcon />
+  </Button>
+</Tooltip>
+```
+
+### Icon-Only Button
+
+```tsx
+<Tooltip content="Save changes">
+  <Button variant="ghost" onClick={save}>
+    <SaveIcon />
+  </Button>
+</Tooltip>
+```
+
+### Form Field Help
+
+```tsx
+<div className="flex gap-2">
+  <label htmlFor="email">Email</label>
+  <Tooltip content="We'll send notifications to this address">
+    <InfoIcon className="h-4 w-4 text-gray-500" />
+  </Tooltip>
+</div>
+```
+
+### Abbreviation Explanation
+
+```tsx
+<Tooltip content="HyperText Markup Language">
+  <span className="underline decoration-dashed cursor-help">HTML</span>
+</Tooltip>
+```
+
+### Custom Trigger Element
+
+```tsx
+<Tooltip content="Click to copy to clipboard">
+  <button
+    className="px-2 py-1 rounded bg-gray-100 hover:bg-gray-200"
+    onClick={copyToClipboard}
+  >
+    Copy
+  </button>
+</Tooltip>
+```
+
+### Custom Delay
+
+```tsx
+// Longer delay (500ms)
+<Tooltip content="Slow in" delayDuration={500}>
+  <span>Hover me</span>
+</Tooltip>
+```
+
+### Shorter Skip Delay
+
+```tsx
+<Tooltip content="Quick switch" skipDelayDuration={0}>
+  <span>Fast transition</span>
+</Tooltip>
+```
+
+### Tooltips with Icons
+
+```tsx
+import { InfoIcon, HelpCircleIcon } from '@tenbaselabs/icons';
+
+// Information icon
+<Tooltip content="This is additional information">
+  <InfoIcon className="h-4 w-4 text-blue-500" />
+</Tooltip>
+
+// Question mark icon
+<Tooltip content="Learn more about this feature">
+  <HelpCircleIcon className="h-4 w-4 text-gray-400" />
+</Tooltip>
+```
+
+### Conditional Tooltip
+
+```tsx
+function ConditionalTooltip({ condition }) {
+  return (
+    <Tooltip content={condition ? 'Available' : 'Unavailable'}>
+      <div className={condition ? 'text-green-500' : 'text-gray-400'}>
+        Status Icon
+      </div>
+    </Tooltip>
+  );
+}
+```
+
+### Tooltip with Link
+
+```tsx
+<Tooltip content={
+  <div className="max-w-xs">
+    <p>Click to view documentation</p>
+    <a href="/docs" className="text-white underline">View docs</a>
+  </div>
+}>
+  <Button variant="ghost">
+    <QuestionIcon />
+  </Button>
+</Tooltip>
+```
+
+### Controlled Tooltip
+
+```tsx
+function ControlledTooltip() {
+  const [open, setOpen] = useState(false);
+
+  return (
+    <Tooltip
+      content="Custom tooltip"
+      open={open}
+      onOpenChange={setOpen}
+    >
+      <Button onClick={() => setOpen(true)}>Trigger</Button>
+    </Tooltip>
+  );
+}
+```
+
+## Common Patterns
+
+### Overlay Menu Helper
+
+```tsx
+function DropdownHelper() {
+  return (
+    <div className="flex gap-2">
+      <Tooltip content="Sort by name">
+        <button onClick={() => sortBy('name')}>
+          <SortAscendingIcon />
+        </button>
+      </Tooltip>
+      <Tooltip content="Sort by date">
+        <button onClick={() => sortBy('date')}>
+          <CalendarIcon />
+        </button>
+      </Tooltip>
+      <Tooltip content="Filter results">
+        <button onClick={() => filter()}>
+          <FilterIcon />
+        </button>
+      </Tooltip>
+    </div>
+  );
+}
+```
+
+### Encoding Tooltip (HTML Entities)
+
+```tsx
+function EncodingTooltip() {
+  return (
+    <Tooltip content="Reserved character: &lt; is less than">
+      <code>&lt;script&gt;</code>
+    </Tooltip>
+  );
+}
+```
+
+### Tooltip with Code
+
+```tsx
+<Tooltip content="Maximum file size: 10MB">
+  <span className="text-xs text-gray-500">Max: 10MB</span>
+</Tooltip>
+```
+
+### Accessibility Helper
+
+```tsx
+function AccessibleIcon() {
+  return (
+    <Tooltip content="Go to dashboard">
+      <button aria-label="Dashboard">
+        <HomeIcon className="h-5 w-5" />
+      </button>
+    </Tooltip>
+  );
+}
+```
+
+### Tooltip on Input
+
+```tsx
+<Tooltip content="Enter your email address">
+  <Input type="email" placeholder="Enter email" />
+</Tooltip>
+```
+
+## Accessibility
+
+### ARIA Attributes
+
+Tooltip automatically manages accessibility:
+
+```tsx
+<Tooltip content="Click to delete">
+  <button aria-label="Delete">...</button>
+</Tooltip>
+```
+
+### Focus Visibility
+
+Tooltips appear on focus for keyboard users:
+
+```tsx
+// Tab into trigger
+// Tooltip appears after delay
+// Press Enter to activate
+// Press Escape to close tooltip
+```
+
+### Screen Reader Support
+
+| Scenario | Screen Reader Announcement |
+|---|---|
+| Hover over icon | "Delete item, tooltip" |
+| Focus via keyboard | "Delete item, tooltip" |
+| Close button | "Close tooltip, button" |
+
+### Keyboard Accessibility
+
+| Key | Action |
+|---|---|
+| `Tab` | Moves to trigger element |
+| `Shift + Tab` | Moves backward |
+| `Enter` | Activates trigger (tooltip closes) |
+| `Escape` | Closes tooltip (if open) |
+
+**Note:** Tooltips should not interfere with keyboard navigation. Users should be able to reach all interactive elements regardless of tooltip state.
+
+### Best Practice: Provide aria-label
+
+For icon-only buttons, provide both tooltip and aria-label:
+
+```tsx
+// Good
+<Tooltip content="Delete">
+  <button aria-label="Delete item">
+    <TrashIcon />
+  </button>
+</Tooltip>
+
+// Badge — aria-label for screen readers, tooltip for visual users
+```
+
+## Best Practices
+
+### Do's
+
+✅ **Use for icon-only buttons**
+```tsx
+<Tooltip content="Delete">
+  <Button variant="ghost">
+    <TrashIcon />
+  </Button>
+</Tooltip>
+```
+
+✅ **Keep content short**
+```tsx
+// Good — short and clear
+<Tooltip content="Delete item">...</Tooltip>
+```
+
+✅ **Provide both visual text and tooltip**
+```tsx
+<Tooltip content="Delete">
+  <Button variant="ghost">
+    <TrashIcon />
+    <span className="sr-only">Delete</span>
+  </Button>
+</Tooltip>
+```
+
+✅ **Use aria-label for icons**
+```tsx
+<Tooltip content="Delete">
+  <button aria-label="Delete item">
+    <TrashIcon />
+  </button>
+</Tooltip>
+```
+
+### Don'ts
+
+❌ **Don't use tooltip for critical information**
+```tsx
+// Bad — users might miss it
+<Tooltip content="Your subscription expires tomorrow">
+  <icon />
+</Tooltip>
+
+// Good — use Alert or clear annual renewal notice
+<Alert variant="warning" title="Subscription Expiring">
+  Your subscription expires in 24 hours.
+</Alert>
+```
+
+❌ **Don't use tooltip as primary instruction**
+```tsx
+// Bad
+<Tooltip content="Click to submit form">
+  <Button>Submit</Button>
+</Tooltip>
+
+// Good — text label on button
+<Button>Submit</Button>
+```
+
+❌ **Don't overuse tooltips**
+```tsx
+// Bad — tooltip spam
+<Tooltip content="Name field">
+  <Input label="Name" />
+</Tooltip>
+
+// Good — label provides enough context
+<Input label="Name" />
+```
+
+❌ **Don't make tooltip content long**
+```tsx
+// Bad — paragraphs in tooltip
+<Tooltip content="Long explanation... (many paragraphs)">
+  <button>Info</button>
+</Tooltip>
+
+// Good — use Modal or separate page for long content
+<Tooltip content="Learn more...">
+  <button>Info</button>
+</Tooltip>
+```
+
+❌ **Don't hide text entirely behind tooltip**
+```tsx
+// Bad
+<Tooltip content="Submit Form">
+  <Button variant="ghost">
+    <SendIcon />
+  </Button>
+</Tooltip>
+
+// Good
+<Tooltip content="Submit Form">
+  <Button variant="primary">
+    <SendIcon />
+    Submit
+  </Button>
+</Tooltip>
+```
+
+## When to Use Tooltip vs Alert vs Toast vs Help Icon
+
+| Scenario | Use Tooltip | Use Alert | Use Toast | Use Help Icon |
+|---|---|---|---|---|
+| Icon button explanation | ✅ Best | ❌ Too much | ❌ Too ephemeral | ⚠️ Static only |
+| Critical message | ❌ Missed often | ✅ Required attention | ❌ Optional | ❌ Not urgent |
+| Quick success/confirm | ❌ Not for actions | ❌ Persistent | ✅ Quick feedback | ❌ Not relevant |
+| Form field help | ⚠️ Options vary | ❌ Too much | ❌ Too ephemeral | ✅ Static dialog |
+| Abbreviation | ✅ Perfect | ❌ Overkill | ❌ Wrong context | ✅ Static |
+| Modal content | ❌ Too small | ❌ | ❌ | ❌ |
+
+**General rule:**
+- **Tooltip** — Extra context for hover/focus on small UI elements
+- **Alert** — Critical messages requiring action
+- **Toast** — Quick action confirmations
+- **Help Icon** — Static documentation reference
+
+## Related Components
+
+- **Alert** — Priority messages requiring attention
+- **Toast** — Quick, auto-dismissing notifications
+- **Modal** — Full-screen dialogs with focused interactions
+
+## Theming
+
+Tooltip colors (background `neutral-900`, text white, arrow) are controlled by design tokens and automatically adapt to theme changes. Animations include:
+- Fade in from side
+- Zoom in to 95%
+- Slide from direction
+- Arrow pointing to trigger
+
+---
+
+**Related Documentation:**
+- [Alert Component](./Alert)
+- [Toast Component](./Toast)
+- [Accessibility Guidelines](../05-accessibility/Overview)

@@ -197,7 +197,8 @@ export const Alert = forwardRef<HTMLDivElement, AlertProps>(
     const resolvedVariant = variant ?? 'info'
 
     // Determine ARIA role based on variant
-    const alertRole = role || (resolvedVariant === 'danger' || resolvedVariant === 'warning' ? 'alert' : 'status')
+    const alertRole =
+      role || (resolvedVariant === 'danger' || resolvedVariant === 'warning' ? 'alert' : 'status')
 
     // Determine aria-live based on variant
     const liveRegion = ariaLive || (resolvedVariant === 'danger' ? 'assertive' : 'polite')

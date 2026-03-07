@@ -1,6 +1,12 @@
 import type { Preview } from '@storybook/react-vite'
 import '../src/index.css'
 
+// Import theme switcher
+import { getTheme, setTheme, themes } from '../src/themes'
+
+// Ensure theme is set for initial render
+setTheme(getTheme())
+
 const preview: Preview = {
   parameters: {
     controls: {
@@ -11,10 +17,25 @@ const preview: Preview = {
     },
 
     a11y: {
-      // 'todo' - show a11y violations in the test UI only
-      // 'error' - fail CI on a11y violations
-      // 'off' - skip a11y checks entirely
       test: 'todo',
+    },
+
+    // Theme switcher configuration
+    themes: {
+      themes: {
+        roundvision: {
+          title: themes.roundvision.name,
+          color: themes.roundvision.className,
+        },
+        tenbase: {
+          title: themes.tenbase.name,
+          color: themes.tenbase.className,
+        },
+      },
+      activeTheme: getTheme(),
+      onChange: (theme: keyof typeof themes) => {
+        setTheme(theme)
+      },
     },
   },
 }

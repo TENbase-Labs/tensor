@@ -1,0 +1,702 @@
+---
+title: Modal
+description: Overlay dialog for focused interactions
+---
+
+# Modal
+
+Modals display content in a layer above the main application, requiring user interaction before returning to the main context. Use for focused tasks that need user attention.
+
+## When to Use
+
+✅ **Use Modal when:**
+- Confirming a destructive action
+- Collecting a small amount of information
+- Showing detailed information without navigation
+- Requiring user decision before continuing
+- Dialog needs focus trap and backdrop
+
+❌ **Don't use Modal when:**
+- Simple inline feedback — use `Toast` or `Alert`
+- Multi-step wizard with many steps — consider dedicated page
+- Content is longer than modal capacity
+- User needs to reference external content — use `Tooltip` or new tab
+- Multiple modals needed simultaneously — use `Drawer` or `Drawer`
+
+## Installation
+
+```tsx
+import { Modal, ModalTrigger, ModalClose } from '@tenbaselabs/tensor-react';
+```
+
+## API Reference
+
+### Modal Props
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `open` | `boolean` | `undefined` | Whether modal is open (controlled component). |
+| `defaultOpen` | `boolean` | `false` | Initial open state (uncontrolled component). |
+| `onOpenChange` | `(open: boolean) => void` | `undefined` | Callback when modal open state changes. |
+| `title` | `string` | **required** | Modal title (used for accessibility). |
+| `description` | `string` | `undefined` | Optional description text below title. |
+| `children` | `ReactNode` | **required** | Modal content displayed below header. |
+| `size` | `'sm' \| 'md' \| 'lg' \| 'xl' \| 'full'` | `'md'` | Modal width. `sm` (400px), `md` (600px), `lg` (800px), `xl` (1000px), `full` (full viewport width). |
+| `showCloseButton` | `boolean` | `true` | Show close (X) button in header. |
+| `footer` | `ReactNode` | `undefined` | Footer content (typically action buttons). |
+| `onClose` | `() => void` | `undefined` | Callback when modal should close. |
+| `contentClassName` | `string` | `undefined` | Additional CSS classes for content container. |
+
+### ModalTrigger Props
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `children` | `ReactNode` | **required** | The trigger element (usually a button). |
+| `disabled` | `boolean` | `false` | Disable the trigger. |
+
+### ModalClose Props
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `children` | `ReactNode` | `undefined` | Content to display inside close button. |
+| `disabled` | `boolean` | `false` | Disable the close button. |
+
+### TypeScript Interfaces
+
+```typescript
+import { type ModalProps, type ModalTrigger, type ModalClose } from '@tenbaselabs/tensor-react';
+
+interface ModalProps {
+  open?: boolean;
+  defaultOpen?: boolean;
+  onOpenChange?: (open: boolean) => void;
+  title: string;
+  description?: string;
+  children: ReactNode;
+  size?: 'sm' | 'md' | 'lg' | 'xl' | 'full';
+  showCloseButton?: boolean;
+  footer?: ReactNode;
+  onClose?: () => void;
+  contentClassName?: string;
+}
+
+export const ModalTrigger: React.FC<{ children: ReactNode; disabled?: boolean }>;
+export const ModalClose: React.FC<{ children?: ReactNode; disabled?: boolean }>;
+```
+
+## Usage Examples
+
+### Basic Modal
+
+```tsx
+import { useState } from 'react';
+import { Modal, ModalTrigger, ModalClose } from '@tenbaselabs/tensor-react';
+
+function BasicModal() {
+  const [isOpen, setIsOpen] = useState(false);
+
+  return (
+    <>
+      <ModalTrigger asChild>
+        <Button variant="primary">Open Modal</Button>
+      </ModalTrigger>
+
+      <Modal
+        open={isOpen}
+        onOpenChange={setIsOpen}
+        title="Basic Modal"
+        description="A simple modal example"
+      >
+        This is the modal content.
+      </Modal>
+    </>
+  );
+}
+```
+
+### Confirmation Modal
+
+```tsx
+function DeleteConfirmation() {
+  const [isOpen, setIsOpen] = useState(false);
+
+  return (
+    <>
+      <ModalTrigger asChild>
+        <Button variant="danger">Delete Account</Button>
+      </ModalTrigger>
+
+      <Modal
+        open={isOpen}
+        onOpenChange={setIsOpen}
+        title="Delete Account"
+        description="This action cannot be undone"
+        footer={
+          <>
+            <ModalClose asChild>
+              <Button variant="ghost">Cancel</Button>
+            </ModalClose>
+            <Button variant="danger" onClick={handleDelete}>
+              Delete
+            </Button>
+          </>
+        }
+      >
+        Are you sure you want to delete your account? All your data will be
+        permanently removed.
+      </Modal>
+    </>
+  );
+}
+```
+
+### Different Sizes
+
+```tsx
+// Small modal (400px)
+<Modal size="sm" title="Confirm">
+  Content here...
+</Modal>
+
+// Medium modal (600px, default)
+<Modal size="md" title="Edit Profile">
+  Content here...
+</Modal>
+
+// Large modal (800px)
+<Modal size="lg" title="Edit Details">
+  Content here...
+</Modal>
+
+// Extra large modal (1000px)
+<Modal size="xl" title="Settings">
+  Content here...
+</Modal>
+
+// Full-width modal
+<Modal size="full" title="Dashboard Widget">
+  Content here...
+</Modal>
+```
+
+### Modal with Form
+
+```tsx
+function EditProfileModal() {
+  const [isOpen, setIsOpen] = useState(false);
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+
+  return (
+    <>
+      <ModalTrigger asChild>
+        <Button variant="secondary">Edit Profile</Button>
+      </ModalTrigger>
+
+      <Modal
+        open={isOpen}
+        onOpenChange={setIsOpen}
+        title="Edit Profile"
+        footer={
+          <>
+            <ModalClose asChild>
+              <Button variant="ghost">Cancel</Button>
+            </ModalClose>
+            <Button variant="primary" onClick={() => handleSubmit({ name, email })}>
+              Save Changes
+            </Button>
+          </>
+        }
+      >
+        <div className="space-y-4">
+          <Input
+            label="Name"
+            value={name}
+            onChange={(e: any) => setName(e.target.value)}
+          />
+          <Input
+            label="Email"
+            type="email"
+            value={email}
+            onChange={(e: any) => setEmail(e.target.value)}
+          />
+        </div>
+      </Modal>
+    </>
+  );
+}
+```
+
+### Modal with Custom Content
+
+```tsx
+function ImagePreviewModal() {
+  const [isOpen, setIsOpen] = useState(false);
+
+  return (
+    <>
+      <ModalTrigger asChild>
+        <Button variant="ghost">View Image</Button>
+      </ModalTrigger>
+
+      <Modal
+        open={isOpen}
+        onOpenChange={setIsOpen}
+        title="Preview"
+        size="lg"
+        footer={<ModalClose asChild><Button variant="ghost">Close</Button></ModalClose>}
+      >
+        <img
+          src="/path/to/image.jpg"
+          alt="Preview"
+          className="w-full rounded-md"
+        />
+      </Modal>
+    </>
+  );
+}
+```
+
+### Modal Without Close Button
+
+```tsx
+<Modal
+  title="Welcome"
+  showCloseButton={false}
+  footer={<Button onClick={() => setIsOpen(false)}>Get Started</Button>}
+>
+  Welcome to our application! Let's get you started.
+</Modal>
+```
+
+### Uncontrolled Modal
+
+```tsx
+<ModalTrigger asChild>
+  <Button>Open Modal</Button>
+</ModalTrigger>
+
+<Modal
+  defaultOpen={true}
+  title="Uncontrolled Modal"
+  onClose={() => console.log('Closed')}
+>
+  Content here...
+</Modal>
+```
+
+### Modal with Long Content
+
+```tsx
+<Modal
+  title="Terms and Conditions"
+  size="lg"
+  footer={<ModalClose asChild><Button variant="primary">Accept</Button></ModalClose>}
+>
+  <div className="prose max-h-[60vh] overflow-y-auto space-y-4">
+    <p>Long content...</p>
+    <p>Many paragraphs...</p>
+  </div>
+</Modal>
+```
+
+## Common Patterns
+
+### Confirmation Dialog
+
+```tsx
+function DeleteWithToast() {
+  const [isOpen, setIsOpen] = useState(false);
+  const showToast = useToastManager().addToast;
+
+  const handleDelete = async () => {
+    try {
+      await deleteItem();
+      showToast({
+        variant: 'success',
+        title: 'Deleted',
+        message: 'Item deleted successfully',
+      });
+      setIsOpen(false);
+    } catch {
+      showToast({
+        variant: 'danger',
+        title: 'Error',
+        message: 'Failed to delete',
+      });
+    }
+  };
+
+  return (
+    <>
+      <ModalTrigger asChild>
+        <Button variant="danger">Delete Item</Button>
+      </ModalTrigger>
+
+      <Modal
+        open={isOpen}
+        onOpenChange={setIsOpen}
+        title="Delete Item"
+        description="This action cannot be undone"
+        footer={
+          <>
+            <ModalClose asChild>
+              <Button variant="ghost">Cancel</Button>
+            </ModalClose>
+            <Button variant="danger" onClick={handleDelete}>
+              Delete
+            </Button>
+          </>
+        }
+      >
+        Are you sure you want to delete this item? This action is permanent and
+        cannot be undone.
+      </Modal>
+    </>
+  );
+}
+```
+
+### Form with Validation
+
+```tsx
+function FormModal() {
+  const [isOpen, setIsOpen] = useState(false);
+  const [email, setEmail] = useState('');
+  const [error, setError] = useState('');
+  const [submitting, setSubmitting] = useState(false);
+
+  const handleSubmit = async () => {
+    setError('');
+    if (!email.includes('@')) {
+      setError('Please enter a valid email address');
+      return;
+    }
+
+    setSubmitting(true);
+    try {
+      await subscribe(email);
+      setIsOpen(false);
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  return (
+    <>
+      <ModalTrigger asChild>
+        <Button variant="primary">Subscribe</Button>
+      </ModalTrigger>
+
+      <Modal
+        open={isOpen}
+        onOpenChange={setIsOpen}
+        title="Subscribe to Newsletter"
+        footer={
+          <>
+            <ModalClose asChild>
+              <Button variant="ghost" disabled={submitting}>Cancel</Button>
+            </ModalClose>
+            <Button variant="primary" onClick={handleSubmit} disabled={submitting}>
+              {submitting ? 'Subscribing...' : 'Subscribe'}
+            </Button>
+          </>
+        }
+      >
+        <div className="space-y-2">
+          <label htmlFor="email" className="text-sm font-medium">Email address</label>
+          <Input
+            id="email"
+            type="email"
+            value={email}
+            onChange={(e: any) => setEmail(e.target.value)}
+            error={!!error}
+            errorMessage={error}
+          />
+        </div>
+      </Modal>
+    </>
+  );
+}
+```
+
+### Confirmation Before Navigation
+
+```tsx
+function RouteGuard() {
+  const [modalOpen, setModalOpen] = useState(false);
+  const [pendingPath, setPendingPath] = useState('');
+
+  const handleExit = (path: string) => {
+    setPendingPath(path);
+    setModalOpen(true);
+  };
+
+  return (
+    <Modal
+      open={modalOpen}
+      onOpenChange={(open) => {
+        setModalOpen(open);
+        if (!open && pendingPath) {
+          navigate(pendingPath);
+          setPendingPath('');
+        }
+      }}
+      title="Unsaved Changes"
+      description="You have unsaved changes. Are you sure you want to leave?"
+      footer={
+        <>
+          <ModalClose asChild>
+            <Button variant="ghost">Stay Here</Button>
+          </ModalClose>
+          <Button variant="danger" onClick={() => {
+            setIsClean(true);
+            setModalOpen(false);
+          }}>
+            Discard and Leave
+          </Button>
+        </>
+      }
+    >
+      You have made changes that have not been saved. If you leave this page,
+      your changes will be lost.
+    </Modal>
+  );
+}
+```
+
+## Accessibility
+
+### ARIA Attributes
+
+Modal automatically manages accessibility through Radix Dialog:
+
+```tsx
+<Modal
+  title="Delete Account"
+  description="This action cannot be undone"
+>
+  Content...
+</Modal>
+// Renders:
+// <div role="dialog" aria-modal="true" aria-labelledby="dialog-title-xxx">
+//   <h2 id="dialog-title-xxx">Delete Account</h2>
+//   <p>This action cannot be undone</p>
+```
+
+### Focus Management
+
+**Focus trap:** Modal traps focus inside when open - users cannot tab outside.
+
+**Focus return:** Focus returns to the trigger element when modal closes.
+
+**Screen reader:** Announces "Delete Account, dialog" when opened.
+
+### Keyboard Navigation
+
+| Key | Action |
+|---|---|
+| `Tab` | Move focus (trapped inside modal) |
+| `Shift + Tab` | Move focus backward (trapped inside modal) |
+| `Escape` | Close modal |
+| `Enter` | Activate focused button |
+| `Space` | Activate focused button |
+
+**Important:** Users can close modal with `Escape` key.
+
+### Close Button
+
+The close button has proper accessibility:
+
+```tsx
+<Dialog.Close aria-label="Close modal">
+  <CloseIcon />
+</Dialog.Close>
+// Renders: <button aria-label="Close modal">✕</button>
+```
+
+### Role and Policy
+
+- **Role:** `dialog` with `aria-modal="true"`
+- **Trap:** Focus trapped inside modal
+- **Relations:** `aria-labelledby` points to modal title
+
+## Best Practices
+
+### Do's
+
+✅ **Always provide a title**
+```tsx
+<Modal title="Confirm Deletion">...</Modal>
+// Title is required for accessibility
+```
+
+✅ **Use close button (default)**
+```tsx
+<Modal
+  title="Settings"
+  showCloseButton={true}
+  // Or omit - true is default
+>
+  Content...
+</Modal>
+```
+
+✅ **Provide footer with actions**
+```tsx
+<Modal
+  title="Delete"
+  footer={
+    <>
+      <Button variant="ghost">Cancel</Button>
+      <Button variant="danger">Delete</Button>
+    </>
+  }
+>
+  Are you sure?
+</Modal>
+```
+
+✅ **Use appropriate size**
+```tsx
+// Small for simple confirmations
+<Modal size="sm" title="Confirm">...</Modal>
+
+// Large for forms or content
+<Modal size="lg" title="Edit Details">...</Modal>
+```
+
+✅ **Use ModalClose in footer**
+```tsx
+<Modal footer={
+  <ModalClose asChild>
+    <Button>Cancel</Button>
+  </ModalClose>
+}>
+  Content...
+</Modal>
+```
+
+### Don'ts
+
+❌ **Don't use modal for simple confirmations**
+```tsx
+// Bad — use toast for quick confirmations
+<Modal
+  title="Saved"
+  footer={<ModalClose><Button> OK </Button></ModalClose>}
+>
+  Changes saved successfully.
+</Modal>
+
+// Good — notification is quick and doesn't block
+<Toast
+  variant="success"
+  title="Saved"
+  message="Changes saved successfully"
+/>
+```
+
+❌ **Don't nest interactive elements inside modal**
+```tsx
+// Bad
+<Modal title="Form">
+  <form>
+    <Button type="submit">Submit</Button>  {/* Ina */}
+  </form>
+</Modal>
+
+// Good — separate action button
+<Modal
+  title="Form"
+  footer={<Button type="submit">Submit</Button>}
+>
+  <form>...</form>
+</Modal>
+```
+
+❌ **Don't make modal too large for content**
+```tsx
+// Bad — too large for message
+<Modal size="full" title="Saved">
+  Changes saved successfully.
+</Modal>
+
+// Good — use small or medium
+<Modal size="sm" title="Saved">
+  Changes saved successfully.
+</Modal>
+```
+
+❌ **Don't forget to handle close**
+```tsx
+// Bad — closing doesn't update state
+<Modal
+  open={isOpen}
+  title="Edit"
+  footer={<Button onClick={() => setIsOpen(false)}>Close</Button>}
+>
+  Content...
+</Modal>
+
+// Good — onOpenChange handles all close events
+<Modal
+  open={isOpen}
+  onOpenChange={setIsOpen}
+  title="Edit"
+>
+  Content...
+</Modal>
+```
+
+❌ **Don't use modal for loading states**
+```tsx
+// Bad
+<Modal
+  open={loading}
+  title="Loading..."
+>
+  <Spinner />
+</Modal>
+
+// Good — use overlay or inline spinner
+{loading && <Spinner aria-label="Loading..." />}
+```
+
+## When to Use Modal vs Drawer vs Toast vs Alert
+
+| Scenario | Use Modal | Use Drawer | Use Toast | Use Alert |
+|---|---|---|---|---|
+| Confirm destructive action | ✅ Full focus required | ❌ Less prominent | ❌ Too ephemeral | ⚠️ Persistent |
+| Collect small input | ✅ Focused task | ✅れば | ❌ | ❌ |
+| Long content or forms | ✅ Space available | ✅ Vertical scroll | ❌ | ❌ |
+| Quick confirmation | ⚠️ May be overkill | ❌ | ✅ Best fit | ⚠️ Persistent |
+| Critical error requiring action | ⚠️ Modal works | ⚠️ Drawer works | ❌ Too ephemeral | ✅ Priority message |
+| Multi-step wizard | ✅ Proper separation | ✅ Vertical space | ❌ | ❌ |
+| Mobile-friendly overlay | ⚠️ Centered | ✅ Bottom sheet style | ❌ | ❌ |
+
+**General rule:**
+- **Modal** — When user needs full focus on dialog内容
+- **Drawer** — For mobile, vertical scroll, or secondary context
+- **Toast** — For quick, non-blocking feedback
+- **Alert** — For critical, persistent messages
+
+## Related Components
+
+- **Alert** — Priority messages requiring attention (can be persistent)
+- **Toast** — Quick, auto-dismissing notifications
+- **Drawer** — Side/Bottom sheet for less intrusive interactions
+
+## Theming
+
+Modal colors (background, overlay, border) are controlled by design tokens. Modal overlays are semi-transparent (`black/50`). Animations include:
+- Fade in/out
+- Zoom in/out
+- Slide in from center
+
+---
+
+**Related Documentation:**
+- [Alert Component](./Alert)
+- [Toast Component](./Toast)
+- [Accessibility Guidelines](../05-accessibility/Overview)

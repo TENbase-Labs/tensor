@@ -513,6 +513,115 @@ tensor/
 
 ---
 
+## Multi-Brand Theme System
+
+### Overview
+
+TENsor supports multiple brands (RoundVision and TENbase) with runtime theme switching. Each brand has its own color palette while sharing core tokens for typography, spacing, and layout.
+
+### Supported Brands
+
+| Brand | Primary Color | Use Case |
+|---|---|---|
+| **RoundVision** | `#3B82F6` (Blue) | TENbase Labs default |
+| **TENbase** | `#8B5CF6` (Purple) | TENbase specific apps |
+
+### Token Structure
+
+```
+tokens/
+├── core/              # Shared tokens (used by all brands)
+│   ├── colors.json    # Neutral colors, surface, text
+│   ├── spacing.json
+│   ├── typography.json
+│   └── container.json
+├── roundvision/       # RoundVision brand colors
+│   └── colors.json    # Primary, secondary, brand colors
+└── tenbase/           # TENbase brand colors
+    └── colors.json    # Primary, secondary, brand colors
+```
+
+### Build Commands
+
+```bash
+# Build both themes (RoundVision + TENbase)
+npm run build:tokens
+
+# Or build a specific theme
+npx style-dictionary build --config sd.roundvision.config.js
+npx style-dictionary build --config sd.tenbase.config.js
+```
+
+### Usage in Components
+
+**Import theme utilities:**
+```typescript
+import { setTheme, getTheme, useTheme } from '@tenbaselabs/tensor/themes'
+```
+
+**Programmatic theme switching:**
+```typescript
+// Set theme to RoundVision
+setTheme('roundvision')
+
+// Set theme to TENbase
+setTheme('tenbase')
+
+// Toggle between themes
+function toggleTheme() {
+  const current = getTheme()
+  const next = current === 'roundvision' ? 'tenbase' : 'roundvision'
+  setTheme(next)
+}
+```
+
+**In React with hook:**
+```typescript
+function Component() {
+  const [theme, setTheme] = useTheme()
+
+  return (
+    <div>
+      <button onClick={() => setTheme('roundvision')}>
+        RoundVision
+      </button>
+      <button onClick={() => setTheme('tenbase')}>
+        TENbase
+      </button>
+      <p>Current: {theme}</p>
+    </div>
+  )
+}
+```
+
+### Theme Output Files
+
+| Theme | CSS | JS | JSON |
+|---|---|---|---|
+| RoundVision | `dist/css/roundvision.css` | `dist/js/roundvision.tokens.js` | `dist/json/roundvision.tokens.json` |
+| TENbase | `dist/css/tenbase.css` | `dist/js/tenbase.tokens.js` | `dist/json/tenbase.tokens.json` |
+
+### Storybook Integration
+
+Theme switcher controls are available in Storybook preview. Use the theme selector in the toolbar or add the theme decorator to individual stories:
+
+```typescript
+import { roundvision, tenbase } from '@tenbaselabs/tensor/themes'
+
+export const RoundVisionVersion: Story = {
+  args: { ... },
+  decorators: [
+    (Story) => (
+      <div className={roundvision.className}>
+        <Story />
+      </div>
+    ),
+  ],
+}
+```
+
+---
+
 ## Design System Tooling Engineer Responsibilities
 
 As the DSS Tooling Engineer, I maintain:
