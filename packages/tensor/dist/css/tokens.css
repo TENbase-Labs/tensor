@@ -1,0 +1,60 @@
+/**
+ * Do not edit directly, this file was auto-generated.
+ */
+
+:root {
+  --colors-primary: #3b82f6;
+  --colors-secondary: #10b981;
+  --colors-success: #10b981;
+  --colors-warning: #f59e0b;
+  --colors-danger: #ef4444;
+  --colors-info: #3b82f6;
+  --colors-neutral-50: #f9fafb;
+  --colors-neutral-100: #f3f4f6;
+  --colors-neutral-200: #e5e7eb;
+  --colors-neutral-300: #d1d5db;
+  --colors-neutral-400: #9ca3af;
+  --colors-neutral-500: #6b7280;
+  --colors-neutral-600: #4b5563;
+  --colors-neutral-700: #374151;
+  --colors-neutral-800: #1f2937;
+  --colors-neutral-900: #111827;
+  --colors-surface-base: #ffffff;
+  --colors-surface-raised: #f9fafb;
+  --colors-surface-overlay: #ffffff;
+  --colors-surface-sunken: #f3f4f6;
+  --colors-text-primary: #111827;
+  --colors-text-secondary: #6b7280;
+  --colors-text-tertiary: #9ca3af;
+  --colors-text-disabled: #d1d5db;
+  --colors-text-inverse: #f9fafb;
+  --container-sm: 640px;
+  --container-md: 768px;
+  --container-lg: 1024px;
+  --container-xl: 1280px;
+  --container-full: 100%;
+  --spacing-0: 0;
+  --spacing-xs: 0.25rem;
+  --spacing-sm: 0.5rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 1.5rem;
+  --spacing-xl: 2rem;
+  --spacing-2xl: 3rem;
+  --spacing-3xl: 4rem;
+  --typography-font-size-sm: 0.875rem;
+  --typography-font-size-base: 1rem;
+  --typography-font-size-lg: 1.125rem;
+  --typography-font-size-xl: 1.25rem;
+  --typography-font-size-2xl: 1.5rem;
+  --typography-font-size-3xl: 1.875rem;
+  --typography-font-weight-normal: 400;
+  --typography-font-weight-medium: 500;
+  --typography-font-weight-semibold: 600;
+  --typography-font-weight-bold: 700;
+  --typography-line-height-tight: 1.25;
+  --typography-line-height-normal: 1.5;
+  --typography-line-height-relaxed: 1.625;
+  --typography-letter-spacing-tight: -0.025em;
+  --typography-letter-spacing-normal: 0em;
+  --typography-letter-spacing-wide: 0.025em;
+}

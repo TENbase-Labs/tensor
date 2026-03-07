@@ -8,10 +8,9 @@ coverage/
 *.lcov
 .nyc_output
 
-# Production
-dist/
-build/
-storybook-static/
+# Production - build and storybook are gitignored, but dist is committed for CSS
+# build/
+# storybook-static/
 
 # Misc
 .DS_Store
